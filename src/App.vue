@@ -5,7 +5,16 @@
 
       <h3>Shirt</h3>
       <h4>Primary Color</h4>
-      <!-- COLOR VIEW  -->
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === shirtFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setShirtFill(color)"
+          >
+          </button>
+        </section>
       <h4>Type</h4>
       <button 
         v-for="option in shirtOptions"
@@ -15,18 +24,105 @@
         {{ option }}
       </button>
       <button v-show="activeShirtOption" v-on:click="clearShirtOption()">Clear</button>
+      
       <h4>Collar Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === collarFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setCollarFill(color)"
+        >
+        </button>
+      </section>
+      
       <h4>Sleeve Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === sleeveFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setShirtSleeveFill(color)"
+        >
+        </button>
+      </section>
+
       <h4>Cuff Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === shirtCuffFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setShirtCuffFill(color)"
+        >
+        </button>
+      </section>
 
       <h3>Shorts</h3>
       <h4>Primary Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === shortsFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setShortsFill(color)"
+        >
+        </button>
+      </section>
+      
       <h4>Cuff Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === shortsCuffFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setShortsCuffFill(color)"
+        >
+        </button>
+      </section>
+
       <h4>Number Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === numberFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setNumberFill(color)"
+        >
+        </button>
+      </section>
 
       <h3>Socks</h3>
       <h4>Primary Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === socksFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setSocksFill(color)"
+        >
+        </button>
+      </section>
+      
       <h4>Top Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === socksCuffFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setSocksCuffFill(color)"
+        >
+        </button>
+      </section>
+
       <h4>Hoops</h4>
     </section>
 
@@ -36,6 +132,7 @@
         :activeShirtOption="activeShirtOption"
         :shirtFill="shirtFill"
         :shirtCuffFill="shirtCuffFill"
+        :shirtSleeveFill="shirtSleeveFill"
         :shortsFill="shortsFill"
         :shortsCuffsFill="shortsCuffsFill"
         :socksFill="socksFill"
@@ -57,10 +154,10 @@
   const grey = '#CCCCCC';
 
   const colors = [
-    ...green,
-    ...black,
-    ...white,
-    ...grey
+    green,
+    black,
+    white,
+    grey
   ]
 
   const shirtOptions = [
@@ -141,6 +238,17 @@
 </script>
 
 <style>
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 12pt;
+  }
+
+  * {
+    transition: all .2s;
+  }
+
   button {
     text-transform: uppercase;
     margin: 0 .25rem .25rem 0;
@@ -148,6 +256,10 @@
 
   button:hover {
     cursor: pointer;
+    outline: 0;
+    border: none;
+    padding: none;
+    margin: none;
   }
 
   button.active {
@@ -160,9 +272,10 @@
   }
 
   #toolbar {
-    width: 25vw;
-    height: 100vh;
+    width: 30vw;
+    min-height: 100vh;
     border-right: 1px solid black;
+    padding-left: 1em;
   }
 
   #kit-stage {
@@ -174,5 +287,21 @@
 
   .kit-display {
     height: 90vh;
+  }
+
+  .color-select {
+    display: flex;
+  }
+
+  .color-option {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    margin-right: .5em;
+    border: 4px solid transparent;
+  }
+
+  .color-option.active {
+    border-color: #333;
   }
 </style>
