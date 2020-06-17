@@ -68,7 +68,7 @@
         <button 
           v-for="color in colors" 
           class="color-option"
-          :class="{ active: color === sleeveFill }"
+          :class="{ active: color === shirtSleeveFill }"
           :style="{ backgroundColor: color }"
           v-on:click="setShirtSleeveFill(color)"
         >
@@ -105,7 +105,7 @@
         <button 
           v-for="color in colors" 
           class="color-option"
-          :class="{ active: color === shortsCuffFill }"
+          :class="{ active: color === shortsCuffsFill }"
           :style="{ backgroundColor: color }"
           v-on:click="setShortsCuffsFill(color)"
         >
@@ -151,7 +151,7 @@
 
       <h4>Sock Hoops</h4>
       <button 
-        class="toggle"
+        class="toggle active"
         v-if="socksHoops"
         v-on:click="setSocksHoops(false)"
       >Hide Hoops</button>
@@ -325,26 +325,26 @@
 
   h3 {
     padding: .25em;
-    background-color: rgba(255, 255, 255, 0.8);
-    color: #333;
+    background-color: #00B140;
+    color: black;
   }
 
   button {
     text-transform: uppercase;
     margin: 0 .25rem .25rem 0;
+    outline: 0;
+    border: none;
+    padding: none;
+    border-radius: 4px;
   }
 
   button:hover {
     cursor: pointer;
-    outline: 0;
-    border: none;
-    padding: none;
-    margin: none;
   }
 
   button.active {
-    background-color: black;
-    color: white;
+    background-color: #00B140;
+    color: black;
   }
 
   #app {
@@ -387,11 +387,15 @@
     height: 3em;
     border-radius: 50%;
     margin-right: .5em;
-    border: 4px solid transparent;
+    border: 4px solid rgba(255,255,255,0.4);
+  }
+
+  .color-option:hover {
+    border: 4px solid rgba(255,255,255,0.7);
   }
 
   .color-option.active {
-    border-color: #333;
+    border-color: #FFFF66;
   }
 
   .invisible {
