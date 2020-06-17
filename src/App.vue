@@ -4,6 +4,9 @@
       <h2>Create Your Kit</h2>
 
       <h3>Shirt</h3>
+      <h4>Primary Color</h4>
+      <!-- COLOR VIEW  -->
+      <h4>Type</h4>
       <button 
         v-for="option in shirtOptions"
         v-on:click="setShirtOption(option)"
@@ -12,12 +15,34 @@
         {{ option }}
       </button>
       <button v-show="activeShirtOption" v-on:click="clearShirtOption()">Clear</button>
+      <h4>Collar Color</h4>
+      <h4>Sleeve Color</h4>
+      <h4>Cuff Color</h4>
+
+      <h3>Shorts</h3>
+      <h4>Primary Color</h4>
+      <h4>Cuff Color</h4>
+      <h4>Number Color</h4>
+
+      <h3>Socks</h3>
+      <h4>Primary Color</h4>
+      <h4>Top Color</h4>
+      <h4>Hoops</h4>
     </section>
 
     <section id="kit-stage">
       <Kit 
         class="kit-display" 
         :activeShirtOption="activeShirtOption"
+        :shirtFill="shirtFill"
+        :shirtCuffFill="shirtCuffFill"
+        :shortsFill="shortsFill"
+        :shortsCuffsFill="shortsCuffsFill"
+        :socksFill="socksFill"
+        :socksCuffsFill="socksCuffsFill"
+        :logoFill="logoFill"
+        :numberFill="numberFill"
+        :collarFill="collarFill"
       />
     </section>
   </div>
@@ -30,6 +55,13 @@
   const black = '#000000';
   const white = '#FFFFFF';
   const grey = '#CCCCCC';
+
+  const colors = [
+    ...green,
+    ...black,
+    ...white,
+    ...grey
+  ]
 
   const shirtOptions = [
     'stripes',
@@ -48,26 +80,62 @@
     },
     data() {
       return {
+        colors,
+
         shirtOptions,
         activeShirtOption: null,
-        shirtFill: null,
-        shirtCuffFill: null,
+        shirtFill: black,
+        shirtCuffFill: green,
+        shirtSleeveFill: black,
+        logoFill: white,
+        collarFill: green,
         
-        shortsFill: null,
-        shortsCuffsFill: null,
+        shortsFill: black,
+        shortsCuffsFill: green,
         
-        socksFill: null,
-        socksCuffsFill: null
+        socksFill: black,
+        socksCuffsFill: black,
+
+        numberFill: white
       }
     },
     methods: {
       setShirtOption(option) {
-        console.log(`SETTING SHIRT OPTION TO >> ${option}`);
         this.activeShirtOption = option;
       },
       clearShirtOption() {
         this.activeShirtOption = null;
-      }
+      },
+      setShirtFill(fill) {
+        this.shirtFill = fill;
+      },
+      setShirtCuffFill(fill) {
+        this.shirtCuffFill = fill;
+      },
+      setShirtSleeveFill(fill) {
+        this.shirtSleeveFill = fill;
+      },
+      setLogoFill(fill) {
+        this.logoFill = fill;
+      },
+      setCollarFill(fill) {
+        this.collarFill = fill;
+      },
+      setShortsFill(fill) {
+        this.shortsFill = fill;
+      },
+      setShortsCuffsFill(fill) {
+        this.shortsCuffsFill = fill;
+      },
+      setSocksFill(fill) {
+        this.socksFill = fill;
+      },
+      setSocksCuffsFill(fill) {
+        this.socksCuffsFill = fill;
+      },
+      setNumberFill(fill) {
+        this.numberFill = fill;
+      },
     }
   };
 </script>
@@ -98,7 +166,7 @@
   }
 
   #kit-stage {
-    width: 75vw;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-content: center;
