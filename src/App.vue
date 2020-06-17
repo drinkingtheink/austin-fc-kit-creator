@@ -4,13 +4,47 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>Welcome/Hola</h2>
-          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit 'Enter' or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit Enter or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize</button>
           <button v-on:click="handleGreetingClose()">Start On My Own</button>
+          <button v-on:click="handleGreetingToManageColors()">Manage Colors</button>
         </div>
       </section>
     </transition>
+
+    <transition name="fade">
+      <section class="color-mgmt greeting" v-show="manageColors">
+        <div class="greeting-main">
+          <h2>Manage Colors</h2>
+          <p>Add or Remove Your Own Colors (<a href="https://htmlcolorcodes.com/" target="_blank">hex values</a> or <a href="https://htmlcolorcodes.com/color-names/" target="_blank">named colors</a> only)</p>
+
+          <section class="color-select color-display">
+            <button 
+              v-for="color in colors" 
+              class="color-option"
+              :style="{ backgroundColor: color }"
+            >
+            </button>
+            <button 
+              class="add-color-option"
+              v-on:click="addColor(colorToAdd)"
+            >
+              +
+            </button>
+            <input 
+              class="color-to-add"
+              type="text" 
+              placeholder="Add a Hex Value w/ #"
+              v-model="colorToAdd"
+            />
+          </section>
+
+          <button v-on:click="manageColorWindow(false)">Close</button>
+        </div>
+      </section>
+    </transition>
+
     <div id="app">
       <section id="kit-stage">
         <Kit 
@@ -39,6 +73,7 @@
           </a>
           <h2>Create Your Kit</h2>
           <button v-on:click="randomizeKit">Feeling Lucky</button>
+          <button v-on:click="manageColorWindow(true)">Manage Colors</button>
         </header>
 
         <h3>Shirt</h3>
@@ -225,7 +260,7 @@
     </div>
 
     <section class="help">
-      <p>Hit <strong>'Enter'</strong> or <strong>'Directional Arrows'</strong> at any time to randomize kit</p>
+      <p>Hit <strong>Enter</strong> or <strong>Directional Arrows</strong> at any time to randomize kit</p>
     </section>
   </main>
 </template>
@@ -265,6 +300,9 @@
     data() {
       return {
         showGreeting: false,
+        
+        manageColors: false,
+        colorToAdd: null,
 
         colors,
 
@@ -289,6 +327,13 @@
       }
     },
     methods: {
+      addColor(color) {
+        this.colors.push(color);
+
+        setTimeout(() => {
+          this.colorToAdd = null;
+        }, 300);
+      },
       setShirtOption(option) {
         this.activeShirtOption = option;
       },
@@ -373,6 +418,13 @@
         if(randomizePref) {
           this.randomizeKit();
         }
+      },
+      handleGreetingToManageColors() {
+        this.showGreeting = false;
+        this.manageColors = true;
+      },
+      manageColorWindow(pref) {
+        this.manageColors = pref;
       }
     },
     created() {
@@ -427,6 +479,17 @@
     font-family: 'Cairo', sans-serif;
   }
 
+  a {
+    text-decoration: none;
+    color: #F4D03F;
+    opacity: .8;
+  }
+
+  a:hover {
+    text-decoration: none;
+    opacity: 1;
+  }
+
   h3 {
     padding: .25em .25em .25em 1em;
     margin-left: -1em;
@@ -471,7 +534,8 @@
     padding: 2em;
     margin: 4em auto 0 auto;
     max-width: 65%;
-    background-color: #333;
+    background-color: #000000;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='72' viewBox='0 0 36 72'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23333333' fill-opacity='0.81'%3E%3Cpath d='M2 6h12L8 18 2 6zm18 36h12l-6 12-6-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     color: white;
     position: static;
     z-index: 100;
@@ -480,6 +544,11 @@
   .greeting-main h2 {
     color: #00B140;
     font-size: 240%;
+    margin: 0 0 .5rem 0;
+  }
+
+  .greeting-main p {
+    font-size: 1.25em;
   }
 
   .greeting-main button {
@@ -556,6 +625,19 @@
     display: flex;
   }
 
+  .color-select.color-display .color-option:hover {
+    cursor: default;
+  }
+
+  .color-mgmt .color-display {
+    margin-bottom: 2em;
+  }
+
+  .color-display input.color-to-add {
+    width: 15em;
+    padding-left: 1em;
+  }
+
   .color-option {
     width: 3em;
     height: 3em;
@@ -569,7 +651,7 @@
   }
 
   .color-option.active {
-    border-color: #FFFF66;
+    border-color: #F4D03F;
   }
 
   .help {
