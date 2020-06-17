@@ -1,5 +1,25 @@
 <template>
   <div id="app">
+    <section id="kit-stage">
+      <Kit 
+        class="kit-display" 
+        :activeShirtOption="activeShirtOption"
+        :shirtFill="shirtFill"
+        :shirtTypeFill="shirtTypeFill"
+        :shirtCuffFill="shirtCuffFill"
+        :shirtSleeveFill="shirtSleeveFill"
+        :shortsFill="shortsFill"
+        :shortsCuffsFill="shortsCuffsFill"
+        :socksFill="socksFill"
+        :socksCuffsFill="socksCuffsFill"
+        :logoFill="logoFill"
+        :numberFill="numberFill"
+        :collarFill="collarFill"
+        :socksHoops="socksHoops"
+        :socksHoopsFill="socksHoopsFill"
+      />
+    </section>
+    
     <section id="toolbar">
       <h2>Create Your Kit</h2>
 
@@ -175,29 +195,6 @@
           </button>
         </section>
       </section>
-
-
-
-    </section>
-
-    <section id="kit-stage">
-      <Kit 
-        class="kit-display" 
-        :activeShirtOption="activeShirtOption"
-        :shirtFill="shirtFill"
-        :shirtTypeFill="shirtTypeFill"
-        :shirtCuffFill="shirtCuffFill"
-        :shirtSleeveFill="shirtSleeveFill"
-        :shortsFill="shortsFill"
-        :shortsCuffsFill="shortsCuffsFill"
-        :socksFill="socksFill"
-        :socksCuffsFill="socksCuffsFill"
-        :logoFill="logoFill"
-        :numberFill="numberFill"
-        :collarFill="collarFill"
-        :socksHoops="socksHoops"
-        :socksHoopsFill="socksHoopsFill"
-      />
     </section>
   </div>
 </template>
