@@ -4,7 +4,7 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>Welcome/Hola</h2>
-          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there (hit 'Enter' at any time to randomize as well). Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit 'Enter' at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize</button>
           <button v-on:click="handleGreetingClose()">Start On My Own</button>
@@ -593,5 +593,9 @@
 
   .invisible {
     visibility: hidden;
+  }
+
+  strong {
+    color: #00B140;
   }
 </style>
