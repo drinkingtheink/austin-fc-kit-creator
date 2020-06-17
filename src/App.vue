@@ -1,210 +1,213 @@
 <template>
-  <div id="app">
-    <section id="kit-stage">
-      <Kit 
-        class="kit-display" 
-        :activeShirtOption="activeShirtOption"
-        :shirtFill="shirtFill"
-        :shirtTypeFill="shirtTypeFill"
-        :shirtCuffFill="shirtCuffFill"
-        :shirtSleeveFill="shirtSleeveFill"
-        :shortsFill="shortsFill"
-        :shortsCuffsFill="shortsCuffsFill"
-        :socksFill="socksFill"
-        :socksCuffsFill="socksCuffsFill"
-        :logoFill="logoFill"
-        :numberFill="numberFill"
-        :collarFill="collarFill"
-        :socksHoops="socksHoops"
-        :socksHoopsFill="socksHoopsFill"
-      />
-    </section>
+  <main>
+    <div id="app">
+      <section id="kit-stage">
+        <Kit 
+          class="kit-display" 
+          :activeShirtOption="activeShirtOption"
+          :shirtFill="shirtFill"
+          :shirtTypeFill="shirtTypeFill"
+          :shirtCuffFill="shirtCuffFill"
+          :shirtSleeveFill="shirtSleeveFill"
+          :shortsFill="shortsFill"
+          :shortsCuffsFill="shortsCuffsFill"
+          :socksFill="socksFill"
+          :socksCuffsFill="socksCuffsFill"
+          :logoFill="logoFill"
+          :numberFill="numberFill"
+          :collarFill="collarFill"
+          :socksHoops="socksHoops"
+          :socksHoopsFill="socksHoopsFill"
+        />
+      </section>
 
-    <section id="toolbar">
-      <header>
-        <a href="https://austinfc.com/" target="_blank">
-          <AustinFCBadge class="toolbar-badge" />
-        </a>
-        <h2>Create Your Kit</h2>
-      </header>
+      <section id="toolbar">
+        <header>
+          <a href="https://austinfc.com/" target="_blank">
+            <AustinFCBadge class="toolbar-badge" />
+          </a>
+          <h2>Create Your Kit</h2>
+          <button v-on:click="randomizeKit">Feeling Lucky</button>
+        </header>
 
-      <h3>Shirt</h3>
-      <h4>Primary Color</h4>
+        <h3>Shirt</h3>
+        <h4>Primary Color</h4>
+          <section class="color-select">
+            <button 
+              v-for="color in colors" 
+              class="color-option"
+              :class="{ active: color === shirtFill }"
+              :style="{ backgroundColor: color }"
+              v-on:click="setShirtFill(color)"
+            >
+            </button>
+          </section>
+        <h4>Design</h4>
+        <section class="shirt-type-selection">
+          <button 
+            v-on:click="clearShirtOption()"
+            :class="{ active: !activeShirtOption }"
+          >Solid</button>
+          <button 
+            v-for="option in shirtOptions"
+            v-on:click="setShirtOption(option)"
+            :class="{ active: option === activeShirtOption }"
+          >
+            {{ option }}
+          </button>
+        </section>
+
+        <h4>Design Color</h4>
         <section class="color-select">
           <button 
             v-for="color in colors" 
             class="color-option"
-            :class="{ active: color === shirtFill }"
+            :class="{ active: color === shirtTypeFill }"
             :style="{ backgroundColor: color }"
-            v-on:click="setShirtFill(color)"
+            v-on:click="setShirtTypeFill(color)"
           >
           </button>
         </section>
-      <h4>Design</h4>
-      <section class="shirt-type-selection">
-        <button 
-          v-on:click="clearShirtOption()"
-          :class="{ active: !activeShirtOption }"
-        >Solid</button>
-        <button 
-          v-for="option in shirtOptions"
-          v-on:click="setShirtOption(option)"
-          :class="{ active: option === activeShirtOption }"
-        >
-          {{ option }}
-        </button>
-      </section>
 
-      <h4>Design Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === shirtTypeFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setShirtTypeFill(color)"
-        >
-        </button>
-      </section>
+        <h4>Sponsor Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === logoFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setLogoFill(color)"
+          >
+          </button>
+        </section>
+        
+        <h4>Collar Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === collarFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setCollarFill(color)"
+          >
+          </button>
+        </section>
+        
+        <h4>Sleeve Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === shirtSleeveFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setShirtSleeveFill(color)"
+          >
+          </button>
+        </section>
 
-      <h4>Sponsor Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === logoFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setLogoFill(color)"
-        >
-        </button>
-      </section>
-      
-      <h4>Collar Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === collarFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setCollarFill(color)"
-        >
-        </button>
-      </section>
-      
-      <h4>Sleeve Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === shirtSleeveFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setShirtSleeveFill(color)"
-        >
-        </button>
-      </section>
+        <h4>Cuff Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === shirtCuffFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setShirtCuffFill(color)"
+          >
+          </button>
+        </section>
 
-      <h4>Cuff Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === shirtCuffFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setShirtCuffFill(color)"
-        >
-        </button>
-      </section>
+        <h3>Shorts</h3>
+        <h4>Primary Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === shortsFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setShortsFill(color)"
+          >
+          </button>
+        </section>
+        
+        <h4>Cuff Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === shortsCuffsFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setShortsCuffsFill(color)"
+          >
+          </button>
+        </section>
 
-      <h3>Shorts</h3>
-      <h4>Primary Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === shortsFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setShortsFill(color)"
-        >
-        </button>
-      </section>
-      
-      <h4>Cuff Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === shortsCuffsFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setShortsCuffsFill(color)"
-        >
-        </button>
-      </section>
+        <h4>Number Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === numberFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setNumberFill(color)"
+          >
+          </button>
+        </section>
 
-      <h4>Number Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === numberFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setNumberFill(color)"
-        >
-        </button>
-      </section>
-
-      <h3>Socks</h3>
-      <h4>Primary Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === socksFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setSocksFill(color)"
-        >
-        </button>
-      </section>
-      
-      <h4>Top Color</h4>
-      <section class="color-select">
-        <button 
-          v-for="color in colors" 
-          class="color-option"
-          :class="{ active: color === socksCuffsFill }"
-          :style="{ backgroundColor: color }"
-          v-on:click="setSocksCuffsFill(color)"
-        >
-        </button>
-      </section>
-
-      <h4>Sock Hoops</h4>
-      <button 
-        class="toggle active"
-        v-if="socksHoops"
-        v-on:click="setSocksHoops(false)"
-      >Hide Hoops</button>
-
-      <button 
-        class="toggle"
-        v-else
-        v-on:click="setSocksHoops(true)"
-      >Hoop Them</button>
-
-      <section class="hoops-color">
-        <h4>Hoops Color</h4>
+        <h3>Socks</h3>
+        <h4>Primary Color</h4>
         <section class="color-select">
           <button 
             v-for="color in colors" 
             class="color-option"
             :class="{ active: color === socksFill }"
             :style="{ backgroundColor: color }"
-            v-on:click="setSocksHoopsFill(color)"
+            v-on:click="setSocksFill(color)"
           >
           </button>
         </section>
+        
+        <h4>Top Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === socksCuffsFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setSocksCuffsFill(color)"
+          >
+          </button>
+        </section>
+
+        <h4>Sock Hoops</h4>
+        <button 
+          class="toggle active"
+          v-if="socksHoops"
+          v-on:click="setSocksHoops(false)"
+        >Hide Hoops</button>
+
+        <button 
+          class="toggle"
+          v-else
+          v-on:click="setSocksHoops(true)"
+        >Hoop Them</button>
+
+        <section class="hoops-color">
+          <h4>Hoops Color</h4>
+          <section class="color-select">
+            <button 
+              v-for="color in colors" 
+              class="color-option"
+              :class="{ active: color === socksFill }"
+              :style="{ backgroundColor: color }"
+              v-on:click="setSocksHoopsFill(color)"
+            >
+            </button>
+          </section>
+        </section>
       </section>
-    </section>
-  </div>
+    </div>
+  </main>
 </template>
 
 <script>
@@ -308,6 +311,39 @@
       },
       setSocksHoopsFill(fill) {
         this.socksHoopsFill = fill;
+      },
+      getRandomColor() {
+        let randomColor = colors[Math.floor(Math.random()*colors.length)];
+        return randomColor;
+      },
+      getRandomShirtDesign() {
+        let randomDesign = this.shirtOptions[Math.floor(Math.random()*this.shirtOptions.length)];
+        return randomDesign;
+      },
+      getRandomTrueFalse() {
+        let options = [
+          true,
+          false
+        ];
+
+        let randomChoice = options[Math.floor(Math.random()*options.length)];
+        return randomChoice;
+      },
+      randomizeKit() {
+        this.setShirtOption(this.getRandomShirtDesign());
+        this.setShirtFill(this.getRandomColor());
+        this.setShirtTypeFill(this.getRandomColor());
+        this.setShirtCuffFill(this.getRandomColor());
+        this.setShirtSleeveFill(this.getRandomColor());
+        this.setLogoFill(this.getRandomColor());
+        this.setCollarFill(this.getRandomColor());
+        this.setShortsFill(this.getRandomColor());
+        this.setShortsCuffsFill(this.getRandomColor());
+        this.setSocksFill(this.getRandomColor());
+        this.setSocksCuffsFill(this.getRandomColor());
+        this.setNumberFill(this.getRandomColor());
+        this.setSocksHoops(this.getRandomTrueFalse());
+        this.setSocksHoopsFill(this.getRandomColor());
       }
     }
   };
@@ -315,6 +351,11 @@
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&display=swap');
+
+  @keyframes floatABit {
+    10% { transform: translateY(-0.5px); }
+    80% { transform: translateY(0.5px); }
+  }
 
   html,
   body {
@@ -345,9 +386,11 @@
     border: none;
     padding: none;
     border-radius: 4px;
+    background-color: #CCC;
   }
 
   button:hover {
+    background-color: white;
     cursor: pointer;
   }
 
@@ -401,6 +444,7 @@
     justify-content: center;
     align-content: center;
     padding-top: 2em;
+    animation: floatABit 1s infinite ease-in-out;
   }
 
   .kit-display {
