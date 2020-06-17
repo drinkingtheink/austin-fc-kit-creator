@@ -1,5 +1,16 @@
 <template>
   <main v-on:keyup.enter="captureEnter">
+    <transition name="fade">
+      <section class="greeting" v-show="showGreeting">
+        <div class="greeting-main">
+          <h2>Welcome/Hola</h2>
+          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there (hit 'Enter' at any time to randomize as well). Either way, hope you have fun and let's GROW THE LEGEND!</p>
+
+          <button v-on:click="handleGreetingClose(true)">Randomize</button>
+          <button v-on:click="handleGreetingClose()">Start On My Own</button>
+        </div>
+      </section>
+    </transition>
     <div id="app">
       <section id="kit-stage">
         <Kit 
@@ -130,7 +141,7 @@
           </button>
         </section>
         
-        <h4>Cuff Color</h4>
+        <h4>Trim Color</h4>
         <section class="color-select">
           <button 
             v-for="color in colors" 
@@ -212,6 +223,10 @@
         <p></p>
       </section>
     </div>
+
+    <section class="help">
+      <p>Hit <strong>'Enter'</strong> at any time to randomize kit</p>
+    </section>
   </main>
 </template>
 
@@ -249,6 +264,8 @@
     },
     data() {
       return {
+        showGreeting: false,
+
         colors,
 
         shirtOptions,
@@ -350,6 +367,13 @@
         this.setSocksHoops(this.getRandomTrueFalse());
         this.setSocksHoopsFill(this.getRandomColor());
       },
+      handleGreetingClose(randomizePref) {
+        this.showGreeting = false;
+
+        if(randomizePref) {
+          this.randomizeKit();
+        }
+      }
     },
     created() {
       window.addEventListener('keyup', (e) => {
@@ -358,15 +382,28 @@
         }
       });
     },
+    mounted() {
+      setTimeout(() => {
+        this.showGreeting = true;
+      }, 500);
+    }
   };
 </script>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
 
   @keyframes floatABit {
     10% { transform: translateY(-0.5px); }
     80% { transform: translateY(0.5px); }
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 
   html,
@@ -381,6 +418,12 @@
 
   * {
     transition: all .2s;
+  }
+
+  span,
+  p,
+  li {
+    font-family: 'Cairo', sans-serif;
   }
 
   h3 {
@@ -409,6 +452,43 @@
   button.active {
     background-color: #00B140;
     color: black;
+  }
+
+  main {
+    position: relative;
+  }
+
+  .greeting {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 10;
+  }
+
+  .greeting-main {
+    padding: 2em;
+    margin: 4em auto 0 auto;
+    max-width: 65%;
+    background-color: #333;
+    color: white;
+    position: static;
+    z-index: 100;
+  }
+
+  .greeting-main h2 {
+    color: #00B140;
+    font-size: 240%;
+  }
+
+  .greeting-main button {
+    background-color: #00B140;
+    color: black;
+    font-size: 1.25em;
+  }
+
+  .greeting-main button:hover {
+    color: white;
   }
 
   #app {
@@ -463,6 +543,10 @@
     height: 90vh;
   }
 
+  .kit-display:hover svg {
+    transform: scale(1.3);
+  }
+
   .shirt-type-selection {
     padding-right: 2em;
   }
@@ -485,6 +569,25 @@
 
   .color-option.active {
     border-color: #FFFF66;
+  }
+
+  .help {
+    position: absolute;
+    bottom: 0;
+    padding: 1em;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    right: 0;
+    left: 0;
+    margin: auto;
+    max-width: 20em;
+    text-align: center;
+  }
+
+  .help p {
+    padding: 0;
+    margin: 0;
+    font-size: 0.8em;
   }
 
   .invisible {
