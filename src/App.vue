@@ -4,7 +4,7 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>Welcome/Hola</h2>
-          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit 'Enter' or <strong>Left/Right Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit 'Enter' or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize</button>
           <button v-on:click="handleGreetingClose()">Start On My Own</button>
@@ -225,7 +225,7 @@
     </div>
 
     <section class="help">
-      <p>Hit <strong>'Enter'</strong> or <strong>'Left/Right Arrows'</strong> at any time to randomize kit</p>
+      <p>Hit <strong>'Enter'</strong> or <strong>'Directional Arrows'</strong> at any time to randomize kit</p>
     </section>
   </main>
 </template>
@@ -377,7 +377,7 @@
     },
     created() {
       window.addEventListener('keyup', (e) => {
-        if (e.keyCode == 13 || e.keyCode == 37 || e.keyCode == 39) {
+        if (e.keyCode == 13 || e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
           this.randomizeKit();
           this.showGreeting = false;
         }
