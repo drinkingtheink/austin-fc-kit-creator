@@ -365,11 +365,11 @@
   #toolbar {
     width: 30vw;
     min-height: 100vh;
-    padding-left: 1em;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     overflow: auto;
-    padding-top: 1em;
+    padding: 1em 0 3em 1em;
+
   }
 
   #toolbar header {
@@ -379,6 +379,11 @@
   #toolbar header h2 {
     margin: 0;
     padding: 0;
+  }
+
+  #toolbar h4 {
+    margin: .5em 0 .25em 0;
+    color: #ccc;
   }
 
   #toolbar header .toolbar-badge {
