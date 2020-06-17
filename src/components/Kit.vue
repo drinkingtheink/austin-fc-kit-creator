@@ -616,6 +616,11 @@
         </g>
       </g>
       <polygon id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
+      <g id="shirt-maker">
+        <rect :style="{ fill: collarFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
+        <rect :style="{ fill: collarFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
+        <rect :style="{ fill: collarFill }" x="225.3" y="148" width="8.4" height="12.5"/>
+      </g>
     </g>
     <g id="yeti-logo_1_">
       <g>
