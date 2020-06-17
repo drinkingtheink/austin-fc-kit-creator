@@ -19,7 +19,7 @@
         :socksHoopsFill="socksHoopsFill"
       />
     </section>
-    
+
     <section id="toolbar">
       <h2>Create Your Kit</h2>
 
