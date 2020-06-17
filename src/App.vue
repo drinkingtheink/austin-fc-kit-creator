@@ -27,6 +27,18 @@
         <button v-show="activeShirtOption" v-on:click="clearShirtOption()">Clear</button>
       </section>
 
+      <h4>Design Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === shirtTypeFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setShirtTypeFill(color)"
+        >
+        </button>
+      </section>
+
       <h4>Logo Color</h4>
       <section class="color-select">
         <button 
@@ -173,6 +185,7 @@
         class="kit-display" 
         :activeShirtOption="activeShirtOption"
         :shirtFill="shirtFill"
+        :shirtTypeFill="shirtTypeFill"
         :shirtCuffFill="shirtCuffFill"
         :shirtSleeveFill="shirtSleeveFill"
         :shortsFill="shortsFill"
@@ -226,6 +239,7 @@
         shirtOptions,
         activeShirtOption: null,
         shirtFill: black,
+        shirtTypeFill: green,
         shirtCuffFill: green,
         shirtSleeveFill: black,
         logoFill: white,
@@ -251,6 +265,9 @@
       },
       setShirtFill(fill) {
         this.shirtFill = fill;
+      },
+      setShirtTypeFill(fill) {
+        this.shirtTypeFill = fill;
       },
       setShirtCuffFill(fill) {
         this.shirtCuffFill = fill;
