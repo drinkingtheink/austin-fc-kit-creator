@@ -59,7 +59,7 @@
         </button>
       </section>
 
-      <h4>Logo Color</h4>
+      <h4>Sponsor Color</h4>
       <section class="color-select">
         <button 
           v-for="color in colors" 
