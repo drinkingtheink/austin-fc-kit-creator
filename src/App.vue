@@ -158,7 +158,7 @@
             class="color-option"
             :class="{ active: color === socksFill }"
             :style="{ backgroundColor: color }"
-            v-on:click="setSocksFill(color)"
+            v-on:click="setSocksHoopsFill(color)"
           >
           </button>
         </section>
