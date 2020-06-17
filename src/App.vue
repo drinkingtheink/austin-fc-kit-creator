@@ -379,6 +379,7 @@
       window.addEventListener('keyup', (e) => {
         if (e.keyCode == 13) {
           this.randomizeKit();
+          this.showGreeting = false;
         }
       });
     },
