@@ -26,6 +26,18 @@
         </button>
         <button v-show="activeShirtOption" v-on:click="clearShirtOption()">Clear</button>
       </section>
+
+      <h4>Logo Color</h4>
+      <section class="color-select">
+        <button 
+          v-for="color in colors" 
+          class="color-option"
+          :class="{ active: color === logoFill }"
+          :style="{ backgroundColor: color }"
+          v-on:click="setLogoFill(color)"
+        >
+        </button>
+      </section>
       
       <h4>Collar Color</h4>
       <section class="color-select">
@@ -83,7 +95,7 @@
           class="color-option"
           :class="{ active: color === shortsCuffFill }"
           :style="{ backgroundColor: color }"
-          v-on:click="setShortsCuffFill(color)"
+          v-on:click="setShortsCuffsFill(color)"
         >
         </button>
       </section>
@@ -118,14 +130,42 @@
         <button 
           v-for="color in colors" 
           class="color-option"
-          :class="{ active: color === socksCuffFill }"
+          :class="{ active: color === socksCuffsFill }"
           :style="{ backgroundColor: color }"
-          v-on:click="setSocksCuffFill(color)"
+          v-on:click="setSocksCuffsFill(color)"
         >
         </button>
       </section>
 
-      <h4>Hoops</h4>
+      <h4>Sock Hoops</h4>
+      <button 
+        class="toggle"
+        v-if="socksHoops"
+        v-on:click="setSocksHoops(false)"
+      >Hide Hoops</button>
+
+      <button 
+        class="toggle"
+        v-else
+        v-on:click="setSocksHoops(true)"
+      >Hoop Them</button>
+
+      <section class="hoops-color">
+        <h4>Hoops Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === socksFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setSocksFill(color)"
+          >
+          </button>
+        </section>
+      </section>
+
+
+
     </section>
 
     <section id="kit-stage">
@@ -142,6 +182,8 @@
         :logoFill="logoFill"
         :numberFill="numberFill"
         :collarFill="collarFill"
+        :socksHoops="socksHoops"
+        :socksHoopsFill="socksHoopsFill"
       />
     </section>
   </div>
@@ -194,6 +236,8 @@
         
         socksFill: black,
         socksCuffsFill: black,
+        socksHoops: false,
+        socksHoopsFill: white,
 
         numberFill: white
       }
@@ -235,6 +279,12 @@
       setNumberFill(fill) {
         this.numberFill = fill;
       },
+      setSocksHoops(pref) {
+        this.socksHoops = pref;
+      },
+      setSocksHoopsFill(fill) {
+        this.socksHoopsFill = fill;
+      }
     }
   };
 </script>
@@ -254,6 +304,12 @@
 
   * {
     transition: all .2s;
+  }
+
+  h3 {
+    padding: .25em;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
   }
 
   button {
@@ -319,5 +375,9 @@
 
   .color-option.active {
     border-color: #333;
+  }
+
+  .invisible {
+    visibility: hidden;
   }
 </style>

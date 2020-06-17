@@ -11,17 +11,17 @@
     xml:space="preserve"
   >
     <g id="socks">
-      <polygon id="right-sock" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
-      <polygon id="right-cuff" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
-      <g id="right-hoops">
-        <polygon points="297.3,1109.8 156.1,1109.8 164.2,1169 291.6,1169    "/>
-        <polygon points="176.7,1260.9 282.7,1260.9 288.4,1201.7 168.6,1201.7    "/>
+      <polygon id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
+      <polygon id="right-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
+      <g id="right-hoops" v-show="socksHoops">
+        <polygon :style="{ fill: socksHoopsFill }" points="297.3,1109.8 156.1,1109.8 164.2,1169 291.6,1169    "/>
+        <polygon :style="{ fill: socksHoopsFill }" points="176.7,1260.9 282.7,1260.9 288.4,1201.7 168.6,1201.7    "/>
       </g>
-      <polygon id="left-sock" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
-      <polygon id="left-cuff" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
-      <g id="left-hoops">
-        <polygon points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
-        <polygon points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
+      <polygon id="left-sock" :style="{ fill: socksFill }" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
+      <polygon id="left-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
+      <g id="left-hoops" v-show="socksHoops">
+        <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
+        <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
       </g>
     </g>
     
@@ -446,6 +446,8 @@
       'shortsCuffsFill',
       'socksFill',
       'socksCuffsFill',
+      'socksHoops',
+      'socksHoopsFill',
       'numberFill',
       'logoFill',
       'collarFill'
