@@ -386,7 +386,7 @@
     mounted() {
       setTimeout(() => {
         this.showGreeting = true;
-      }, 500);
+      }, 1000);
     }
   };
 </script>
@@ -581,7 +581,7 @@
     right: 0;
     left: 0;
     margin: auto;
-    max-width: 40em;
+    max-width: 30em;
     text-align: center;
   }
 
