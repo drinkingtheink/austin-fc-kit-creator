@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main v-on:keyup.enter="captureEnter">
     <div id="app">
       <section id="kit-stage">
         <Kit 
@@ -205,6 +205,11 @@
             </button>
           </section>
         </section>
+
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
       </section>
     </div>
   </main>
@@ -344,8 +349,15 @@
         this.setNumberFill(this.getRandomColor());
         this.setSocksHoops(this.getRandomTrueFalse());
         this.setSocksHoopsFill(this.getRandomColor());
-      }
-    }
+      },
+    },
+    created() {
+      window.addEventListener('keyup', (e) => {
+        if (e.keyCode == 13) {
+          this.randomizeKit();
+        }
+      });
+    },
   };
 </script>
 
