@@ -21,7 +21,12 @@
     </section>
 
     <section id="toolbar">
-      <h2>Create Your Kit</h2>
+      <header>
+        <a href="https://austinfc.com/" target="_blank">
+          <AustinFCBadge class="toolbar-badge" />
+        </a>
+        <h2>Create Your Kit</h2>
+      </header>
 
       <h3>Shirt</h3>
       <h4>Primary Color</h4>
@@ -35,8 +40,12 @@
           >
           </button>
         </section>
-      <h4>Type</h4>
+      <h4>Design</h4>
       <section class="shirt-type-selection">
+        <button 
+          v-on:click="clearShirtOption()"
+          :class="{ active: !activeShirtOption }"
+        >Solid</button>
         <button 
           v-for="option in shirtOptions"
           v-on:click="setShirtOption(option)"
@@ -44,7 +53,6 @@
         >
           {{ option }}
         </button>
-        <button v-show="activeShirtOption" v-on:click="clearShirtOption()">Clear</button>
       </section>
 
       <h4>Design Color</h4>
@@ -201,6 +209,7 @@
 
 <script>
   import Kit from './components/Kit.vue'
+  import AustinFCBadge from './components/AustinFCBadge.vue'
 
   const green ='#00B140';
   const black = '#000000';
@@ -227,7 +236,8 @@
   export default {
     name: 'App',
     components: {
-      Kit
+      Kit,
+      AustinFCBadge
     },
     data() {
       return {
@@ -321,7 +331,8 @@
   }
 
   h3 {
-    padding: .25em;
+    padding: .25em .25em .25em 1em;
+    margin-left: -1em;
     background-color: #00B140;
     color: black;
   }
@@ -329,6 +340,7 @@
   button {
     text-transform: uppercase;
     margin: 0 .25rem .25rem 0;
+    padding: .5em 1em;
     outline: 0;
     border: none;
     padding: none;
@@ -353,11 +365,29 @@
   #toolbar {
     width: 30vw;
     min-height: 100vh;
-    border-right: 1px solid black;
     padding-left: 1em;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     overflow: auto;
+    padding-top: 1em;
+  }
+
+  #toolbar header {
+    text-align: center;
+  }
+
+  #toolbar header h2 {
+    margin: 0;
+    padding: 0;
+  }
+
+  #toolbar header .toolbar-badge {
+    transition: all .2s;
+    width: 2.5em;
+  }
+
+  .toolbar-badge:hover {
+    transform: scale(1.3);
   }
 
   #kit-stage {
@@ -365,6 +395,7 @@
     display: flex;
     justify-content: center;
     align-content: center;
+    padding-top: 2em;
   }
 
   .kit-display {
