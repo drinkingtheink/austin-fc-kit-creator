@@ -6,7 +6,7 @@
           <h2>Welcome/Hola</h2>
           <p>Make your own Austin FC kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit Enter or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
-          <button v-on:click="handleGreetingClose(true)">Randomize</button>
+          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingClose()">Start On My Own</button>
           <button v-on:click="handleGreetingToManageColors()">Manage Colors</button>
         </div>
@@ -20,12 +20,13 @@
           <p>Add or Remove Your Own Colors (<a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank">hex values</a> or <a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank">named colors</a> only)</p>
 
           <section class="color-select color-display">
-            <button 
+            <span 
               v-for="color in colors" 
               class="color-option"
               :style="{ backgroundColor: color }"
             >
-            </button>
+              <button v-on:click="removeColor(color)">X</button>
+            </span>
             <button 
               class="add-color-option"
               v-on:click="addColor(colorToAdd)"
@@ -44,6 +45,7 @@
 
           <button v-on:click="manageColorWindow(false)">Close</button>
           <button v-on:click="resetColors">Reset Colors</button>
+          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
         </div>
       </section>
     </transition>
@@ -350,6 +352,10 @@
           this.colorToAdd = null;
         }, 200);
       },
+      removeColor(color) {
+        alert(`REMOVING COLORS`);
+        this.colors = this.colors.filter(item => item !== color)
+      },
       resetColors() {
         this.colors = [
           green,
@@ -438,6 +444,7 @@
       },
       handleGreetingClose(randomizePref) {
         this.showGreeting = false;
+        this.manageColors = false;
 
         if(randomizePref) {
           this.randomizeKit();
@@ -672,6 +679,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     border-radius: 50%;
     margin-right: .5em;
     border: 4px solid rgba(255,255,255,0.4);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-content: center;
   }
 
   .color-option:hover {
@@ -680,6 +691,25 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
   .color-option.active {
     border-color: #F4D03F;
+  }
+
+  .color-option button {
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    position: absolute;
+    top: 5px;
+    right: 0;
+    left: 15px;
+    margin: auto;
+    opacity: 0;
+    transition: all .2s;
+    pointer-events: none;
+  }
+
+  .color-option:hover button {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .help {
