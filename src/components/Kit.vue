@@ -9,6 +9,7 @@
     viewBox="0 0 709 1347" 
     style="enable-background:new 0 0 709 1347;" 
     xml:space="preserve"
+    class="kit-display"
   >
     <g id="socks">
       <polygon id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
@@ -690,6 +691,12 @@
   }
   a {
     color: #42b983;
+  }
+
+  @media screen and (min-height: 600px) {
+    .kit-display {
+      transform: scale(2.4);
+    }
   }
 
   .st0{fill:#000000;}
