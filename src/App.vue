@@ -9,7 +9,7 @@
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
           <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
-          <button v-on:click="handleGreetingClose">Start From Here</button>
+          <button v-on:click="showGreeting = false">Start From Here</button>
         </div>
       </section>
     </transition>
