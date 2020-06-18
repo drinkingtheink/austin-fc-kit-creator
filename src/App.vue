@@ -29,8 +29,9 @@
             <button 
               class="add-color-option"
               v-on:click="addColor(colorToAdd)"
+              :style="{ backgroundColor: colorToAdd }"
             >
-              +
+              ADD
             </button>
             <input 
               class="color-to-add"
@@ -432,6 +433,7 @@
         if (e.keyCode == 13 || e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
           this.randomizeKit();
           this.showGreeting = false;
+          this.manageColors = false;
         }
       });
     },
@@ -636,6 +638,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   .color-display input.color-to-add {
     width: 15em;
     padding-left: 1em;
+    border: 4px solid;
   }
 
   .color-option {
