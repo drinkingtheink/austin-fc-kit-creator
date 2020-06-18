@@ -45,6 +45,7 @@
           </section>
 
           <button v-on:click="resetColors">Reset Colors</button>
+          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
 
           <h4>Pride 2020 Palette</h4>
           <section class="color-select color-display">
