@@ -44,8 +44,25 @@
             />
           </section>
 
-          <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
           <button v-on:click="resetColors">Reset Colors</button>
+
+          <h4>Pride 2020 Palette</h4>
+          <section class="color-select color-display">
+            <span 
+              v-for="color in prideColors" 
+              class="color-option"
+              :style="{ backgroundColor: color }"
+            >
+            </span>
+            <button 
+              class="add-color-option"
+              v-on:click="handlePrideShift"
+              :style="{ backgroundColor: colorToAdd }"
+            >
+              USE PALETTE
+            </button>
+          </section>
+
           <button v-on:click="manageColorWindow(false)">Close</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
         </div>
@@ -337,6 +354,7 @@
         showGreeting: false,
         
         manageColors: false,
+        prideColors,
         colorToAdd: null,
 
         colors: null,
