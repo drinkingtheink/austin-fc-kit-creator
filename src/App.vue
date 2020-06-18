@@ -737,6 +737,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     margin: auto;
     max-width: 30em;
     text-align: center;
+    z-index: 1;
   }
 
   .help p {
