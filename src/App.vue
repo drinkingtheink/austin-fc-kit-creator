@@ -288,6 +288,9 @@
         </section>
 
         <p class="attribution">Austin FC owns all rights to the Austin FC Badge and any other intellectual property under their perview. I am merely a huge supporter.</p>
+
+        <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" class="block-link" target="_blank">About this Project</a>
+        <a href="http://drinkingtheink.com/" class="block-link" target="_blank">About the Author</a>
       </section>
     </div>
 
@@ -605,6 +608,12 @@
     opacity: 1;
   }
 
+  a.block-link {
+    display: block;
+    margin-bottom: 1em;
+    text-align: center;
+  }
+
   h3 {
     padding: .25em .25em .25em 1em;
     margin-left: -1em;
@@ -690,7 +699,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
     overflow: auto;
-    padding: 1em 0 3em 1em;
+    padding: 1em 0 5em 1em;
     position: static;
     z-index: 2;
   }
@@ -828,7 +837,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   }
 
   .attribution {
-    margin-bottom: 5em;
     font-size: 0.8rem;
     line-height: 1;
   }
