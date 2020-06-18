@@ -693,9 +693,9 @@
     color: #42b983;
   }
 
-  @media screen and (min-height: 600px) {
+  @media screen and (min-height: 750px) {
     .kit-display {
-      transform: scale(2.4);
+      transform: scale(1.4);
     }
   }
 
