@@ -316,6 +316,7 @@
     },
     data() {
       return {
+        setting: null,
         showGreeting: false,
         
         manageColors: false,
@@ -343,8 +344,8 @@
         numberFill: white
       }
     },
-    computed: {
-      setting() {
+    methods: {
+      getSetting() {
         const settings = [
           'one',
           'two',
@@ -354,10 +355,8 @@
 
         let randomSetting = settings[Math.floor(Math.random()*settings.length)];;
 
-        return randomSetting;
-      }
-    },
-    methods: {
+        this.setting = randomSetting;
+      },
       addColor(color) {
         if(this.colorToAdd) {
           this.colors.push(color);
@@ -455,6 +454,7 @@
         this.setNumberFill(this.getRandomColor());
         this.setSocksHoops(this.getRandomTrueFalse());
         this.setSocksHoopsFill(this.getRandomColor());
+        this.getSetting()
       },
       handleGreetingClose(randomizePref) {
         this.showGreeting = false;
@@ -483,6 +483,7 @@
     },
     mounted() {
       this.colors = defaultColors;
+      this.getSetting();
 
       setTimeout(() => {
         this.showGreeting = true;
