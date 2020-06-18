@@ -695,7 +695,7 @@
 
   @media screen and (min-height: 750px) {
     .kit-display {
-      transform: scale(1.4);
+      transform: scale(1.3);
     }
   }
 
