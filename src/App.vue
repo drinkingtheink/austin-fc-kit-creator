@@ -353,7 +353,6 @@
         }, 200);
       },
       removeColor(color) {
-        alert(`REMOVING COLORS`);
         this.colors = this.colors.filter(item => item !== color)
       },
       resetColors() {
@@ -657,6 +656,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
   .color-select {
     display: flex;
+    flex-wrap: wrap;
   }
 
   .color-select.color-display .color-option:hover {
