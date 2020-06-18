@@ -57,7 +57,6 @@
             <button 
               class="add-color-option"
               v-on:click="handlePrideShift"
-              :style="{ backgroundColor: colorToAdd }"
             >
               USE PALETTE
             </button>
