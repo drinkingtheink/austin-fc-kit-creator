@@ -7,8 +7,9 @@
           <p>If you're like me, you can' WAIT until Austin FC releases their first official kit. Since I can't I wait, I made this kit creator so we could make our own. This tool allows to design a kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit Enter or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
-          <button v-on:click="handleGreetingClose()">Start On My Own</button>
-          <button v-on:click="handleGreetingToManageColors()">Manage Colors</button>
+          <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
+          <button v-on:click="handleGreetingClose">Start On My Own</button>
+          <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
         </div>
       </section>
     </transition>
@@ -43,8 +44,9 @@
             />
           </section>
 
-          <button v-on:click="manageColorWindow(false)">Close</button>
+          <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
           <button v-on:click="resetColors">Reset Colors</button>
+          <button v-on:click="manageColorWindow(false)">Close</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
         </div>
       </section>
@@ -289,13 +291,28 @@
   const black = '#000000';
   const white = '#FFFFFF';
   const grey = '#CCCCCC';
+  const pridered = '#c02129';
+  const prideorange = '#e86c24';
+  const prideyellow = '#f6de04';
+  const pridegreen = '#69bd45';
+  const prideblue = '#0095bf';
+  const pridepurple = '#89408b';
 
   const defaultColors = [
     green,
     black,
     white,
     grey
-  ]
+  ];
+
+  const prideColors = [
+    pridered,
+    prideorange,
+    prideyellow,
+    pridegreen,
+    prideblue,
+    pridepurple
+  ];
 
   const shirtOptions = [
     'stripes',
@@ -376,6 +393,9 @@
           white,
           grey
         ];
+      },
+      setPrideColors() {
+        this.colors = prideColors;
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -470,6 +490,12 @@
       },
       manageColorWindow(pref) {
         this.manageColors = pref;
+      },
+      handlePrideShift() {
+        this.showGreeting = false;
+        this.manageColors = false;
+        this.setPrideColors();
+        this.randomizeKit();
       }
     },
     created() {
@@ -798,5 +824,16 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     z-index: 0;
     transform: scale(1.1);
     opacity: .5;
+  }
+
+@keyframes rainbow { 
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+
+  .pride {
+      background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+      animation: rainbow 2s ease infinite;
   }
 </style>
