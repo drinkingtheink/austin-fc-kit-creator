@@ -766,7 +766,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     width: 100vw;
     height: 100vh;
     z-index: 0;
-    transform: scale(1.4);
+    transform: scale(1.1);
     opacity: .5;
   }
 </style>
