@@ -17,7 +17,7 @@
       <section class="color-mgmt greeting" v-show="manageColors">
         <div class="greeting-main">
           <h2>Manage Colors</h2>
-          <p>Add or Remove Your Own Colors (<a href="https://htmlcolorcodes.com/" target="_blank">hex values</a> or <a href="https://htmlcolorcodes.com/color-names/" target="_blank">named colors</a> only)</p>
+          <p>Add or Remove Your Own Colors (<a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank">hex values</a> or <a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank">named colors</a> only)</p>
 
           <section class="color-select color-display">
             <button 
@@ -38,10 +38,12 @@
               type="text" 
               placeholder="Add a Hex Value w/ #"
               v-model="colorToAdd"
+              v-on:keyup.enter="addColor(colorToAdd)"
             />
           </section>
 
           <button v-on:click="manageColorWindow(false)">Close</button>
+          <button v-on:click="resetColors">Reset Colors</button>
         </div>
       </section>
     </transition>
@@ -112,6 +114,7 @@
             :class="{ active: color === shirtTypeFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setShirtTypeFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -124,6 +127,7 @@
             :class="{ active: color === logoFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setLogoFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -136,6 +140,7 @@
             :class="{ active: color === collarFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setCollarFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -148,6 +153,7 @@
             :class="{ active: color === shirtSleeveFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setShirtSleeveFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -160,6 +166,7 @@
             :class="{ active: color === shirtCuffFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setShirtCuffFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -173,6 +180,7 @@
             :class="{ active: color === shortsFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setShortsFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -185,6 +193,7 @@
             :class="{ active: color === shortsCuffsFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setShortsCuffsFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -197,6 +206,7 @@
             :class="{ active: color === numberFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setNumberFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -210,6 +220,7 @@
             :class="{ active: color === socksFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setSocksFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -222,6 +233,7 @@
             :class="{ active: color === socksCuffsFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setSocksCuffsFill(color)"
+            :key="color" 
           >
           </button>
         </section>
@@ -243,11 +255,12 @@
           <h4>Hoops Color</h4>
           <section class="color-select">
             <button 
-              v-for="color in colors" 
+              v-for="color in colors"
               class="color-option"
               :class="{ active: color === socksFill }"
               :style="{ backgroundColor: color }"
               v-on:click="setSocksHoopsFill(color)"
+              :key="color" 
             >
             </button>
           </section>
@@ -275,7 +288,7 @@
   const white = '#FFFFFF';
   const grey = '#CCCCCC';
 
-  const colors = [
+  const defaultColors = [
     green,
     black,
     white,
@@ -305,7 +318,7 @@
         manageColors: false,
         colorToAdd: null,
 
-        colors,
+        colors: null,
 
         shirtOptions,
         activeShirtOption: null,
@@ -329,11 +342,21 @@
     },
     methods: {
       addColor(color) {
-        this.colors.push(color);
-
+        if(this.colorToAdd) {
+          this.colors.push(color);
+        }
+        
         setTimeout(() => {
           this.colorToAdd = null;
-        }, 300);
+        }, 200);
+      },
+      resetColors() {
+        this.colors = [
+          green,
+          black,
+          white,
+          grey
+        ];
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -381,7 +404,7 @@
         this.socksHoopsFill = fill;
       },
       getRandomColor() {
-        let randomColor = colors[Math.floor(Math.random()*colors.length)];
+        let randomColor = this.colors[Math.floor(Math.random()*this.colors.length)];
         return randomColor;
       },
       getRandomShirtDesign() {
@@ -438,6 +461,8 @@
       });
     },
     mounted() {
+      this.colors = defaultColors;
+
       setTimeout(() => {
         this.showGreeting = true;
       }, 1000);
