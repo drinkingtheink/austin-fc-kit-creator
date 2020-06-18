@@ -4,7 +4,7 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>The Future Looks Bright Verde</h2>
-          <p>If you're like me, you can' WAIT until Austin FC releases their first official kit. Since I can't I wait, I made this kit creator so we could make our own. This tool allows to design a kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit Enter or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit Enter or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
