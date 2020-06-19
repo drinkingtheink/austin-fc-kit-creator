@@ -404,7 +404,7 @@
     },
     methods: {
       setPrideKit() {
-        this.activeShirtOption = 'stripes';
+        this.activeShirtOption = 'hoops';
         this.shirtFill = white;
         this.collarFill = prideblue;
         this.logoFill = pridepurple;
