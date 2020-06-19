@@ -101,7 +101,7 @@
           </a>
           <h2>Create Your Kit</h2>
           <button v-on:click="randomizeKit">Feeling Lucky</button>
-          <button v-on:click="manageColorWindow(true)">Manage Colors</button>
+          <button v-on:click="manageColorWindow(true)" class="manage-colors-action-create-header">Manage Colors</button>
         </header>
 
         <h3>Shirt</h3>
@@ -912,7 +912,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
   @media (max-width: 640px) {
     body {
-      overflow: auto;
+      overflow-y: auto;
     }
 
     #app {
@@ -930,7 +930,8 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     }
 
     .greeting,
-    .help {
+    .help,
+    .manage-colors-action-create-header {
       display: none;
     }
 
