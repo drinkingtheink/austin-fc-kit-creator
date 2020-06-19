@@ -48,7 +48,7 @@
             />
           </section>
 
-          <button v-on:click="resetColors">Reset Colors</button>
+          <button v-show="!defaultPaletteEnabled" v-on:click="resetColors">Reset Colors</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
 
           <h4>Pride 2020 Palette</h4>
@@ -392,6 +392,9 @@
     computed: {
       prideEnabled() {
         return this.arraysMatch(this.colors, this.prideColors);
+      },
+      defaultPaletteEnabled() {
+        return this.arraysMatch(this.colors, this.defaultColors);
       }
     },
     watch: {
@@ -711,13 +714,19 @@
 
   .greeting-main {
     padding: 2em;
-    margin: 4em auto 0 auto;
+    margin: 1em auto 0 auto;
     max-width: 65%;
     background-color: #000000;
 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='72' viewBox='0 0 36 72'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23333333' fill-opacity='0.81'%3E%3Cpath d='M2 6h12L8 18 2 6zm18 36h12l-6 12-6-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     color: white;
     position: static;
     z-index: 100;
+  }
+
+  @media screen and (max-height: 600px) {
+    .greeting-main {
+      max-width: 90%
+    }
   }
 
   .greeting-main h2 {
@@ -820,11 +829,17 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     border: 4px solid;
   }
 
+  @media screen and (max-width: 860px) {
+    .color-display input.color-to-add {
+      padding: 20px;
+    }
+  }
+
   .color-option {
     width: 3em;
     height: 3em;
     border-radius: 50%;
-    margin-right: .5em;
+    margin: 0 .5em .5em 0;
     border: 4px solid rgba(255,255,255,0.4);
     position: relative;
     display: flex;
@@ -985,7 +1000,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
       background-color: rgba(0,0,0,0.9);
     }
 
-    .greeting,
     .help,
     .manage-colors-action-create-header {
       display: none;
