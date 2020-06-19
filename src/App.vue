@@ -63,7 +63,7 @@
               class="add-color-option pride"
               v-on:click="handlePrideShift"
             >
-              USE PALETTE
+              CELEBRATE PRIDE
             </button>
           </section>
 
