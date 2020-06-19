@@ -398,23 +398,26 @@
       // whenever question changes, this function will run
       prideEnabled: function () {
         if(this.prideEnabled) {
-          this.activeShirtOption = 'stripes';
-          this.shirtFill = white;
-          this.collarFill = prideblue;
-          this.logoFill = pridepurple;
-          this.shirtSleeveFill = white;
-          this.shirtCuffFill = pridepurple;
-          this.shortsFill = white;
-          this.shortsCuffsFill = pridepurple;
-          this.numberFill = prideblue;
-          this.socksFill = white;
-          this.socksCuffsFill = prideblue;
-          this.socksHoops = true;
-          this.socksHoopsFill = prideyellow;
+          this.setPrideKit();
         }
       }
     },
     methods: {
+      setPrideKit() {
+        this.activeShirtOption = 'stripes';
+        this.shirtFill = white;
+        this.collarFill = prideblue;
+        this.logoFill = pridepurple;
+        this.shirtSleeveFill = white;
+        this.shirtCuffFill = pridepurple;
+        this.shortsFill = white;
+        this.shortsCuffsFill = pridepurple;
+        this.numberFill = prideblue;
+        this.socksFill = white;
+        this.socksCuffsFill = prideblue;
+        this.socksHoops = true;
+        this.socksHoopsFill = prideyellow;
+      },
       arraysMatch(_arr1, _arr2) {
           if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
             return false;
@@ -463,6 +466,7 @@
       },
       setPrideColors() {
         this.colors = prideColors;
+        this.setPrideKit();
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
