@@ -60,7 +60,7 @@
             >
             </span>
             <button 
-              class="add-color-option"
+              class="add-color-option pride"
               v-on:click="handlePrideShift"
             >
               USE PALETTE
@@ -335,7 +335,8 @@
     prideyellow,
     pridegreen,
     prideblue,
-    pridepurple
+    pridepurple,
+    white
   ];
 
   const shirtOptions = [
@@ -878,7 +879,8 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
   .pride {
       background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
-      animation: rainbow 2s ease infinite;
+      animation: rainbow 8s ease infinite;
+      background-size: 1800% 1800%;
   }
 
   .mobile-welcome {
