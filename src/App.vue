@@ -396,9 +396,14 @@
     },
     watch: {
       // whenever question changes, this function will run
-      prideEnabled: function () {
+      prideEnabled() {
         if(this.prideEnabled) {
           this.setPrideKit();
+        }
+      },
+      activeShirtOption() {
+        if(this.prideEnabled && (this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes')) {
+          this.shirtFill = white;
         }
       }
     },
