@@ -1,7 +1,7 @@
 <template>
   <main v-on:keyup.enter="captureEnter" :class="setting">
     <section class="mobile-welcome show-on-mobile">
-      <p>This app is better on a tablet/desktop, but I hope you still have fun.</p>
+      <p>This app is better experienced on a tablet/desktop, but I hope you still have fun.</p>
     </section>
 
     <transition name="fade">
