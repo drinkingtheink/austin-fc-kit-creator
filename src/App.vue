@@ -91,6 +91,8 @@
           :collarFill="collarFill"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
+          :prideColors="prideColors"
+          :prideEnabled="prideEnabled"
         />
       </section>
 
@@ -387,7 +389,46 @@
         numberFill: white
       }
     },
+    computed: {
+      prideEnabled() {
+        return this.arraysMatch(this.colors, this.prideColors);
+      }
+    },
+    watch: {
+      // whenever question changes, this function will run
+      prideEnabled: function () {
+        if(this.prideEnabled) {
+          this.activeShirtOption = 'stripes';
+          this.shirtFill = white;
+          this.collarFill = prideblue;
+          this.logoFill = pridepurple;
+          this.shirtSleeveFill = white;
+          this.shirtCuffFill = pridepurple;
+          this.shortsFill = white;
+          this.shortsCuffsFill = pridepurple;
+          this.numberFill = prideblue;
+          this.socksFill = white;
+          this.socksCuffsFill = prideblue;
+          this.socksHoops = true;
+          this.socksHoopsFill = prideyellow;
+        }
+      }
+    },
     methods: {
+      arraysMatch(_arr1, _arr2) {
+          if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
+            return false;
+
+          var arr1 = _arr1.concat().sort();
+          var arr2 = _arr2.concat().sort();
+
+          for (var i = 0; i < arr1.length; i++) {
+
+            if (arr1[i] !== arr2[i]) { return false; }
+          }
+
+          return true;
+      },
       getSetting() {
         const settings = [
           'one',
