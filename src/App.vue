@@ -920,6 +920,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
       height: auto;
     }
 
+    main {
+      overflow-x: hidden;
+    }
+
     #kit-stage {
       width: 100vw;
     }
