@@ -1,5 +1,9 @@
 <template>
   <main v-on:keyup.enter="captureEnter" :class="setting">
+    <section class="mobile-welcome show-on-mobile">
+      <p>This app is better on a tablet/desktop, but I hope you still have fun.</p>
+    </section>
+
     <transition name="fade">
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
@@ -357,7 +361,7 @@
         showGreeting: false,
         
         manageColors: false,
-        prideColors,
+        prideColors: prideColors,
         colorToAdd: null,
 
         colors: null,
@@ -742,10 +746,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     height: 90vh;
   }
 
-  .kit-display:hover svg {
-    transform: scale(1.3);
-  }
-
   .shirt-type-selection {
     padding-right: 2em;
   }
@@ -852,14 +852,90 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     opacity: .5;
   }
 
-@keyframes rainbow { 
+  @media screen and (max-width: 1100px) {
+    .stadium-stage {
+      transform: scale(1.7);
+    }
+  }
+
+  @media screen and (max-width: 760px) {
+    .stadium-stage {
+      transform: scale(3);
+    }
+  }
+
+  @media screen and (max-width: 490px) {
+    .stadium-stage {
+      transform: scale(3.5);
+    }
+  }
+
+  @keyframes rainbow { 
     0%{background-position:0% 82%}
     50%{background-position:100% 19%}
     100%{background-position:0% 82%}
-}
+  }
 
   .pride {
       background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
       animation: rainbow 2s ease infinite;
+  }
+
+  .mobile-welcome {
+    background-color: black;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    color: white;
+    position: relative;
+    z-index: 10;
+    padding: .25rem;
+  }
+
+  .mobile-welcome p {
+    margin: 0;
+    padding: 0;
+    font-size: .8em;
+    padding: 0 1.5em;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .mob-welcome-badge {
+    width: 2em;
+  }
+
+  /** RESPONSIVE **/
+  .show-on-mobile {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    body {
+      overflow: auto;
+    }
+
+    #app {
+      flex-wrap: wrap;
+      height: auto;
+    }
+
+    #kit-stage {
+      width: 100vw;
+    }
+
+    #toolbar {
+      width: 100vw;
+      background-color: rgba(0,0,0,0.9);
+    }
+
+    .greeting,
+    .help {
+      display: none;
+    }
+
+    .mobile-welcome {
+      display: flex;
+    }
   }
 </style>
