@@ -994,6 +994,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     position: relative;
     z-index: 10;
     padding: .25rem;
+    border-top: 5px solid #00B140;
   }
 
   .mobile-welcome p {
@@ -1057,6 +1058,29 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
     .mobile-welcome {
       display: flex;
+    }
+
+    .color-select {
+      justify-content: center;
+    }
+
+    #toolbar h4 {
+      text-align: center;
+    }
+
+    .shirt-type-selection {
+      justify-content: center;
+      padding-right: 0;
+      text-align: center;
+    }
+
+    h3 {
+      text-align: center;
+    }
+
+    button.toggle {
+      margin: 0 auto;
+      display: block;
     }
   }
 </style>
