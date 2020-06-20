@@ -8,7 +8,9 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>The Future Looks Bright Verde</h2>
-          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there <strong>(hit Enter or <strong>Directional Arrows</strong> at any time to randomize as well)</strong>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there (hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well). Either way, hope you have fun and let's GROW THE LEGEND!</p>
+
+          <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
@@ -298,6 +300,8 @@
           </section>
         </section>
 
+        <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
+
         <p class="attribution">Austin FC owns all rights to the Austin FC Badge and any other intellectual property under their perview. I am merely a huge supporter.</p>
 
         <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" class="block-link" target="_blank">About this Project</a>
@@ -306,7 +310,7 @@
     </div>
 
     <section class="help">
-      <p>Hit <strong>Enter</strong> or <strong>Directional Arrows</strong> at any time to randomize kit</p>
+      <p>Hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize kit</p>
     </section>
 
     <Stadium class="stadium-stage" />
@@ -598,7 +602,7 @@
     },
     created() {
       window.addEventListener('keyup', (e) => {
-        if (e.keyCode == 13 || e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+        if (e.keyCode == 13 || e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 32 || e.keyCode == 40) {
           this.randomizeKit();
           this.showGreeting = false;
           this.manageColors = false;
@@ -804,6 +808,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   #toolbar header .toolbar-badge {
     transition: all .2s;
     width: 2.5em;
+  }
+
+  #toolbar p {
+    line-height: 1.2;
   }
 
   .toolbar-badge:hover {
