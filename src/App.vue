@@ -74,6 +74,11 @@
     </transition>
 
     <div id="app">
+      <button 
+        v-on:click="randomizeKit" 
+        class="mob-randomize"
+        v-show="!showGreeting && !manageColors"
+      >Randomize Design</button>
       <section id="kit-stage">
         <Kit 
           class="kit-display" 
@@ -977,9 +982,19 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     display: none;
   }
 
+  .mob-randomize {
+    display: none;
+  }
+
   @media (max-width: 640px) {
     body {
       overflow-y: auto;
+    }
+
+    .mob-randomize {
+      display: block;
+      z-index: 10;
+      margin: .5em auto 0 auto;
     }
 
     #app {
@@ -993,6 +1008,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
     #kit-stage {
       width: 100vw;
+      padding-top: 0;
     }
 
     #toolbar {
@@ -1000,8 +1016,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
       background-color: rgba(0,0,0,0.9);
     }
 
-    .help,
-    .manage-colors-action-create-header {
+    .help {
       display: none;
     }
 
