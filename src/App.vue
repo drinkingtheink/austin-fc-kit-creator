@@ -76,11 +76,20 @@
     </transition>
 
     <div id="app">
-      <button 
-        v-on:click="randomizeKit" 
-        class="mob-randomize"
-        v-show="!showGreeting && !manageColors"
-      >Randomize Design</button>
+      <section class="mob-randomize">
+        <button 
+          v-on:click="randomizeKit" 
+          class="mob-randomize-random"
+          v-show="!showGreeting && !manageColors"
+        >Randomize Design</button>
+
+        <button 
+          v-on:click="handleGreetingToManageColors"
+          class="mob-randomize-color"
+          v-show="!showGreeting && !manageColors"
+        >Manage Colors</button>
+      </section>
+
       <section id="kit-stage">
         <Kit 
           class="kit-display" 
@@ -748,7 +757,8 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
   @media screen and (max-height: 600px) {
     .greeting-main {
-      max-width: 90%
+      margin: 0 auto;
+      padding: 0;
     }
   }
 
@@ -1006,6 +1016,8 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
   .mob-randomize {
     display: none;
+    width: 100%;
+    padding-top: .5rem;
   }
 
   @media (max-width: 640px) {
@@ -1014,9 +1026,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     }
 
     .mob-randomize {
-      display: block;
       z-index: 10;
-      margin: .5em auto 0 auto;
+      display: flex;
+      justify-content: center;
+      align-content: center;
     }
 
     #app {
