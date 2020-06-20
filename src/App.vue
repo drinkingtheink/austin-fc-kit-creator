@@ -13,7 +13,7 @@
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
           <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
-          <button v-on:click="showGreeting = false">Start From Here</button>
+          <button v-on:click="handleGreetingClose(false)">Start From Here</button>
         </div>
       </section>
     </transition>
@@ -416,6 +416,13 @@
       }
     },
     methods: {
+      backToTop() {
+        let scrollOptions = {
+          top: 0
+        }
+
+        window.scrollTo(scrollOptions);
+      },
       setPrideKit() {
         this.activeShirtOption = 'hoops';
         this.shirtFill = white;
@@ -430,6 +437,7 @@
         this.socksCuffsFill = prideblue;
         this.socksHoops = true;
         this.socksHoopsFill = prideyellow;
+        this.backToTop();
       },
       arraysMatch(_arr1, _arr2) {
           if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
@@ -558,7 +566,8 @@
         this.setNumberFill(this.getRandomColor());
         this.setSocksHoops(this.getRandomTrueFalse());
         this.setSocksHoopsFill(this.getRandomColor());
-        this.getSetting()
+        this.getSetting();
+        this.backToTop();
       },
       handleGreetingClose(randomizePref) {
         this.showGreeting = false;
@@ -567,19 +576,24 @@
         if(randomizePref) {
           this.randomizeKit();
         }
+
+        this.backToTop();
       },
       handleGreetingToManageColors() {
         this.showGreeting = false;
         this.manageColors = true;
+        this.backToTop();
       },
       manageColorWindow(pref) {
         this.manageColors = pref;
+        this.backToTop();
       },
       handlePrideShift() {
         this.showGreeting = false;
         this.manageColors = false;
         this.setPrideColors();
         this.randomizeKit();
+        this.backToTop();
       }
     },
     created() {
