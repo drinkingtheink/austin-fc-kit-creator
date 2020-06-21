@@ -645,6 +645,10 @@
     opacity: 0;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   html,
   body {
     padding: 0;
