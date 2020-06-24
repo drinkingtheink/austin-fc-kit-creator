@@ -600,6 +600,19 @@
         this.setSocksHoops(this.getRandomTrueFalse());
         this.setSocksHoopsFill(this.getRandomColor());
         this.getSetting();
+
+        if(this.collarFill === this.shirtFill) {
+          this.setCollarFill(this.getRandomColor);
+        }
+
+        if(this.logoFill === this.shirtFill) {
+          this.setLogoFill(this.getRandomColor);
+        }
+
+        if(this.numberFill === this.shortsFill) {
+          this.setNumberFill(this.getRandomColor);
+        }
+        
         this.backToTop();
       },
       handleGreetingClose(randomizePref) {
