@@ -616,7 +616,12 @@
             c0.4,0,0.5,0.1,0.5,0.5c0,0.7,0,1.5,0,2.2C451.6,131.8,451.6,131.9,451.6,132z"/>
         </g>
       </g>
-      <polygon id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
+      <polygon v-show="!showButtonCollar" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
+      <g v-show="showButtonCollar" id="button-collar">
+        <path id="collar-w-fold" :style="{ fill: collarFill }" class="st0" d="M440.9,34.7l0.2-0.2h-11.1l-69.3,69.3l-69.2-69.3h-11.1c-11.3,40.8,21.3,97.7,21.3,97.7
+          l36.7-39.5l16.7,16.7l-12.5,23.5l40.2-40.2l36.6,39.4C419.5,132.2,452.1,75.5,440.9,34.7z"/>
+        <circle id="button" :style="{ fill: collarFill }" class="st0" cx="366.8" cy="127.7" r="8"/>
+      </g>
       <g id="shirt-maker">
         <rect :style="{ fill: collarFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
         <rect :style="{ fill: collarFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
@@ -668,6 +673,7 @@
       'numberFill',
       'logoFill',
       'collarFill',
+      'showButtonCollar',
       'prideColors',
       'prideEnabled'
     ],

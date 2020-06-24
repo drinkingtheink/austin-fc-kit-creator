@@ -105,6 +105,7 @@
           :logoFill="logoFill"
           :numberFill="numberFill"
           :collarFill="collarFill"
+          :showButtonCollar="showButtonCollar"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
           :prideColors="prideColors"
@@ -174,6 +175,19 @@
           >
           </button>
         </section>
+
+        <h4>Collar Type</h4>
+        <button 
+          class="toggle active"
+          v-if="showButtonCollar"
+          v-on:click="setCollarButton(false)"
+        >No Button Collar</button>
+
+        <button 
+          class="toggle"
+          v-else
+          v-on:click="setCollarButton(true)"
+        >Button Collar</button>
         
         <h4>Collar Color</h4>
         <section class="color-select">
@@ -394,7 +408,9 @@
         shirtCuffFill: green,
         shirtSleeveFill: black,
         logoFill: white,
+        
         collarFill: green,
+        showButtonCollar: false,
         
         shortsFill: black,
         shortsCuffsFill: green,
@@ -412,7 +428,7 @@
         return this.arraysMatch(this.colors, this.prideColors);
       },
       defaultPaletteEnabled() {
-        return this.arraysMatch(this.colors, this.defaultColors);
+        return this.arraysMatch(this.colors, defaultColors);
       }
     },
     watch: {
@@ -526,6 +542,9 @@
       setCollarFill(fill) {
         this.collarFill = fill;
       },
+      setCollarButton(pref) {
+        this.showButtonCollar = pref;
+      },
       setShortsFill(fill) {
         this.shortsFill = fill;
       },
@@ -572,6 +591,7 @@
         this.setShirtSleeveFill(this.getRandomColor());
         this.setLogoFill(this.getRandomColor());
         this.setCollarFill(this.getRandomColor());
+        this.setCollarButton(this.getRandomTrueFalse());
         this.setShortsFill(this.getRandomColor());
         this.setShortsCuffsFill(this.getRandomColor());
         this.setSocksFill(this.getRandomColor());
