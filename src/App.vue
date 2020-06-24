@@ -612,6 +612,10 @@
         if(this.numberFill === this.shortsFill) {
           this.setNumberFill(this.getRandomColor);
         }
+
+        if(this.logoFill === this.shirtTypeFill) {
+          this.setShirtTypeFill(this.getRandomColor);
+        }
         
         this.backToTop();
       },
