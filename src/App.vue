@@ -14,7 +14,6 @@
 
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
-          <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
           <button v-on:click="handleGreetingClose(false)">Start From Here</button>
         </div>
       </section>
@@ -51,25 +50,6 @@
           </section>
 
           <button v-show="!defaultPaletteEnabled" v-on:click="resetColors">Reset Colors</button>
-          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
-
-          <h4>Pride 2020 Palette</h4>
-          <section class="color-select color-display">
-            <span 
-              v-for="color in prideColors" 
-              class="color-option"
-              :style="{ backgroundColor: color }"
-            >
-            </span>
-            <button 
-              class="add-color-option pride"
-              v-on:click="handlePrideShift"
-            >
-              CELEBRATE PRIDE
-            </button>
-          </section>
-
-          <button v-on:click="manageColorWindow(false)">Close</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
         </div>
       </section>
@@ -109,7 +89,6 @@
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
           :prideColors="prideColors"
-          :prideEnabled="prideEnabled"
         />
       </section>
 
@@ -363,16 +342,6 @@
     grey
   ];
 
-  const prideColors = [
-    pridered,
-    prideorange,
-    prideyellow,
-    pridegreen,
-    prideblue,
-    pridepurple,
-    white
-  ];
-
   const shirtOptions = [
     'stripes',
     'center-stripe',
@@ -398,7 +367,6 @@
         showGreeting: false,
         
         manageColors: false,
-        prideColors: prideColors,
         colorToAdd: null,
 
         colors: null,
@@ -426,22 +394,13 @@
       }
     },
     computed: {
-      prideEnabled() {
-        return this.arraysMatch(this.colors, this.prideColors);
-      },
       defaultPaletteEnabled() {
         return this.arraysMatch(this.colors, defaultColors);
       }
     },
     watch: {
-      // whenever question changes, this function will run
-      prideEnabled() {
-        if(this.prideEnabled) {
-          this.setPrideKit();
-        }
-      },
       activeShirtOption() {
-        if(this.prideEnabled && (this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes')) {
+        if(this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes') {
           this.shirtFill = white;
         }
       }
@@ -453,22 +412,6 @@
         }
 
         window.scrollTo(scrollOptions);
-      },
-      setPrideKit() {
-        this.activeShirtOption = 'hoops';
-        this.shirtFill = white;
-        this.collarFill = prideblue;
-        this.logoFill = pridepurple;
-        this.shirtSleeveFill = white;
-        this.shirtCuffFill = pridepurple;
-        this.shortsFill = white;
-        this.shortsCuffsFill = pridepurple;
-        this.numberFill = prideblue;
-        this.socksFill = white;
-        this.socksCuffsFill = prideblue;
-        this.socksHoops = true;
-        this.socksHoopsFill = prideyellow;
-        this.backToTop();
       },
       arraysMatch(_arr1, _arr2) {
           if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
@@ -515,10 +458,6 @@
           white,
           grey
         ];
-      },
-      setPrideColors() {
-        this.colors = prideColors;
-        this.setPrideKit();
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -638,13 +577,6 @@
       },
       manageColorWindow(pref) {
         this.manageColors = pref;
-        this.backToTop();
-      },
-      handlePrideShift() {
-        this.showGreeting = false;
-        this.manageColors = false;
-        this.setPrideColors();
-        this.randomizeKit();
         this.backToTop();
       }
     },
@@ -1020,12 +952,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     0%{background-position:0% 82%}
     50%{background-position:100% 19%}
     100%{background-position:0% 82%}
-  }
-
-  .pride {
-      background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
-      animation: rainbow 8s ease infinite;
-      background-size: 1800% 1800%;
   }
 
   .mobile-welcome {
