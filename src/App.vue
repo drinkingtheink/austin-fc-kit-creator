@@ -381,6 +381,7 @@
     'sash',
     'half-panel',
     'quarter-panel',
+    'checkered',
     'tiger-stripes'
   ];
 
