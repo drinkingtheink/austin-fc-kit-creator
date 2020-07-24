@@ -429,7 +429,7 @@
           L546.6,305.9z"/>
       </g>
       <g id="checkered" v-show="idMatchesActiveShirtOption('checkered')">
-        <polygon class="st2" points="170.7,237.8 171,306.4 222.4,306.4 222.4,237.8    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,237.8 171,306.4 222.4,306.4 222.4,237.8    "/>
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M545.3,35.7h4.1c0,0-1.5-0.4-4.1-1.2h-48.5v62.6h48.7L545.3,35.7z"/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="291,169.2 359.6,169.2 359.6,237.8 428.2,237.8 428.2,305.5 496.8,305.5 496.8,236.9 428.2,236.9 
           428.2,168.3 496.8,168.3 496.8,236.9 546.1,236.9 545.8,165.7 496.8,165.7 496.8,97.1 428.2,97.1 428.2,35.1 365.4,98 428.2,98 
