@@ -8,7 +8,7 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>The Future Looks Bright Verde</h2>
-          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there (hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well). Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there <span class="not-mobile">(hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well)</span>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
 
@@ -88,7 +88,6 @@
           :showButtonCollar="showButtonCollar"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
-          :prideColors="prideColors"
         />
       </section>
 
@@ -328,12 +327,6 @@
   const black = '#000000';
   const white = '#FFFFFF';
   const grey = '#CCCCCC';
-  const pridered = '#c02129';
-  const prideorange = '#e86c24';
-  const prideyellow = '#f6de04';
-  const pridegreen = '#69bd45';
-  const prideblue = '#0095bf';
-  const pridepurple = '#89408b';
 
   const defaultColors = [
     green,
@@ -1050,6 +1043,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     button.toggle {
       margin: 0 auto;
       display: block;
+    }
+
+    .not-mobile {
+      display: none;
     }
   }
 </style>
