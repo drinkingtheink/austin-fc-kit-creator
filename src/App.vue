@@ -380,6 +380,7 @@
     'chevron',
     'sash',
     'half-panel',
+    'quarter-panel',
     'tiger-stripes'
   ];
 
@@ -601,7 +602,7 @@
         this.setSocksHoopsFill(this.getRandomColor());
         this.getSetting();
 
-        if(this.collarFill === this.shirtFill) {
+        if(this.collarFill === (this.shirtFill || this.shirtTypeFill)) {
           this.setCollarFill(this.getRandomColor);
         }
 
