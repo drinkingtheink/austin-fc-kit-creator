@@ -264,30 +264,30 @@
       <polygon id="right-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
       <polygon id="left-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
       <g id="stripes" v-show="idMatchesActiveShirtOption('stripes')">
-        <polygon :style="{ fill: prideEnabled ? pridered : shirtTypeFill }" :class="{ 'red': prideEnabled }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
-        <polygon :style="{ fill: prideEnabled ? prideorange : shirtTypeFill }" class="st2" points="389.7,549.5 440.5,549.5 440.5,34.5 429.9,34.5 389.7,74.7     "/>
-        <path :style="{ fill: prideEnabled ? prideyellow : shirtTypeFill }" class="st2" d="M222.8,34.5h-46.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5c-0.3,1.5-0.5,3-0.5,4.5
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="389.7,549.5 440.5,549.5 440.5,34.5 429.9,34.5 389.7,74.7     "/>
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M222.8,34.5h-46.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5c-0.3,1.5-0.5,3-0.5,4.5
           c0,3.2,0.7,6.3,2.1,9.4h47.7V34.5z"/>
-        <path :style="{ fill: prideEnabled ? pridegreen : shirtTypeFill }" class="st2" d="M546.3,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-47.8v515h47.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M546.3,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-47.8v515h47.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
           L546.3,35.7z"/>
       </g>
       <g id="hoops" v-show="idMatchesActiveShirtOption('hoops')">
-        <polygon :style="{ fill: prideEnabled ? pridered : shirtTypeFill }" class="st2" points="171,361 171.1,384.6 546.5,384.6 546.4,361    "/>
-        <polygon :style="{ fill: prideEnabled ? prideorange : shirtTypeFill }" class="st2" points="170.7,279.9 170.8,303.5 546.2,303.5 546.1,279.9    "/>
-        <polygon :style="{ fill: prideEnabled ? prideyellow : shirtTypeFill }" class="st2" points="170.8,320.4 170.9,344.1 546.3,344.1 546.2,320.4    "/>
-        <polygon :style="{ fill: prideEnabled ? pridegreen : shirtTypeFill }" class="st2" points="170.5,239.3 170.6,262.9 546,262.9 545.9,239.3    "/>
-        <path :style="{ fill: prideEnabled ? prideyellow : shirtTypeFill }" class="st2" d="M545.2,60.1l-0.1-23.2l4.1,0c0,0-1.5-0.4-4.1-1.2H428.7l-24.4,24.4H545.2z"/>
-        <polygon :style="{ fill: prideEnabled ? pridepurple : shirtTypeFill }" class="st2" points="171.2,401.5 171.3,425.2 546.7,425.2 546.6,401.5    "/>
-        <polygon :style="{ fill: prideEnabled ? pridered : shirtTypeFill }" class="st2" points="171.4,442.1 171.4,465.7 546.8,465.7 546.7,442.1    "/>
-        <polygon :style="{ fill: prideEnabled ? prideorange : shirtTypeFill }" class="st2" points="547,506.3 546.9,482.7 171.5,482.7 171.6,506.3    "/>
-        <path :style="{ fill: prideEnabled ? prideyellow : shirtTypeFill }" class="st2" d="M314.6,60.1l-24.4-24.4H175.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l0.1,23.2H314.6z"/>
-        <path :style="{ fill: prideEnabled ? pridegreen : shirtTypeFill }" class="st2" d="M547.1,523.2H171.7l0.1,13.6h0.5c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4H545c1.4-3.1,2.1-6.2,2.1-9.4
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="171,361 171.1,384.6 546.5,384.6 546.4,361    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,279.9 170.8,303.5 546.2,303.5 546.1,279.9    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.8,320.4 170.9,344.1 546.3,344.1 546.2,320.4    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.5,239.3 170.6,262.9 546,262.9 545.9,239.3    "/>
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M545.2,60.1l-0.1-23.2l4.1,0c0,0-1.5-0.4-4.1-1.2H428.7l-24.4,24.4H545.2z"/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="171.2,401.5 171.3,425.2 546.7,425.2 546.6,401.5    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="171.4,442.1 171.4,465.7 546.8,465.7 546.7,442.1    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="547,506.3 546.9,482.7 171.5,482.7 171.6,506.3    "/>
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M314.6,60.1l-24.4-24.4H175.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l0.1,23.2H314.6z"/>
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M547.1,523.2H171.7l0.1,13.6h0.5c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4H545c1.4-3.1,2.1-6.2,2.1-9.4
           c0-1.5-0.2-3-0.5-4.5h0.5L547.1,523.2z"/>
-        <polygon :style="{ fill: prideEnabled ? pridered : shirtTypeFill }" class="st2" points="387.3,77.1 363.7,100.7 545.3,100.7 545.2,77.1    "/>
-        <polygon :style="{ fill: prideEnabled ? pridepurple : shirtTypeFill }" class="st2" points="170.3,198.7 170.4,222.4 545.8,222.4 545.7,198.7    "/>
-        <polygon :style="{ fill: prideEnabled ? pridered : shirtTypeFill }" class="st2" points="169.8,77.1 169.9,100.7 355.2,100.7 331.5,77.1    "/>
-        <polygon :style="{ fill: prideEnabled ? prideorange : shirtTypeFill }" class="st2" points="170.2,158.2 170.3,181.8 545.7,181.8 545.6,158.2    "/>
-        <polygon :style="{ fill: prideEnabled ? prideyellow : shirtTypeFill }" class="st2" points="170,117.6 170.1,141.3 545.5,141.3 545.4,117.6    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="387.3,77.1 363.7,100.7 545.3,100.7 545.2,77.1    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.3,198.7 170.4,222.4 545.8,222.4 545.7,198.7    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="169.8,77.1 169.9,100.7 355.2,100.7 331.5,77.1    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.2,158.2 170.3,181.8 545.7,181.8 545.6,158.2    "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170,117.6 170.1,141.3 545.5,141.3 545.4,117.6    "/>
       </g>
       <polygon id="chevron" :style="{ fill: shirtTypeFill }" v-show="idMatchesActiveShirtOption('chevron')" class="st2" points="546.5,261.2 545.9,119.4 359.9,236.2 170.5,117.2 171.1,259.6 359.9,398.3   "/>
       <path id="half-panel" :style="{ fill: shirtTypeFill }" v-show="idMatchesActiveShirtOption('half-panel')" class="st2" d="M359.4,103.8l-69.3-69.3H175.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5
@@ -421,6 +421,27 @@
           c-0.2,8.1-1.1,16.1-2.2,24.2c-0.6,4.5,0.4,9.1,1,13.7c0.7,6.3,1.9,12.6-1.2,18.6c-1.4,2.7-2.9,5.3-4.7,7.8
           c-4.3,6.3-6.3,13.1-6.1,20.8c0.4,10.3-2.1,20.1-6.5,29.3c-1.9,4-5.4,7.2-8.1,10.8c-1.7,2.2-3.6,4.4-5.2,6.7c-4,6-7.9,12-11.8,18
           c0.1,0.2,0.1,0.4,0.2,0.6h33.5C212.1,546.2,214.9,541.6,216.8,536.3z"/>
+      </g>
+      <g id="quarter-panel" v-show="idMatchesActiveShirtOption('quarter-panel')">
+        <path :style="{ fill: shirtTypeFill }" id="top-left" class="st2" d="M359.8,103.8l-69.3-69.3H175.7c-1.1,0.5-2.1,0.9-2.9,1.2H170l1.1,270.2h188.6L359.8,103.8
+          L359.8,103.8z"/>
+        <path :style="{ fill: shirtTypeFill }" id="bot-right_1_" class="st2" d="M546.6,305.9H359.8v243.6h185.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
+          L546.6,305.9z"/>
+      </g>
+      <g id="checkered" v-show="idMatchesActiveShirtOption('checkered')">
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,237.8 171,306.4 222.4,306.4 222.4,237.8    "/>
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M545.3,35.7h4.1c0,0-1.5-0.4-4.1-1.2h-48.5v62.6h48.7L545.3,35.7z"/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="291,169.2 359.6,169.2 359.6,237.8 428.2,237.8 428.2,305.5 496.8,305.5 496.8,236.9 428.2,236.9 
+          428.2,168.3 496.8,168.3 496.8,236.9 546.1,236.9 545.8,165.7 496.8,165.7 496.8,97.1 428.2,97.1 428.2,35.1 365.4,98 428.2,98 
+          428.2,166.6 359.6,166.6 359.6,103.8 359.6,103.8 353.8,98 291,98 291,166.6 222.4,166.6 222.4,98 170.1,98 170.4,169.2 
+          222.4,169.2 222.4,237.8 291,237.8     "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="291,35.2 290.3,34.5 222.4,34.5 222.4,98 291,98     "/>
+        <rect :style="{ fill: shirtTypeFill }" x="291" y="237.8" class="st2" width="68.6" height="68.6"/>
+        <path :style="{ fill: shirtTypeFill }" class="st2" d="M222.4,515.7H291v33.8h68.6v-33.8h68.6v33.8h68.6v-34.7h50.5l-0.3-69.5h-50.2v68.6h-68.6v-67.7h-68.6v68.6
+          H291v-68.6h-68.6v68.6h-50.5l0.1,20.8h0.5c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h48.3V515.7z"/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="291,377.6 291,446.2 359.6,446.2 359.6,377.6 428.2,377.6 428.2,445.3 496.8,445.3 496.8,376.7 
+          546.7,376.7 546.4,305.5 496.8,305.5 496.8,374.1 428.2,374.1 428.2,306.4 359.6,306.4 359.6,375 291,375 291,306.4 222.4,306.4 
+          222.4,375 171.3,375 171.6,446.2 222.4,446.2 222.4,377.6     "/>
       </g>
       <g id="austin-fc-crest">
         <g>
@@ -674,8 +695,7 @@
       'logoFill',
       'collarFill',
       'showButtonCollar',
-      'prideColors',
-      'prideEnabled'
+      'prideColors'
     ],
     computed: {
       pridered() {

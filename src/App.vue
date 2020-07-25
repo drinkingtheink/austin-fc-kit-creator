@@ -8,13 +8,12 @@
       <section class="greeting" v-show="showGreeting">
         <div class="greeting-main">
           <h2>The Future Looks Bright Verde</h2>
-          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there (hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well). Either way, hope you have fun and let's GROW THE LEGEND!</p>
+          <p>If you're like me, you can't WAIT until Austin FC release their first official kit. Since I can't I wait, I made this kit creator so we can make our own. This tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there <span class="not-mobile">(hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well)</span>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
 
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
-          <button class="pride" v-on:click="handlePrideShift">Celebrate Pride</button>
           <button v-on:click="handleGreetingClose(false)">Start From Here</button>
         </div>
       </section>
@@ -51,25 +50,6 @@
           </section>
 
           <button v-show="!defaultPaletteEnabled" v-on:click="resetColors">Reset Colors</button>
-          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
-
-          <h4>Pride 2020 Palette</h4>
-          <section class="color-select color-display">
-            <span 
-              v-for="color in prideColors" 
-              class="color-option"
-              :style="{ backgroundColor: color }"
-            >
-            </span>
-            <button 
-              class="add-color-option pride"
-              v-on:click="handlePrideShift"
-            >
-              CELEBRATE PRIDE
-            </button>
-          </section>
-
-          <button v-on:click="manageColorWindow(false)">Close</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
         </div>
       </section>
@@ -108,8 +88,6 @@
           :showButtonCollar="showButtonCollar"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
-          :prideColors="prideColors"
-          :prideEnabled="prideEnabled"
         />
       </section>
 
@@ -349,28 +327,12 @@
   const black = '#000000';
   const white = '#FFFFFF';
   const grey = '#CCCCCC';
-  const pridered = '#c02129';
-  const prideorange = '#e86c24';
-  const prideyellow = '#f6de04';
-  const pridegreen = '#69bd45';
-  const prideblue = '#0095bf';
-  const pridepurple = '#89408b';
 
   const defaultColors = [
     green,
     black,
     white,
     grey
-  ];
-
-  const prideColors = [
-    pridered,
-    prideorange,
-    prideyellow,
-    pridegreen,
-    prideblue,
-    pridepurple,
-    white
   ];
 
   const shirtOptions = [
@@ -380,6 +342,8 @@
     'chevron',
     'sash',
     'half-panel',
+    'quarter-panel',
+    'checkered',
     'tiger-stripes'
   ];
 
@@ -396,7 +360,6 @@
         showGreeting: false,
         
         manageColors: false,
-        prideColors: prideColors,
         colorToAdd: null,
 
         colors: null,
@@ -424,22 +387,13 @@
       }
     },
     computed: {
-      prideEnabled() {
-        return this.arraysMatch(this.colors, this.prideColors);
-      },
       defaultPaletteEnabled() {
         return this.arraysMatch(this.colors, defaultColors);
       }
     },
     watch: {
-      // whenever question changes, this function will run
-      prideEnabled() {
-        if(this.prideEnabled) {
-          this.setPrideKit();
-        }
-      },
       activeShirtOption() {
-        if(this.prideEnabled && (this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes')) {
+        if(this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes') {
           this.shirtFill = white;
         }
       }
@@ -451,22 +405,6 @@
         }
 
         window.scrollTo(scrollOptions);
-      },
-      setPrideKit() {
-        this.activeShirtOption = 'hoops';
-        this.shirtFill = white;
-        this.collarFill = prideblue;
-        this.logoFill = pridepurple;
-        this.shirtSleeveFill = white;
-        this.shirtCuffFill = pridepurple;
-        this.shortsFill = white;
-        this.shortsCuffsFill = pridepurple;
-        this.numberFill = prideblue;
-        this.socksFill = white;
-        this.socksCuffsFill = prideblue;
-        this.socksHoops = true;
-        this.socksHoopsFill = prideyellow;
-        this.backToTop();
       },
       arraysMatch(_arr1, _arr2) {
           if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
@@ -513,10 +451,6 @@
           white,
           grey
         ];
-      },
-      setPrideColors() {
-        this.colors = prideColors;
-        this.setPrideKit();
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -601,7 +535,7 @@
         this.setSocksHoopsFill(this.getRandomColor());
         this.getSetting();
 
-        if(this.collarFill === this.shirtFill) {
+        if(this.collarFill === (this.shirtFill || this.shirtTypeFill)) {
           this.setCollarFill(this.getRandomColor);
         }
 
@@ -636,13 +570,6 @@
       },
       manageColorWindow(pref) {
         this.manageColors = pref;
-        this.backToTop();
-      },
-      handlePrideShift() {
-        this.showGreeting = false;
-        this.manageColors = false;
-        this.setPrideColors();
-        this.randomizeKit();
         this.backToTop();
       }
     },
@@ -1020,12 +947,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     100%{background-position:0% 82%}
   }
 
-  .pride {
-      background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
-      animation: rainbow 8s ease infinite;
-      background-size: 1800% 1800%;
-  }
-
   .mobile-welcome {
     background-color: black;
     width: 100%;
@@ -1122,6 +1043,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     button.toggle {
       margin: 0 auto;
       display: block;
+    }
+
+    .not-mobile {
+      display: none;
     }
   }
 </style>
