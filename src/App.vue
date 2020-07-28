@@ -115,17 +115,6 @@
             </button>
           </section>
 
-        <h4>Secondary Color</h4>
-          <section class="color-select">
-            <button 
-              v-for="color in colors" 
-              class="color-option"
-              :class="{ active: color === shirtSecondaryFill }"
-              :style="{ backgroundColor: color }"
-              v-on:click="setShirtSecondaryFill(color)"
-            >
-            </button>
-          </section>
         <h4>Design</h4>
         <section class="shirt-type-selection">
           <button 
@@ -153,6 +142,18 @@
           >
           </button>
         </section>
+
+        <h4>Secondary Color</h4>
+          <section class="color-select">
+            <button 
+              v-for="color in colors" 
+              class="color-option"
+              :class="{ active: color === shirtSecondaryFill }"
+              :style="{ backgroundColor: color }"
+              v-on:click="setShirtSecondaryFill(color)"
+            >
+            </button>
+          </section>
 
         <h4>Sponsor Color</h4>
         <section class="color-select">
