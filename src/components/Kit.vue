@@ -295,7 +295,12 @@
       <path id="sash" :style="{ fill: shirtTypeFill }" v-show="idMatchesActiveShirtOption('sash')" class="st2" d="M545.9,152.4l-0.5-116.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-28.7L171.8,466.4l0.3,69.2h0.5
         c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h54.6L545.9,152.4z"/>
       <polygon id="center-stripe" :style="{ fill: shirtTypeFill }"  v-show="idMatchesActiveShirtOption('center-stripe')" class="st2" points="299.6,41.5 299.6,548.3 421.7,548.3 421.7,41.5 360.6,102.6   "/>
-      <g id="tiger-stripes"  v-show="idMatchesActiveShirtOption('tiger-stripes')">
+      <g id="double-sash" v-show="idMatchesActiveShirtOption('double-sash')">
+        <path :style="{ fill: shirtTypeFill }" id="top-stripe" class="st2" d="M545.4,35.1h4.1c0,0-1.5-0.4-4.1-1.2h-28.7L171.8,465.8l0.3,69.2h0.5c-0.3,1.5-0.5,3-0.5,4.5
+          c0,1.9,0.3,3.8,0.8,5.7L545.6,78.4L545.4,35.1z"/>
+        <path :style="{ fill: shirtSecondaryFill }" id="bottom-stripe" class="st2" d="M227.7,550.1L544.8,153l-0.3-73.4L171.8,546.4c0.3,1.2,0.8,2.5,1.3,3.7H227.7z"/>
+      </g>
+      <g id="tiger-stripes" v-show="idMatchesActiveShirtOption('tiger-stripes')">
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M387,454.2c-1.4,5.5-1.7,11.2-3.2,16.6c-2,7.3-4.9,14.3-7.2,21.5c-1.7,5.3-4.4,9.8-8.2,13.8
           c-6.7,7-12.1,14.9-16,23.7c-2.5,5.5-4.4,11.3-6.7,16.9c-0.5,1.3-1.2,2.4-2,3.4h19.7c2.1-6.5,5.3-12.3,10-17.8
           c5.4-6.2,8.8-14.2,12.7-21.6c0.9-1.7,1.1-4.1,0.8-6.1c-1.2-7.3,0.7-13.4,5.8-18.8c4.6-4.9,7.7-10.8,9.4-17.4
@@ -683,6 +688,7 @@
       'activeShirtOption',
       'shirtFill',
       'shirtTypeFill',
+      'shirtSecondaryFill',
       'shirtCuffFill',
       'shirtSleeveFill',
       'shortsFill',
