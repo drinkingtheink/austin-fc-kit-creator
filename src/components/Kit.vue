@@ -300,6 +300,10 @@
           c0,1.9,0.3,3.8,0.8,5.7L545.6,78.4L545.4,35.1z"/>
         <path :style="{ fill: shirtSecondaryFill }" id="bottom-stripe" class="st2" d="M227.7,550.1L544.8,153l-0.3-73.4L171.8,546.4c0.3,1.2,0.8,2.5,1.3,3.7H227.7z"/>
       </g>
+      <g id="off-center-stripe" v-show="idMatchesActiveShirtOption('off-center-stripe')">
+        <rect :style="{ fill: shirtTypeFill }" id="left-stripe" x="434.9" y="34.5" class="st2" width="33.7" height="515"/>
+        <rect :style="{ fill: shirtSecondaryFill }" id="right-stripe" x="468.6" y="34.5" class="st2" width="33.7" height="515"/>
+      </g>
       <g id="tiger-stripes" v-show="idMatchesActiveShirtOption('tiger-stripes')">
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M387,454.2c-1.4,5.5-1.7,11.2-3.2,16.6c-2,7.3-4.9,14.3-7.2,21.5c-1.7,5.3-4.4,9.8-8.2,13.8
           c-6.7,7-12.1,14.9-16,23.7c-2.5,5.5-4.4,11.3-6.7,16.9c-0.5,1.3-1.2,2.4-2,3.4h19.7c2.1-6.5,5.3-12.3,10-17.8

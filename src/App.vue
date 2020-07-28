@@ -352,6 +352,7 @@
   const shirtOptions = [
     'stripes',
     'center-stripe',
+    'off-center-stripe',
     'hoops',
     'chevron',
     'sash',
