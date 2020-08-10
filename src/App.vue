@@ -353,6 +353,7 @@
     'stripes',
     'center-stripe',
     'off-center-stripe',
+    'shoulder-stripes',
     'hoops',
     'chevron',
     'sash',
