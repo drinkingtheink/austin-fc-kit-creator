@@ -76,6 +76,7 @@
           :activeShirtOption="activeShirtOption"
           :shirtFill="shirtFill"
           :shirtTypeFill="shirtTypeFill"
+          :shirtSecondaryFill="shirtSecondaryFill"
           :shirtCuffFill="shirtCuffFill"
           :shirtSleeveFill="shirtSleeveFill"
           :shortsFill="shortsFill"
@@ -113,6 +114,7 @@
             >
             </button>
           </section>
+
         <h4>Design</h4>
         <section class="shirt-type-selection">
           <button 
@@ -140,6 +142,18 @@
           >
           </button>
         </section>
+
+        <h4>Secondary Color</h4>
+          <section class="color-select">
+            <button 
+              v-for="color in colors" 
+              class="color-option"
+              :class="{ active: color === shirtSecondaryFill }"
+              :style="{ backgroundColor: color }"
+              v-on:click="setShirtSecondaryFill(color)"
+            >
+            </button>
+          </section>
 
         <h4>Sponsor Color</h4>
         <section class="color-select">
@@ -338,9 +352,12 @@
   const shirtOptions = [
     'stripes',
     'center-stripe',
+    'off-center-stripe',
+    'shoulder-stripes',
     'hoops',
     'chevron',
     'sash',
+    'double-sash',
     'half-panel',
     'quarter-panel',
     'checkered',
@@ -368,6 +385,7 @@
         activeShirtOption: null,
         shirtFill: black,
         shirtTypeFill: green,
+        shirtSecondaryFill: white,
         shirtCuffFill: green,
         shirtSleeveFill: black,
         logoFill: white,
@@ -460,6 +478,9 @@
       },
       setShirtFill(fill) {
         this.shirtFill = fill;
+      },
+      setShirtSecondaryFill(fill) {
+        this.shirtSecondaryFill = fill;
       },
       setShirtTypeFill(fill) {
         this.shirtTypeFill = fill;
