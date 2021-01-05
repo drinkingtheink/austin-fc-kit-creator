@@ -947,18 +947,21 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   @media screen and (max-width: 1100px) {
     .stadium-stage {
       transform: scale(1.7);
+      height: 100vh;
     }
   }
 
   @media screen and (max-width: 760px) {
     .stadium-stage {
       transform: scale(3);
+      height: 100vh;
     }
   }
 
   @media screen and (max-width: 490px) {
     .stadium-stage {
       transform: scale(3.5);
+      height: 100vh;
     }
   }
 
