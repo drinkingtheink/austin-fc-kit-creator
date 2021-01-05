@@ -47,6 +47,8 @@
               v-model="colorToAdd"
               v-on:keyup.enter="addColor(colorToAdd)"
             />
+
+            <chrome-picker v-model="colorToAdd" @input="addColor(colorToAdd)" />
           </section>
 
           <button v-on:click="handleGreetingClose(false)">Go From Here</button>
@@ -337,6 +339,7 @@
   import Kit from './components/Kit.vue';
   import AustinFCBadge from './components/AustinFCBadge.vue';
   import Stadium from './components/Stadium.vue';
+  import { Chrome } from 'vue-color'
 
   const green ='#00B140';
   const black = '#000000';
@@ -370,7 +373,8 @@
     components: {
       Kit,
       AustinFCBadge,
-      Stadium
+      Stadium,
+      'chrome-picker': Chrome,
     },
     data() {
       return {
@@ -939,7 +943,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
     z-index: 0;
     transform: scale(1.1);
     opacity: .5;
