@@ -46,7 +46,19 @@
               placeholder="Add a Hex Value w/ #"
               v-model="colorToAdd"
               v-on:keyup.enter="addColor(colorToAdd)"
+              v-bind:style="{ borderColor: `${colorToAddBorderColor}` }"
             />
+
+            <div class="color-picker">
+              <label for="colorPicker" class="color-picker-label">Choose a color:</label>
+              <input 
+                id="colorPicker" 
+                type="color" 
+                :value="brightVerde"
+                v-on:input="updateActiveColor"
+                class="color-picker-input"
+              />
+            </div>
           </section>
 
           <button v-on:click="handleGreetingClose(false)">Go From Here</button>
@@ -408,6 +420,12 @@
     computed: {
       defaultPaletteEnabled() {
         return this.arraysMatch(this.colors, defaultColors);
+      },
+      brightVerde() {
+        return green;
+      },
+      colorToAddBorderColor() {
+        return this.colorToAdd ? this.colorToAdd : '#000000';
       }
     },
     watch: {
@@ -593,6 +611,10 @@
       manageColorWindow(pref) {
         this.manageColors = pref;
         this.backToTop();
+      },
+      updateActiveColor(event) {
+        let newColor = event.target.value;
+        this.colorToAdd = newColor;
       }
     },
     created() {
@@ -899,6 +921,18 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   .color-option:hover button {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .color-picker-label {
+    display: block;
+  }
+
+  .color-picker-input {
+    width: 100%;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .help {
