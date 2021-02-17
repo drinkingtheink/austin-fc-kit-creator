@@ -62,7 +62,7 @@
           </section>
 
           <button v-on:click="handleGreetingClose(false)">Go From Here</button>
-          <button v-show="!defaultPaletteEnabled" v-on:click="resetColors">Reset Colors</button>
+          <button v-on:click="resetColors">Reset Colors</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
         </div>
       </section>
