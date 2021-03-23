@@ -2,6 +2,8 @@
 
 Do you have a sharp eye for design and a love of our city's great football club? This retro-esque tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there (hit Enter, Space Bar or Directional Arrows at any time to randomize as well). Either way, hope you have fun and let's GROW THE LEGEND!
 
+## [Design Your Own Austin FC Kit](https://austin-fc-kit-creator.netlify.app/)
+
 Be sure to take screenshots of your favorite designs and post them with #AustinFCKitCreator
 
 ## Make Your Own Kit or Let the App Do It For You
