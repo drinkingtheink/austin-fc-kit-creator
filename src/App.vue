@@ -167,6 +167,7 @@
               :class="{ active: color === shirtSecondaryFill }"
               :style="{ backgroundColor: color }"
               v-on:click="setShirtSecondaryFill(color)"
+              :key="color"
             >
             </button>
           </section>
