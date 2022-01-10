@@ -125,6 +125,7 @@
               :class="{ active: color === shirtFill }"
               :style="{ backgroundColor: color }"
               v-on:click="setShirtFill(color)"
+              :key="color"
             >
             </button>
           </section>
@@ -139,6 +140,7 @@
             v-for="option in shirtOptions"
             v-on:click="setShirtOption(option)"
             :class="{ active: option === activeShirtOption }"
+            :key="option"
           >
             {{ option }}
           </button>
