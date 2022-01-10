@@ -718,6 +718,9 @@
       'socksHoopsFill',
       'numberFill',
       'logoFill',
+      'badgeFill',
+      'badgeTextFill',
+      'badgeBGFill',
       'collarFill',
       'showButtonCollar',
       'prideColors'
