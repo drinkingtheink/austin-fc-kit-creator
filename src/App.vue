@@ -30,6 +30,7 @@
               v-for="color in colors" 
               class="color-option"
               :style="{ backgroundColor: color }"
+              :key="color"
             >
               <button v-on:click="removeColor(color)">X</button>
             </span>
