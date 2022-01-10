@@ -175,45 +175,6 @@
             </button>
           </section>
 
-        <h4>Badge Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === badgeFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setBadgeFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h4>Badge Text Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === badgeTextFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setBadgeTextFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h4>Badge BG Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === badgeBGFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setBadgeBGFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
         <h4>Sponsor Color</h4>
         <section class="color-select">
           <button 
@@ -274,6 +235,46 @@
             :class="{ active: color === shirtCuffFill }"
             :style="{ backgroundColor: color }"
             v-on:click="setShirtCuffFill(color)"
+            :key="color" 
+          >
+          </button>
+        </section>
+
+        <h3>Badge</h3>
+        <h4>Badge Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === badgeFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setBadgeFill(color)"
+            :key="color" 
+          >
+          </button>
+        </section>
+
+        <h4>Badge Text Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === badgeTextFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setBadgeTextFill(color)"
+            :key="color" 
+          >
+          </button>
+        </section>
+
+        <h4>Badge BG Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === badgeBGFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setBadgeBGFill(color)"
             :key="color" 
           >
           </button>

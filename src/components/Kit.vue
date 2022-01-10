@@ -725,26 +725,6 @@
       'showButtonCollar',
       'prideColors'
     ],
-    computed: {
-      pridered() {
-        return this.prideColors ? this.prideColors[0] : null;
-      },
-      prideorange() {
-        return this.prideColors ? this.prideColors[1] : null;
-      },
-      prideyellow() {
-        return this.prideColors ? this.prideColors[2] : null;
-      },
-      pridegreen() {
-        return this.prideColors ? this.prideColors[3] : null;
-      },
-      prideblue() {
-        return this.prideColors ? this.prideColors[4] : null;
-      },
-      pridepurple() {
-        return this.prideColors ? this.prideColors[5] : null;
-      },
-    },
     methods: {
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
