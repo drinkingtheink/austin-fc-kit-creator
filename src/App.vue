@@ -106,6 +106,7 @@
           :showButtonCollar="showButtonCollar"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
+          :shirtMakerFill="shirtMakerFill"
         />
       </section>
 
@@ -448,13 +449,14 @@
         shirtTypeFill: black,
         shirtSecondaryFill: white,
         shirtCuffFill: black,
+        shirtMakerFill: white,
         shirtSleeveFill: green,
         logoFill: white,
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
         
-        collarFill: 'white',
+        collarFill: black,
         showButtonCollar: false,
         
         shortsFill: black,

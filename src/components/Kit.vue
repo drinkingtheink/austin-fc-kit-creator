@@ -685,9 +685,9 @@
         <circle id="button" :style="{ fill: collarFill }" class="st0" cx="366.8" cy="127.7" r="8"/>
       </g>
       <g id="shirt-maker">
-        <rect :style="{ fill: collarFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
-        <rect :style="{ fill: collarFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
-        <rect :style="{ fill: collarFill }" x="225.3" y="148" width="8.4" height="12.5"/>
+        <rect :style="{ fill: shirtMakerFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
+        <rect :style="{ fill: shirtMakerFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
+        <rect :style="{ fill: shirtMakerFill }" x="225.3" y="148" width="8.4" height="12.5"/>
       </g>
     </g>
     <g id="yeti-logo_1_">
@@ -727,6 +727,7 @@
       'shirtSecondaryFill',
       'shirtCuffFill',
       'shirtSleeveFill',
+      'shirtMakerFill',
       'shortsFill',
       'shortsCuffsFill',
       'socksFill',
