@@ -776,4 +776,8 @@
   .st0{fill:#000000;}
   .st1{fill:#FFFFFF;}
   .st2{fill:#00B14C;}
+
+  #austin-fc-crest {
+    transform: translateY(10px);
+  }
 </style>
