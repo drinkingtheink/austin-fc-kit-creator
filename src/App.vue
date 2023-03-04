@@ -822,11 +822,12 @@
   button:hover {
     background-color: white;
     cursor: pointer;
+    color: #00B140;
   }
 
   button.active {
     background-color: #00B140;
-    color: black;
+    color: white;
   }
 
   main {
