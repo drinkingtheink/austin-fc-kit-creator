@@ -216,6 +216,19 @@
           >
           </button>
         </section>
+
+        <h4>Shirt Brand Color</h4>
+        <section class="color-select">
+          <button 
+            v-for="color in colors" 
+            class="color-option"
+            :class="{ active: color === shirtMakerFill }"
+            :style="{ backgroundColor: color }"
+            v-on:click="setShirtMakerFill(color)"
+            :key="color" 
+          >
+          </button>
+        </section>
         
         <h4>Sleeve Color</h4>
         <section class="color-select">
@@ -579,6 +592,9 @@
       },
       setCollarFill(fill) {
         this.collarFill = fill;
+      },
+      setShirtMakerFill(fill) {
+        this.shirtMakerFill = fill;
       },
       setCollarButton(pref) {
         this.showButtonCollar = pref;
