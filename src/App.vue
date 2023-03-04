@@ -391,7 +391,7 @@
           </section>
         </section>
 
-        <p class="attribution">Austin FC owns all rights to the Austin FC Badge and any other intellectual property under their perview. I am merely a huge supporter.</p>
+        <p class="attribution">Austin FC owns all rights to the Austin FC Badge and any other intellectual property under their purview. I am merely a huge supporter.</p>
 
         <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" class="block-link" target="_blank">About this Project</a>
         <a href="http://drinkingtheink.com/" class="block-link" target="_blank">About the Author</a>
