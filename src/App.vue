@@ -115,6 +115,8 @@
             <AustinFCBadge class="toolbar-badge" />
           </a>
           <h2>Create Your Kit</h2>
+          <p class="hashtag">Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
+          
           <button v-on:click="randomizeKit">Feeling Lucky</button>
           <button v-on:click="manageColorWindow(true)" class="manage-colors-action-create-header">Manage Colors</button>
         </header>
@@ -375,8 +377,6 @@
           </section>
         </section>
 
-        <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
-
         <p class="attribution">Austin FC owns all rights to the Austin FC Badge and any other intellectual property under their perview. I am merely a huge supporter.</p>
 
         <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" class="block-link" target="_blank">About this Project</a>
@@ -403,13 +403,14 @@
   const grey = '#CCCCCC';
 
   const defaultColors = [
-    green,
     black,
+    green,
     white,
     grey
   ];
 
   const shirtOptions = [
+    'barcode',
     'stripes',
     'center-stripe',
     'off-center-stripe',
@@ -442,9 +443,9 @@
         colors: null,
 
         shirtOptions,
-        activeShirtOption: 'stripes',
-        shirtFill: black,
-        shirtTypeFill: green,
+        activeShirtOption: 'barcode',
+        shirtFill: green,
+        shirtTypeFill: black,
         shirtSecondaryFill: white,
         shirtCuffFill: green,
         shirtSleeveFill: black,
@@ -538,6 +539,8 @@
           white,
           grey
         ];
+
+        this.resetBadge();
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -674,6 +677,11 @@
       updateActiveColor(event) {
         let newColor = event.target.value;
         this.colorToAdd = newColor;
+      },
+      resetBadge() {
+        this.badgeFill = green;
+        this.badgeTextFill = white;
+        this.badgeBGFill = black;
       }
     },
     created() {
@@ -1165,5 +1173,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     .not-mobile {
       display: none;
     }
+  }
+
+  .hashtag {
+    max-width: 300px;
+    margin: 0 auto 1rem auto;
   }
 </style>

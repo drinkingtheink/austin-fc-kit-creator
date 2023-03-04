@@ -452,6 +452,23 @@
         <path :style="{ fill: shirtTypeFill }" id="bot-right_1_" class="st2" d="M546.6,305.9H359.8v243.6h185.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
           L546.6,305.9z"/>
       </g>
+      <g id="barcode" v-show="idMatchesActiveShirtOption('barcode')">
+        <polygon :style="{ fill: shirtTypeFill }" class="st0" points="379.6,122.4 357.7,122.4 357.7,428 345,428 345,549.5 379.7,549.5 379.7,428 379.6,428 		"/>
+        <path :style="{ fill: shirtTypeFill }" class="st0" d="M513.3,121.5h4.2V33.3h-5.9v87.1h-4.2V33.3h-5.9v87.1h-4.2V33.3h-5.9v87.1h-4.2V33.3h-5.9v87.1h-44.1V40.9
+          L402.4,74v48.4h-4.5V428h4v121.5h34.7V428h40.2V306.6h9.5v242.9h5.9V306.6h4.2v242.9h5.9V306.6h4.2v242.9h5.9V306.6h0.8V121.5z
+          M435.6,428h-15.9V123.3h15.9V428z"/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st0" points="208.9,33.3 174.2,33.3 174.2,123.3 196.8,123.3 196.8,428 174.2,428 174.2,549.5 208.9,549.5 
+          208.9,428 218.7,428 218.7,122.4 208.9,122.4 		"/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st0" points="231.1,123.3 237,123.3 237,428 231.1,428 231.1,549.5 265.8,549.5 265.8,428 258.9,428 258.9,123.3 
+          265.8,123.3 265.8,33.3 231.1,33.3 		"/>
+        <path :style="{ fill: shirtTypeFill }" class="st0" d="M322.8,66.9l-32.4-32.4l-2.3,87.9h-10.9V428h10.8v121.5h34.7V428h16.6V122.4h-16.6V66.9z M317.4,428h-18.3
+          V123.3h18.3V428z"/>
+        <rect :style="{ fill: shirtTypeFill }" x="516.7" y="306.5" class="st0" width="5.9" height="243"/>
+        <rect :style="{ fill: shirtTypeFill }" x="526.8" y="306.5" class="st0" width="5.9" height="243"/>
+        <rect :style="{ fill: shirtTypeFill }" x="537" y="306.5" class="st0" width="5.9" height="243"/>
+        <rect :style="{ fill: shirtTypeFill }" x="521.8" y="33.3" class="st0" width="5.9" height="88.2"/>
+        <rect :style="{ fill: shirtTypeFill }" x="531.9" y="33.3" class="st0" width="5.9" height="88.2"/>
+      </g>
       <g id="checkered" v-show="idMatchesActiveShirtOption('checkered')">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,237.8 171,306.4 222.4,306.4 222.4,237.8    "/>
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M545.3,35.7h4.1c0,0-1.5-0.4-4.1-1.2h-48.5v62.6h48.7L545.3,35.7z"/>
