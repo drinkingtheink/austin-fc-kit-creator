@@ -11,10 +11,20 @@
           <p>Do you have a sharp eye for design and a love of our city's great football club? This retro-esque tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there <span class="not-mobile">(hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well)</span>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
 
           <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
-          
+
           <button v-on:click="handleGreetingClose(false)">Start From Here</button>
           <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
           <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
+        </div>
+      </section>
+    </transition>
+
+    <transition name="fade">
+      <section class="greeting" v-show="showWelcomeBack">
+        <div class="greeting-main">
+          <h2>Welcome Back!</h2>
+
+          <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
         </div>
       </section>
     </transition>
@@ -450,6 +460,8 @@
       return {
         setting: null,
         showGreeting: false,
+
+        showWelcomeBack: false,
         
         manageColors: false,
         colorToAdd: null,
@@ -499,6 +511,11 @@
         if(this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes') {
           this.shirtFill = white;
         }
+      },
+      showWelcomeBack() {
+        setTimeout(() => {
+          this.showWelcomeBack = false;
+        }, 2000);
       }
     },
     methods: {
@@ -674,6 +691,7 @@
         this.backToTop();
       },
       handleGreetingClose(randomizePref) {
+        localStorage.setItem('visitedAustinFCKitDesigner', true);
         this.showGreeting = false;
         this.manageColors = false;
 
@@ -715,9 +733,15 @@
       this.colors = defaultColors;
       this.getSetting();
 
-      setTimeout(() => {
-        this.showGreeting = true;
-      }, 1000);
+      let hasVisited = localStorage.getItem('visitedAustinFCKitDesigner');
+      
+      if (!hasVisited) {
+        setTimeout(() => {
+          this.showGreeting = true;
+        }, 1000);
+      } else {
+        this.showWelcomeBack = true;
+      }
     }
   };
 </script>
