@@ -384,6 +384,10 @@
   import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
 
   const green ='#00B140';
+  // The home shirt's stripes are tonal rather than contrasting: a deeper verde
+  // on bright verde. Sampled off a photograph of the current kit, which reads
+  // about #01A648 against #008A50 under studio light.
+  const greenDeep = '#008A4B';
   const black = '#000000';
   const white = '#FFFFFF';
   const grey = '#CCCCCC';
@@ -391,6 +395,7 @@
   const defaultColors = [
     black,
     green,
+    greenDeep,
     white,
     grey
   ];
@@ -528,14 +533,18 @@
         exporting: false,
 
         shirtOptions,
-        activeShirtOption: 'barcode',
+        // The current Austin FC home shirt, as close as the parameters get:
+        // tonal verde stripes, black sponsor and brand mark, black trim
+        // standing in for the shoulder stripes and side panels the art has no
+        // equivalent of.
+        activeShirtOption: 'stripes',
         shirtFill: green,
-        shirtTypeFill: black,
-        shirtSecondaryFill: white,
+        shirtTypeFill: greenDeep,
+        shirtSecondaryFill: black,
         shirtCuffFill: black,
-        shirtMakerFill: white,
+        shirtMakerFill: black,
         shirtSleeveFill: green,
-        logoFill: white,
+        logoFill: black,
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
@@ -547,7 +556,7 @@
         shortsCuffsFill: green,
 
         socksFill: black,
-        socksCuffsFill: black,
+        socksCuffsFill: green,
         socksHoops: false,
         socksHoopsFill: white,
 
