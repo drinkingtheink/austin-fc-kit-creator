@@ -378,7 +378,7 @@
   import ShirtThumb from './components/ShirtThumb.vue';
   import ColorPanel from './components/ColorPanel.vue';
   import { computed } from 'vue';
-  import { isValidColor, nearest, toHex } from './lib/colorTools.js';
+  import { contrast, isValidColor, nearest, toHex } from './lib/colorTools.js';
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
   import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
@@ -449,6 +449,49 @@
 
     return models;
   }, {});
+
+  // Two legibility bars, because not everything on a kit is doing the same
+  // job. A tonal stripe is meant to be subtle; a squad number is meant to be
+  // read from the stands.
+  //
+  // SEEN has to stay under the 1.55 that the home shirt's own tonal stripes
+  // score, or the randomizer could never produce a tonal kit. READ is set
+  // where a grey number on white shorts (1.61 -- it cleared the old single
+  // bar, and still looked washed out) falls on the wrong side.
+  const SEEN = 1.45;
+  const READ = 2.4;
+
+  // What sits on what. `on` is the color being judged, `over` is everything
+  // behind it, dominant surface first.
+  //
+  // Order matters, but only in one direction: anything used as a background is
+  // resolved before whatever sits on it, and no entry ever rewrites its own
+  // background. That makes the pass single-shot -- the old hand-written guards
+  // could undo one another, and were commented accordingly.
+  //
+  // shirtFill, shirtSleeveFill, shortsFill and socksFill are the grounds. They
+  // are never adjusted; everything else is judged against them.
+  const LEGIBILITY = [
+    { on: 'shirtTypeFill', over: ['shirtFill'] },
+    { on: 'shirtSecondaryFill', over: ['shirtFill', 'shirtTypeFill'] },
+    { on: 'logoFill', over: ['shirtFill', 'shirtTypeFill'], min: READ },
+    { on: 'shirtMakerFill', over: ['shirtFill'], min: READ },
+    { on: 'collarFill', over: ['shirtFill', 'shirtTypeFill'] },
+    { on: 'shirtCuffFill', over: ['shirtSleeveFill'] },
+    { on: 'numberFill', over: ['shortsFill'], min: READ },
+    { on: 'shortsCuffsFill', over: ['shortsFill'] },
+    { on: 'socksCuffsFill', over: ['socksFill'] },
+    { on: 'socksHoopsFill', over: ['socksFill'] },
+    // The crest is worn twice, on the shirt and on the shorts, so its backing
+    // has to clear both. It is also the one thing the randomizer never
+    // touches: without this the badge kept its default black backing while
+    // the shirt randomized to black around it, and the crest disappeared.
+    // Held to READ rather than SEEN, because a crest that merely differs from
+    // the shirt is not the same as a crest that stands out from it.
+    { on: 'badgeBGFill', over: ['shirtFill', 'shirtTypeFill', 'shortsFill'], min: READ },
+    { on: 'badgeFill', over: ['badgeBGFill'] },
+    { on: 'badgeTextFill', over: ['badgeBGFill'], min: READ }
+  ];
 
   const shirtOptions = [
     'barcode',
@@ -600,11 +643,6 @@
       },
       persistedKit(kit) {
         writeKit(kit);
-      },
-      activeShirtOption() {
-        if(this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes') {
-          this.shirtFill = white;
-        }
       }
     },
     methods: {
@@ -812,16 +850,6 @@
         let randomColor = this.colors[Math.floor(Math.random()*this.colors.length)];
         return randomColor;
       },
-      getRandomColorExcept(...avoid) {
-        let candidates = this.colors.filter(color => !avoid.includes(color));
-
-        // A single-color palette has nothing else to offer.
-        if (!candidates.length) {
-          candidates = this.colors;
-        }
-
-        return candidates[Math.floor(Math.random()*candidates.length)];
-      },
       getRandomShirtDesign() {
         let randomDesign = this.shirtOptions[Math.floor(Math.random()*this.shirtOptions.length)];
         return randomDesign;
@@ -843,6 +871,11 @@
         this.setShirtOption(this.getRandomShirtDesign());
         this.setShirtFill(this.getRandomColor());
         this.setShirtTypeFill(this.getRandomColor());
+        // Neither of these was randomized before, so the four designs that use
+        // a secondary color always drew it black, and the brand mark never
+        // moved off its default at all.
+        this.setShirtSecondaryFill(this.getRandomColor());
+        this.setShirtMakerFill(this.getRandomColor());
         this.setShirtCuffFill(this.getRandomColor());
         this.setShirtSleeveFill(this.getRandomColor());
         this.setLogoFill(this.getRandomColor());
@@ -863,44 +896,66 @@
         this.backToTop();
       },
       /**
-       * Keep each element legible against what it sits on.
+       * Keep every element legible against whatever it sits on.
        *
-       * Order matters: a guard has to see the final value of everything it
-       * compares against, so each one runs after whatever can still rewrite
-       * its inputs. The collar goes last of the shirt guards because the
-       * sponsor guard above it can still move shirtTypeFill.
+       * Driven by the LEGIBILITY table rather than by a hand-written chain of
+       * comparisons. The old version tested for exact equality, which let any
+       * two merely-similar colors through -- a palette holding #000000 and
+       * #111111 could put a sponsor on a shirt nobody could read -- and its
+       * five rules each had to be ordered so they would not undo one another.
+       *
+       * This pass is single-shot: backgrounds are resolved before the things
+       * that sit on them, and nothing rewrites its own background.
        *
        * Shared by the randomizer and by a club palette swap. The swap moves
        * every fill to its nearest match in the new set, which collapses
-       * distinct colors together -- a two-color palette turned a white
-       * sponsor and a white shirt into the same yellow, and the sponsor
-       * disappeared.
+       * distinct colors together -- a two-color palette turned a white sponsor
+       * and a white shirt into the same yellow, and the sponsor vanished.
        */
       enforceLegibility() {
-        if(this.logoFill === this.shirtFill) {
-          this.setLogoFill(this.getRandomColorExcept(this.shirtFill));
+        LEGIBILITY.forEach(({ on, over, min = SEEN }) => {
+          const backgrounds = over.map(ground => this[ground]);
+          const worst = Math.min(
+            ...backgrounds.map(background => contrast(this[on], background))
+          );
+
+          if (worst >= min) return;
+
+          this[on] = this.mostLegibleAgainst(backgrounds, min);
+        });
+      },
+      /**
+       * The palette entry that holds up best against everything behind it.
+       *
+       * Anything clearing the bar is picked from at random, because this runs
+       * inside the randomizer and a deterministic repair would make every
+       * dark shirt reach for the same sponsor color.
+       */
+      mostLegibleAgainst(backgrounds, min) {
+        const scored = this.colors.map(color => ({
+          color,
+          // The weakest pairing is what decides whether it reads, so score on
+          // that rather than on the average.
+          worst: Math.min(...backgrounds.map(background => contrast(color, background))),
+          // Every rule lists the dominant surface first, so this is the one
+          // worth reading against when not everything can be satisfied.
+          primary: contrast(color, backgrounds[0])
+        }));
+
+        const legible = scored.filter(entry => entry.worst >= min);
+
+        if (legible.length) {
+          return legible[Math.floor(Math.random() * legible.length)].color;
         }
 
-        if(this.logoFill === this.shirtTypeFill) {
-          this.setShirtTypeFill(this.getRandomColorExcept(this.logoFill, this.shirtFill));
-        }
-
-        // A pattern painted in the shirt's own color is a pattern nobody can
-        // see: the randomizer could land on "tiger stripes" and serve up what
-        // looks like a plain shirt. Excluding the sponsor color too keeps the
-        // guard above from being undone.
-        if(this.shirtTypeFill === this.shirtFill) {
-          this.setShirtTypeFill(this.getRandomColorExcept(this.shirtFill, this.logoFill));
-        }
-
-        // `(a || b)` only ever compared against `a`, so this half worked.
-        if(this.collarFill === this.shirtFill || this.collarFill === this.shirtTypeFill) {
-          this.setCollarFill(this.getRandomColorExcept(this.shirtFill, this.shirtTypeFill));
-        }
-
-        if(this.numberFill === this.shortsFill) {
-          this.setNumberFill(this.getRandomColorExcept(this.shortsFill));
-        }
+        // Nothing clears every background. Sometimes that is a palette with no
+        // contrast in it at all, but more often it is simple arithmetic: a
+        // two-color kit cannot carry a sponsor that reads on both the shirt
+        // and the stripes across it, because the only two candidates are the
+        // shirt and the stripes. Fall back to whatever reads best against the
+        // largest area behind it -- a black sponsor on a yellow shirt with
+        // black stripes, rather than an arbitrary pick between the two.
+        return scored.reduce((best, entry) => (entry.primary > best.primary ? entry : best)).color;
       },
       // Socks, then shorts, then shirt. The classes live in Kit.vue; this just
       // arms and disarms them.
