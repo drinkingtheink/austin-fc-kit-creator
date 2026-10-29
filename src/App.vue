@@ -92,10 +92,6 @@
           </div>
         </header>
 
-        <p class="mobile-welcome show-on-mobile">
-          This app is better experienced on a tablet or desktop, but I hope you still have fun.
-        </p>
-
         <div class="toolbar-sections">
           <ToolSection
             title="Shirt"
@@ -410,6 +406,7 @@
   import ShirtThumb from './components/ShirtThumb.vue';
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
+  import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
 
   const green ='#00B140';
   const black = '#000000';
@@ -498,6 +495,13 @@
       };
     },
     data() {
+      // Restored values override the defaults below. Applying them here rather
+      // than in a lifecycle hook is what keeps a restore quiet: they become the
+      // component's initial state, so neither the flash watchers nor the
+      // activeShirtOption watcher sees a change and reacts as though someone
+      // had just made it.
+      const saved = readKit(shirtOptions, STAGE_NAMES);
+
       return {
         setting: null,
         showGreeting: false,
@@ -550,12 +554,20 @@
         socksHoops: false,
         socksHoopsFill: white,
 
-        numberFill: white
+        numberFill: white,
+
+        ...saved
       }
     },
     computed: {
-      defaultPaletteEnabled() {
-        return this.arraysMatch(this.colors, defaultColors);
+      // Watched rather than rendered: any change to a persisted field yields a
+      // new object, which is the cue to save.
+      persistedKit() {
+        const kit = {};
+
+        PERSISTED_FIELDS.forEach(field => { kit[field] = this[field]; });
+
+        return kit;
       },
       stageGradient() {
         return toCssGradient(getBackdrop(this.setting));
@@ -573,6 +585,9 @@
       }
     },
     watch: {
+      persistedKit(kit) {
+        writeKit(kit);
+      },
       activeShirtOption() {
         if(this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes') {
           this.shirtFill = white;
@@ -592,20 +607,6 @@
       },
       formatOption(option) {
         return option ? option.replace(/-/g, ' ') : 'solid';
-      },
-      arraysMatch(_arr1, _arr2) {
-        if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
-          return false;
-
-        var arr1 = _arr1.concat().sort();
-        var arr2 = _arr2.concat().sort();
-
-        for (var i = 0; i < arr1.length; i++) {
-
-          if (arr1[i] !== arr2[i]) { return false; }
-        }
-
-        return true;
       },
       getSetting() {
         this.setting = STAGE_NAMES[Math.floor(Math.random()*STAGE_NAMES.length)];
@@ -797,6 +798,14 @@
           this.setShirtTypeFill(this.getRandomColorExcept(this.logoFill, this.shirtFill));
         }
 
+        // A pattern painted in the shirt's own color is a pattern nobody can
+        // see: the randomizer could land on "tiger stripes" and serve up what
+        // looks like a plain shirt. Excluding the sponsor color too keeps the
+        // guard above from being undone.
+        if(this.shirtTypeFill === this.shirtFill) {
+          this.setShirtTypeFill(this.getRandomColorExcept(this.shirtFill, this.logoFill));
+        }
+
         // `(a || b)` only ever compared against `a`, so this half worked.
         if(this.collarFill === this.shirtFill || this.collarFill === this.shirtTypeFill) {
           this.setCollarFill(this.getRandomColorExcept(this.shirtFill, this.shirtTypeFill));
@@ -945,9 +954,12 @@
     },
     mounted() {
       window.addEventListener('keyup', this.handleShortcut);
+
+      // Either may already hold a restored value, so only fall back when
+      // nothing was persisted.
       // Copy, don't alias: addColor() pushes onto this array.
-      this.colors = [...defaultColors];
-      this.getSetting();
+      if (!this.colors) this.colors = [...defaultColors];
+      if (!this.setting) this.getSetting();
 
       let hasVisited = localStorage.getItem('visitedAustinFCKitDesigner');
 
@@ -1727,16 +1739,6 @@
 
   .show-on-mobile {
     display: none;
-  }
-
-  .mobile-welcome {
-    margin: 0;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--line);
-    background-color: rgba(0, 177, 64, .08);
-    color: var(--text-dim);
-    font-size: .76rem;
-    line-height: 1.5;
   }
 
   @media screen and (max-width: 900px) {
