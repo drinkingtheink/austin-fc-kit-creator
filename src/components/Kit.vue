@@ -44,9 +44,9 @@
       </pattern>
 
       <!-- Each garment is its own cylinder, so each gets its own clip. The
-           cuffs and trims are deliberately absent: `right-cuff` and
-           `left-cuff` are each used twice in this file, once on the socks and
-           once on the sleeves, so a reference by id cannot say which it means. -->
+           cuffs and trims are left flat: they are narrow accent bands, usually
+           in a contrasting color, and read fine without rounding. Their ids are
+           unique now, so clipping them is a matter of adding the shapes here. -->
       <clipPath id="clipShirtTrunk"><use href="#shirt-trunk" /></clipPath>
       <clipPath id="clipRightSleeve"><use href="#right-sleeve" /></clipPath>
       <clipPath id="clipLeftSleeve"><use href="#left-sleeve" /></clipPath>
@@ -69,13 +69,13 @@
          shirt while keeping the space between shorts and socks. -->
     <g id="socks" transform="translate(0,-40)">
       <polygon data-part="socks" :class="partClass('socks')" id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
-      <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="right-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
+      <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="right-sock-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
       <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="right-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="297.3,1109.8 156.1,1109.8 164.2,1169 291.6,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="176.7,1260.9 282.7,1260.9 288.4,1201.7 168.6,1201.7    "/>
       </g>
       <polygon data-part="socks" :class="partClass('socks')" id="left-sock" :style="{ fill: socksFill }" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
-      <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="left-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
+      <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="left-sock-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
       <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="left-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
@@ -317,8 +317,8 @@
       <path data-part="shirt" :class="partClass('shirt')" id="shirt-trunk" :style="{ fill: shirtFill }" class="st0" d="M545.4,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2H429l-69.3,69.3l-69.3-69.3H175.6
         c-1.1,0.5-2.1,0.9-2.9,1.2H170l2.1,499.9h0.5c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h371.2c1.4-3.1,2.1-6.2,2.1-9.4
         c0-1.5-0.2-3-0.5-4.5h0.5L545.4,35.7z"/>
-      <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="right-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
-      <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="left-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
+      <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="right-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
+      <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="left-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
       <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="389.7,549.5 440.5,549.5 440.5,34.5 429.9,34.5 389.7,74.7     "/>
