@@ -6,8 +6,8 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" 
     x="0px" 
     y="0px"
-    viewBox="0 0 709 1347" 
-    style="enable-background:new 0 0 709 1347;" 
+    viewBox="0 0 709 1307" 
+    style="enable-background:new 0 0 709 1307;" 
     xml:space="preserve"
     class="kit-display"
     :class="{ 'is-revealing': revealing, 'is-frozen': frozen, 'is-paintable': !!paintColor }"
@@ -50,22 +50,24 @@
       <clipPath id="clipShirtTrunk"><use href="#shirt-trunk" /></clipPath>
       <clipPath id="clipRightSleeve"><use href="#right-sleeve" /></clipPath>
       <clipPath id="clipLeftSleeve"><use href="#left-sleeve" /></clipPath>
-      <clipPath id="clipShorts"><use href="#shorts-trunk" /></clipPath>
-      <clipPath id="clipRightSock"><use href="#right-sock" /></clipPath>
-      <clipPath id="clipLeftSock"><use href="#left-sock" /></clipPath>
+      <clipPath id="clipShorts"><use href="#shorts-trunk" transform="translate(0,-40)" /></clipPath>
+      <clipPath id="clipRightSock"><use href="#right-sock" transform="translate(0,-40)" /></clipPath>
+      <clipPath id="clipLeftSock"><use href="#left-sock" transform="translate(0,-40)" /></clipPath>
 
       <!-- Children of a clipPath union, so one weave covers the whole kit. -->
       <clipPath id="clipKitAll">
         <use href="#shirt-trunk" />
         <use href="#right-sleeve" />
         <use href="#left-sleeve" />
-        <use href="#shorts-trunk" />
-        <use href="#right-sock" />
-        <use href="#left-sock" />
+        <use href="#shorts-trunk" transform="translate(0,-40)" />
+        <use href="#right-sock" transform="translate(0,-40)" />
+        <use href="#left-sock" transform="translate(0,-40)" />
       </clipPath>
     </defs>
 
-    <g id="socks">
+    <!-- Shorts and socks ride up together, closing the gap under the
+         shirt while keeping the space between shorts and socks. -->
+    <g id="socks" transform="translate(0,-40)">
       <polygon data-part="socks" :class="partClass('socks')" id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
       <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="right-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
       <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="right-hoops">
@@ -80,7 +82,7 @@
       </g>
     </g>
     
-    <g id="shorts">
+    <g id="shorts" transform="translate(0,-40)">
       <path data-part="shorts" :class="partClass('shorts')" id="shorts-trunk" :style="{ fill: shortsFill }" class="st0" d="M579.1,842.6l-46.3-153.2v-76.8H188.1v77.8l-46,152.2l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56
         c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l31.7-105l31.7,105l0.5-0.2c0.1,0.2,0.2,0.3,0.3,0.5l185.5-56c0-0.2,0-0.4-0.1-0.6L579.1,842.6z"
         />
@@ -786,21 +788,21 @@
         <rect x="540" y="34" width="147" height="197" fill="url(#kitDepth)" />
       </g>
       <g clip-path="url(#clipShorts)">
-        <rect x="134" y="612" width="455" height="318" fill="url(#kitRound)" />
-        <rect x="134" y="612" width="455" height="318" fill="url(#kitDepth)" />
+        <rect x="134" y="572" width="455" height="318" fill="url(#kitRound)" />
+        <rect x="134" y="572" width="455" height="318" fill="url(#kitDepth)" />
       </g>
       <g clip-path="url(#clipRightSock)">
-        <rect x="142" y="1011" width="165" height="306" fill="url(#kitRound)" />
+        <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
       </g>
       <g clip-path="url(#clipLeftSock)">
-        <rect x="410" y="1011" width="165" height="306" fill="url(#kitRound)" />
+        <rect x="410" y="971" width="165" height="306" fill="url(#kitRound)" />
       </g>
       <rect
         clip-path="url(#clipKitAll)"
         x="0"
         y="0"
         width="709"
-        height="1347"
+        height="1307"
         fill="url(#kitKnit)"
       />
     </g>
