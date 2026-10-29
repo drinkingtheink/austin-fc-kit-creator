@@ -755,7 +755,37 @@
         <rect :style="{ fill: shirtMakerFill }" x="225.3" y="148" width="8.4" height="12.5"/>
       </g>
     </g>
-    <g data-part="sponsor" :class="partClass('sponsor')" id="yeti-logo_1_">
+    <!-- The outline is drawn behind the letters. Stroked the ordinary way, a
+         centred stroke eats half its width into the glyph: at any width thick
+         enough to see, the counters in the E and the O close up and YETI turns
+         into four blobs. `paint-order` puts the stroke under the fill, so only
+         its outer half shows and the letterforms keep their shape.
+
+         It is an attribute rather than a CSS declaration because the exporter
+         serializes a clone of this DOM and rewrites only `style`. An attribute
+         rides along; a scoped class would be dropped, and the PNG would come
+         back with fattened letters. stroke, stroke-width and stroke-linejoin
+         are all in its PAINT_PROPS, so those reach the PNG through the
+         computed style, and all three inherit, which is why they sit on the
+         group rather than on each of the six paths.
+
+         Six units against letterforms 57 tall shows three outside them: an
+         edge you can see across a stadium without it becoming the design.
+
+         (Note the dashes in this comment. A double hyphen inside an XML
+         comment is a parse error, and Vue keeps template comments in the DOM
+         in dev, so writing the house style dash here takes the whole export
+         down with it. stripComments in kitToPng.js now catches that, but it
+         is worth not writing in the first place.) -->
+    <g
+      data-part="sponsor"
+      :class="partClass('sponsor')"
+      id="yeti-logo_1_"
+      paint-order="stroke"
+      stroke-linejoin="round"
+      stroke-width="6"
+      :stroke="logoStroke ? logoStrokeFill : 'none'"
+    >
       <g>
         <path :style="{ fill: logoFill }" class="st1" d="M322.1,249.8c15.7,0,31.4,0,47,0c0,4.7,0,9.3,0,14c-9.8,0-19.6,0-29.3,0c0,2.7,0,5.4,0,8.1
           c8.5,0,17.1,0,25.6,0c0,4.3,0,8.5,0,12.8c-8.6,0-17.1,0-25.5,0c0,2.7,0,5.4,0,8.1c10.1,0,20.1,0,30.2,0c0,0.3,0,0.5,0,0.7
@@ -837,6 +867,9 @@
       'socksHoopsFill',
       'numberFill',
       'logoFill',
+      // The sponsor's optional outline, and what it is drawn in.
+      'logoStroke',
+      'logoStrokeFill',
       'badgeFill',
       'badgeTextFill',
       'badgeBGFill',

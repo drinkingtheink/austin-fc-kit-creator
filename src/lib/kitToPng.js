@@ -99,8 +99,31 @@ function inlinePaint(source, clone) {
  * Rasterizes a live SVG element at a given pixel size, carrying across the
  * styling it inherits from scoped CSS.
  */
+/**
+ * Drops comment nodes from a clone before it is serialized.
+ *
+ * XML forbids a double hyphen inside a comment, and this codebase writes `--`
+ * as a dash everywhere. Vue keeps template comments in the DOM in development
+ * and strips them in a production build, so one em-dash in an SVG comment
+ * takes down every export in dev and none in prod -- a difference nobody
+ * should have to find twice. Comments do not render, so the PNG loses nothing
+ * and the data URL gets shorter.
+ */
+function stripComments(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
+  const comments = [];
+
+  while (walker.nextNode()) comments.push(walker.currentNode);
+
+  comments.forEach(comment => comment.remove());
+}
+
 function svgToImage(svgEl, width, height) {
   const clone = svgEl.cloneNode(true);
+
+  // Before the pairing below, though it would hold either way: comments are
+  // never returned by querySelectorAll('*').
+  stripComments(clone);
 
   inlinePaint(svgEl, clone);
 

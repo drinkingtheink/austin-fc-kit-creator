@@ -18,6 +18,7 @@ const COLOR_FIELDS = [
   'shirtMakerFill',
   'shirtSleeveFill',
   'logoFill',
+  'logoStrokeFill',
   'badgeFill',
   'badgeTextFill',
   'badgeBGFill',
@@ -30,7 +31,7 @@ const COLOR_FIELDS = [
   'numberFill'
 ];
 
-const FLAG_FIELDS = ['showButtonCollar', 'socksHoops'];
+const FLAG_FIELDS = ['showButtonCollar', 'socksHoops', 'logoStroke'];
 
 const MAX_PALETTE = 64;
 

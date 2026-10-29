@@ -85,6 +85,14 @@ floodlights halved the frame rate — 28fps against 61. Only one bulb in four
 carries a filter now. Measure before and after when adding effects to anything
 that exists in bulk; the stadium and the crest are both hundreds of nodes.
 
+**A `--` inside an SVG template comment breaks every export.** XML forbids a
+double hyphen in a comment, Vue keeps template comments in the DOM in dev and
+drops them in a production build, and the exporter serializes that DOM. So the
+house-style dash, written into a comment in `Kit.vue`'s template, takes every
+PNG down in dev and none in prod. `stripComments` in `kitToPng.js` now removes
+them from the clone, which closes it off; the trap is worth knowing anyway,
+because it is invisible until something tries to parse the markup.
+
 **Vue 3.5 unwraps injected refs in the Options API.** `App.vue` provides a
 computed ref as `spotlightState`; `ToolField` reads `this.spotlightState`
 directly, with no `.value`. Getting this wrong fails silently.

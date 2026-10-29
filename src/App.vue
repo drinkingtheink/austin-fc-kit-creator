@@ -45,6 +45,8 @@
           :socksFill="socksFill"
           :socksCuffsFill="socksCuffsFill"
           :logoFill="logoFill"
+          :logoStroke="logoStroke"
+          :logoStrokeFill="logoStrokeFill"
           :badgeFill="badgeFill"
           :badgeTextFill="badgeTextFill"
           :badgeBGFill="badgeBGFill"
@@ -192,6 +194,33 @@
             <ToolField label="Sponsor color" part="sponsor">
               <ColorSwatches label="Sponsor color" :colors="colors" v-model="logoFill" />
             </ToolField>
+
+            <ToolField label="Sponsor outline" part="sponsor">
+              <div class="segmented" role="group" aria-label="Sponsor outline">
+                <button
+                  type="button"
+                  :class="{ active: !logoStroke }"
+                  :aria-pressed="String(!logoStroke)"
+                  v-on:click="setLogoStroke(false)"
+                >Off</button>
+                <button
+                  type="button"
+                  :class="{ active: logoStroke }"
+                  :aria-pressed="String(logoStroke)"
+                  v-on:click="setLogoStroke(true)"
+                >On</button>
+              </div>
+            </ToolField>
+
+            <transition name="field-pop">
+              <ToolField v-if="logoStroke" label="Outline color" part="sponsor">
+                <ColorSwatches
+                  label="Sponsor outline color"
+                  :colors="colors"
+                  v-model="logoStrokeFill"
+                />
+              </ToolField>
+            </transition>
 
             <ToolField label="Collar" part="collar">
               <div class="segmented" role="group" aria-label="Collar type">
@@ -490,6 +519,7 @@
     shirtSleeveFill: 'sleeve',
     shirtMakerFill: 'maker',
     logoFill: 'sponsor',
+    logoStrokeFill: 'sponsor',
     collarFill: 'collar',
     badgeFill: 'badge',
     badgeTextFill: 'badge',
@@ -537,6 +567,12 @@
     { on: 'shirtTypeFill', over: ['shirtFill'] },
     { on: 'shirtSecondaryFill', over: ['shirtFill', 'shirtTypeFill'] },
     { on: 'logoFill', over: ['shirtFill', 'shirtTypeFill'], min: READ },
+    // An outline the color of the letters it outlines is not an outline.
+    // Judged against the sponsor itself rather than against the shirt,
+    // because a halo in the shirt's own color is a real design and a common
+    // one -- it is how a sponsor is lifted off a busy pattern -- so the only
+    // thing worth guarding is that the edge can be told from what it edges.
+    { on: 'logoStrokeFill', over: ['logoFill'] },
     { on: 'shirtMakerFill', over: ['shirtFill'], min: READ },
     { on: 'collarFill', over: ['shirtFill', 'shirtTypeFill'] },
     { on: 'shirtCuffFill', over: ['shirtSleeveFill'] },
@@ -594,9 +630,10 @@
         'shirtSleeveFill',
         'shirtMakerFill',
         'logoFill',
+        'logoStrokeFill',
         'collarFill'
       ],
-      toggles: ['showButtonCollar']
+      toggles: ['showButtonCollar', 'logoStroke']
     },
     {
       key: 'shorts',
@@ -739,6 +776,11 @@
         shirtMakerFill: black,
         shirtSleeveFill: green,
         logoFill: black,
+        // The current shirt carries no outline on its sponsor, so neither does
+        // the kit this app opens on. The color is what it would be drawn in
+        // the moment anyone turns it on.
+        logoStroke: false,
+        logoStrokeFill: white,
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
@@ -1060,6 +1102,9 @@
       },
       setCollarFill(fill) {
         this.collarFill = fill;
+      },
+      setLogoStroke(pref) {
+        this.logoStroke = pref;
       },
       setShirtMakerFill(fill) {
         this.shirtMakerFill = fill;
