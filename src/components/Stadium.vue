@@ -512,4 +512,97 @@
   .st13{fill:#05B14C;}
   .st14{fill:#01AF4C;stroke:#FFFFFF;stroke-width:4;stroke-miterlimit:10;}
   .dark-gray {fill: #666;}
+
+  /* ---- Ambient motion -------------------------------------------------- */
+
+  /* The backdrop sits at 34% opacity behind the kit, so everything below is
+     deliberately slow and small: enough that the stage stops reading as a
+     still photograph, never enough to pull focus off the shirt. */
+
+  /* Six clouds on six clocks. The durations are deliberately unrelated, so
+     the sky never resynchronises into a single visible pulse. */
+  #cloud1,
+  #cloud3,
+  #cloud4,
+  #cloud4_1_,
+  #cloud5,
+  #cloud5_1_ {
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+  }
+
+  #cloud1     { animation-name: driftFar;  animation-duration: 59s; }
+  #cloud3     { animation-name: driftNear; animation-duration: 71s; }
+  #cloud4     { animation-name: driftMid;  animation-duration: 83s; }
+  #cloud4_1_  { animation-name: driftFar;  animation-duration: 97s; }
+  #cloud5     { animation-name: driftNear; animation-duration: 67s; }
+  #cloud5_1_  { animation-name: driftMid;  animation-duration: 79s; }
+
+  /* Distances are in viewBox units on a 2834-wide stage drawn about half
+     size, so even the nearest cloud only travels ~30 screen pixels. */
+  @keyframes driftNear {
+    from { transform: translateX(0); }
+    to { transform: translateX(72px); }
+  }
+
+  @keyframes driftMid {
+    from { transform: translateX(0); }
+    to { transform: translateX(-54px); }
+  }
+
+  @keyframes driftFar {
+    from { transform: translateX(0); }
+    to { transform: translateX(38px); }
+  }
+
+  /* Ninety-six bulbs across two banks. Negative delays start each bucket
+     already part-way through, so the banks shimmer from the first frame
+     instead of blinking in unison and then drifting apart. */
+  #left-lights ellipse,
+  #left-lights_1_ ellipse {
+    animation: lampFlash 5.5s ease-in-out infinite;
+  }
+
+  #left-lights ellipse:nth-of-type(5n+2),
+  #left-lights_1_ ellipse:nth-of-type(5n+2) { animation-delay: -1.1s; }
+
+  #left-lights ellipse:nth-of-type(5n+3),
+  #left-lights_1_ ellipse:nth-of-type(5n+3) { animation-delay: -2.2s; }
+
+  #left-lights ellipse:nth-of-type(5n+4),
+  #left-lights_1_ ellipse:nth-of-type(5n+4) { animation-delay: -3.3s; }
+
+  #left-lights ellipse:nth-of-type(5n),
+  #left-lights_1_ ellipse:nth-of-type(5n) { animation-delay: -4.4s; }
+
+  /* Not a smooth sine: the quick dip and recover at the top is what makes a
+     floodlight read as a floodlight rather than a glowing dot. */
+  @keyframes lampFlash {
+    0%, 100% { opacity: .5; }
+    38% { opacity: 1; }
+    45% { opacity: .6; }
+    52% { opacity: 1; }
+    72% { opacity: .78; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* These animations have no fill-mode, so the global reduced-motion rule
+       collapsing them to nothing already returns both properties to their
+       base values. Stated outright so a later fill-mode cannot strand a
+       cloud mid-drift or a bulb at half brightness. */
+    #cloud1,
+    #cloud3,
+    #cloud4,
+    #cloud4_1_,
+    #cloud5,
+    #cloud5_1_ {
+      transform: none;
+    }
+
+    #left-lights ellipse,
+    #left-lights_1_ ellipse {
+      opacity: 1;
+    }
+  }
 </style>
