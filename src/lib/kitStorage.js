@@ -34,7 +34,13 @@ const COLOR_FIELDS = [
   'numberFill'
 ];
 
-const FLAG_FIELDS = ['showButtonCollar', 'socksHoops', 'logoStroke', 'showRoundelBadge'];
+const FLAG_FIELDS = [
+  'showButtonCollar',
+  'socksHoops',
+  'logoStroke',
+  'showRoundelBadge',
+  'showBadgeDisc'
+];
 
 const MAX_PALETTE = 64;
 

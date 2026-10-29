@@ -156,9 +156,9 @@
         transform="translate(176.6,778.1) scale(0.1484375)"
       >
         <AustinFCRoundel
-          :groundFill="badgeBGFill"
+          :groundFill="showBadgeDisc ? badgeBGFill : null"
           :treeFill="badgeFill"
-          :letterFill="badgeTextFill"
+          :letterFill="showBadgeDisc ? badgeTextFill : badgeFill"
         />
       </g>
 
@@ -615,10 +615,17 @@
         id="austin-fc-roundel"
         transform="translate(433.4,123.2) scale(0.136719)"
       >
+        <!-- Printed onto cloth, the mark is one color: the F and the C sit
+             in the gaps between the branches, on the garment itself, and a
+             second color for them would have to read on the shirt, the
+             stripes across it and the shorts all at once. It cannot, often
+             enough to matter -- rolled 400 kits and the lettering came out
+             below the bar in 80 of them, invisible in 64. A disc gives them
+             a ground, and then they get their own color back. -->
         <AustinFCRoundel
-          :groundFill="badgeBGFill"
+          :groundFill="showBadgeDisc ? badgeBGFill : null"
           :treeFill="badgeFill"
-          :letterFill="badgeTextFill"
+          :letterFill="showBadgeDisc ? badgeTextFill : badgeFill"
         />
       </g>
 
@@ -956,8 +963,10 @@
       'badgeFill',
       'badgeTextFill',
       'badgeBGFill',
-      // Which badge the shirt wears: the traced crest, or the tree roundel.
+      // Which badge is worn: the traced crest, or the tree roundel.
       'showRoundelBadge',
+      // Whether the roundel has a disc behind it. It has none by default.
+      'showBadgeDisc',
       'collarFill',
       'showButtonCollar',
       'prideColors',

@@ -51,6 +51,7 @@
           :badgeTextFill="badgeTextFill"
           :badgeBGFill="badgeBGFill"
           :showRoundelBadge="showRoundelBadge"
+          :showBadgeDisc="showBadgeDisc"
           :numberFill="numberFill"
           :collarFill="collarFill"
           :showButtonCollar="showButtonCollar"
@@ -281,17 +282,50 @@
               </div>
             </ToolField>
 
+            <transition name="field-pop">
+              <ToolField v-if="showRoundelBadge" label="Disc" part="badge">
+                <div class="segmented" role="group" aria-label="Roundel disc">
+                  <button
+                    type="button"
+                    :class="{ active: !showBadgeDisc }"
+                    :aria-pressed="String(!showBadgeDisc)"
+                    v-on:click="setBadgeDisc(false)"
+                  >None</button>
+                  <button
+                    type="button"
+                    :class="{ active: showBadgeDisc }"
+                    :aria-pressed="String(showBadgeDisc)"
+                    v-on:click="setBadgeDisc(true)"
+                  >Filled</button>
+                </div>
+              </ToolField>
+            </transition>
+
             <ToolField label="Badge color" part="badge">
               <ColorSwatches label="Badge color" :colors="colors" v-model="badgeFill" />
             </ToolField>
 
-            <ToolField label="Badge text color" part="badge">
-              <ColorSwatches label="Badge text color" :colors="colors" v-model="badgeTextFill" />
-            </ToolField>
+            <transition name="field-pop">
+              <ToolField
+                v-if="!showRoundelBadge || showBadgeDisc"
+                label="Badge text color"
+                part="badge"
+              >
+                <ColorSwatches label="Badge text color" :colors="colors" v-model="badgeTextFill" />
+              </ToolField>
+            </transition>
 
-            <ToolField label="Badge background" part="badge">
-              <ColorSwatches label="Badge background color" :colors="colors" v-model="badgeBGFill" />
-            </ToolField>
+            <!-- Nothing to color when the roundel is printed straight onto
+                 the cloth; the crest always has a backing. -->
+            <transition name="field-pop">
+              <ToolField
+                v-if="!showRoundelBadge || showBadgeDisc"
+                label="Badge background"
+                part="badge"
+              >
+                <ColorSwatches label="Badge background color" :colors="colors" v-model="badgeBGFill" />
+              </ToolField>
+            </transition>
 
             <button class="btn btn-ghost btn-block" v-on:click="resetBadge">Reset badge</button>
           </ToolSection>
@@ -516,14 +550,12 @@
   const greenDeep = '#008A4B';
   const black = '#000000';
   const white = '#FFFFFF';
-  const grey = '#CCCCCC';
 
   const defaultColors = [
     black,
     green,
     greenDeep,
-    white,
-    grey
+    white
   ];
 
   // How far the kit may be scaled, and the step a keypress moves it.
@@ -650,6 +682,29 @@
   //
   // shirtFill, shirtSleeveFill, shortsFill and socksFill are the grounds. They
   // are never adjusted; everything else is judged against them.
+  // What the badge's device sits on, which depends on the badge. The crest
+  // carries its own backing and the roundel can be given a disc, and in both
+  // cases that is the ground. A roundel without a disc is printed straight
+  // onto the cloth, so the cloth is what it has to stand off -- all three
+  // garments it is worn over, since one set of badge colors serves the shirt
+  // and the shorts alike.
+  //
+  // Written as a function because it is the one thing in this table that is
+  // not knowable until the kit is in hand. Both branches name fills that are
+  // resolved before this entry runs, so the pass stays single-shot.
+  const BADGE_GROUND = kit => (
+    kit.showRoundelBadge && !kit.showBadgeDisc
+      ? ['shirtFill', 'shirtTypeFill', 'shortsFill']
+      : ['badgeBGFill']
+  );
+
+  // Fields the table reads to decide what sits on what, rather than fields it
+  // judges or rewrites. A reel that rolls one of these will overwrite it on
+  // the way past; this is for the ones no reel touches, which would otherwise
+  // be missing from a rolled kit and read as false -- the pass would pick the
+  // badge's colors for bare cloth while the kit on screen had a disc.
+  const READ_BY_LEGIBILITY = ['showRoundelBadge', 'showBadgeDisc'];
+
   const LEGIBILITY = [
     { on: 'shirtTypeFill', over: ['shirtFill'] },
     { on: 'shirtSecondaryFill', over: ['shirtFill', 'shirtTypeFill'] },
@@ -683,7 +738,9 @@
     // Held to READ rather than SEEN, because a crest that merely differs from
     // the shirt is not the same as a crest that stands out from it.
     { on: 'badgeBGFill', over: ['shirtFill', 'shirtTypeFill', 'shortsFill'], min: READ },
-    { on: 'badgeFill', over: ['badgeBGFill'] },
+    { on: 'badgeFill', over: BADGE_GROUND },
+    // Always against the ground: a badge with no ground has no lettering of
+    // its own to judge, because the mark is then printed in one color.
     { on: 'badgeTextFill', over: ['badgeBGFill'], min: READ }
   ];
 
@@ -884,8 +941,11 @@
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
-        // The traced crest unless asked otherwise; it is what the shirt wears.
+        // The traced crest unless asked otherwise; it is what the kit wears.
         showRoundelBadge: false,
+        // The roundel is printed onto the cloth, not onto a disc, until
+        // somebody decides otherwise.
+        showBadgeDisc: false,
 
         collarFill: black,
         showButtonCollar: false,
@@ -1185,7 +1245,7 @@
       resetColors() {
         this.colors = [...defaultColors];
         this.resetBadge();
-        this.notify('Back to Austin FC.', 'Verde, black, white, grey');
+        this.notify('Back to Austin FC.', 'Verde, black, white');
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -1216,6 +1276,9 @@
       },
       setRoundelBadge(pref) {
         this.showRoundelBadge = pref;
+      },
+      setBadgeDisc(pref) {
+        this.showBadgeDisc = pref;
       },
       setLogoFill(fill) {
         this.logoFill = fill;
@@ -1551,6 +1614,7 @@
         const kit = {};
 
         Object.keys(FILL_PARTS).forEach(model => { kit[model] = this[model]; });
+        READ_BY_LEGIBILITY.forEach(field => { kit[field] = this[field]; });
 
         REELS.forEach(reel => Object.assign(kit, this.rollReel(reel)));
 
@@ -1595,7 +1659,8 @@
        */
       enforceLegibility(kit = this) {
         LEGIBILITY.forEach(({ on, over, min = SEEN, rescue }) => {
-          const backgrounds = over.map(ground => kit[ground]);
+          const grounds = typeof over === 'function' ? over(kit) : over;
+          const backgrounds = grounds.map(ground => kit[ground]);
           const worst = Math.min(
             ...backgrounds.map(background => contrast(kit[on], background))
           );

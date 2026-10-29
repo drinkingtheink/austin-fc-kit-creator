@@ -5,11 +5,15 @@
        the shorts, which are different sizes. -->
   <g class="austin-fc-roundel">
     <!-- The disc belongs to this component, not to the artwork: what arrived
-         was a tree and two letters on nothing. It is what makes a roundel a
-         roundel, and it is what keeps the badge's three colors doing the same
-         three jobs they do on the crest -- ground, device, lettering -- so
-         the legibility table needs no special case for which badge is on. -->
-    <circle cx="256" cy="256" r="256" :style="{ fill: groundFill }" />
+         was a tree and two letters on nothing, and that is how it is worn by
+         default -- the tree straight onto the cloth. A ground is something
+         you turn on, and then it takes the badge's background color.
+
+         Dropped from the DOM rather than drawn with fill:none, because the
+         exporter skips a `none` and the circle would come back from it
+         wearing SVG's default fill, which is black. A disc nobody asked for,
+         in the one place nobody would look for it. -->
+    <circle v-if="groundFill" cx="256" cy="256" r="256" :style="{ fill: groundFill }" />
 
     <!-- The artwork's own box is 451.37 x 484.21. Scaled to three quarters of
          the disc and centred in it, which leaves the canopy clear of the edge
