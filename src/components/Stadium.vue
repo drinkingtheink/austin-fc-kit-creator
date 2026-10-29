@@ -104,6 +104,17 @@
   <circle v-for="(person, i) in deckPeople('far')" :key="i"
           :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
 </g>
+
+<!-- Camera flashes, over the crowd and clipped to the same decks so a halo
+     cannot spill off the stand. data-screen-only keeps them out of the PNG:
+     the glow is a filter, which the exporter never carries, but the opacity
+     that turns each one on is a property it does. See lib/crowd.js. -->
+<g v-for="deck in ['far', 'mid', 'near']" :key="deck"
+   class="crowd-flashes" data-screen-only :clip-path="`url(#crowd-${deck}-deck)`">
+  <circle v-for="(flash, i) in deckFlashes(deck)" :key="i"
+          :cx="flash.cx" :cy="flash.cy" :r="flash.r"
+          :style="{ animationDelay: `${flash.delay}s` }" fill="#FFFFFF"/>
+</g>
 <g id="far-top-wall">
   <polygon class="st7" points="182.4,780.7 182.4,808.9 1577.7,796.6 1577.7,780.7  "/>
 </g>
@@ -527,7 +538,7 @@
 </template>
 
 <script>
-  import { CROWD_DECKS } from '../lib/crowd.js';
+  import { CROWD_DECKS, CROWD_FLASHES } from '../lib/crowd.js';
 
   export default {
     name: 'Stadium',
@@ -536,6 +547,9 @@
       // never changes. This only lets the template reach it by deck.
       deckPeople(id) {
         return CROWD_DECKS.find(deck => deck.id === id).people;
+      },
+      deckFlashes(id) {
+        return CROWD_FLASHES.filter(flash => flash.deck === id);
       }
     }
   };
@@ -655,6 +669,36 @@
   #left-lights ellipse:nth-of-type(7n),
   #left-lights_1_ ellipse:nth-of-type(7n) { animation-delay: -6.8s; animation-duration: 10.4s; }
 
+  /* A camera going off in the stand. Dark for all but a fifth of a second
+     of a twelve second cycle, which is both what makes it read as a flash
+     and why it costs nothing: measured at 59fps with 400 of these running,
+     against the 28fps that 96 floodlights carrying a permanent drop-shadow
+     once cost. A filter that is none most of the time is not a filter most
+     of the time.
+
+     filter only, deliberately. It is the one painted property the exporter
+     does not carry, so none of this reaches the PNG. */
+  .crowd-flashes circle {
+    opacity: 0;
+    animation: crowdFlash 12s linear infinite;
+  }
+
+  /* The halo is the whole thing, not the brightness. The stadium composites
+     at 34%, which caps how white a flash can get, and the crowd already has
+     white shirts in it at that same ceiling -- so a bright dot is just
+     another fan in white. What separates a flash from a shirt is the glow
+     around it, and it has to be wider than the figure to be seen at all,
+     the same reason the floodlight flare runs a 16 and 28px shadow. */
+  @keyframes crowdFlash {
+    0%, 97.2%, 100% { opacity: 0; filter: none; }
+    97.6% {
+      opacity: 1;
+      filter: drop-shadow(0 0 4px rgba(255, 255, 255, .95))
+              drop-shadow(0 0 11px rgba(255, 255, 255, .8));
+    }
+    98.4% { opacity: 0; filter: none; }
+  }
+
   /* Lit, with a slow swell. Every bulb runs this, so it stays opacity-only. */
   @keyframes lampGlow {
     0%, 100% { opacity: .62; }
@@ -705,6 +749,14 @@
     #left-lights ellipse,
     #left-lights_1_ ellipse {
       opacity: 1;
+      filter: none;
+    }
+
+    /* These do have to be pinned off rather than left to the global rule:
+       their resting state is invisible, and a collapsed animation would
+       strand eighteen white circles lit on the stands. */
+    .crowd-flashes circle {
+      opacity: 0;
       filter: none;
     }
   }

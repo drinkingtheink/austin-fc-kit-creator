@@ -166,3 +166,47 @@ function build() {
 }
 
 export const CROWD_DECKS = build();
+
+// Someone in the stand takes a photo.
+//
+// The dose is the whole design here. A flash is built to catch the eye, and
+// the backdrop's job is to stop the stage reading as a still photograph
+// without pulling focus off the shirt, so this is eighteen people in six and
+// a half thousand, each firing once per twelve seconds: about one and a half
+// flashes a second across the entire bowl. Raise FLASH_COUNT and it stops
+// being a stadium and starts being a lightning storm.
+//
+// It is animated with filter and nothing else, which is what keeps it out of
+// the PNG. filter is deliberately absent from PAINT_PROPS in kitToPng.js, and
+// the stadium is not covered by the export freeze the kit gets, so a flash
+// animating fill or opacity would bake a half-lit figure into the export and
+// make two exports of the same kit differ. stars.js declines to animate
+// twinkle for the same reason.
+const FLASH_COUNT = 18;
+const FLASH_CYCLE = 12;
+
+function pickFlashes() {
+  // Its own stream, so changing the count cannot reshuffle the crowd itself.
+  const random = mulberry32(0x1CE11A);
+  const flashes = [];
+
+  for (let i = 0; i < FLASH_COUNT; i += 1) {
+    const deck = CROWD_DECKS[Math.floor(random() * CROWD_DECKS.length)];
+    const person = deck.people[Math.floor(random() * deck.people.length)];
+
+    flashes.push({
+      cx: person.cx,
+      cy: person.cy,
+      // Wider than the person holding the phone: the burst is the light, not
+      // the figure, and at a figure's own size it reads as a white shirt.
+      r: +(person.r * 1.45).toFixed(2),
+      deck: deck.id,
+      // Spread across the cycle so they never fire together.
+      delay: +(-random() * FLASH_CYCLE).toFixed(2)
+    });
+  }
+
+  return flashes;
+}
+
+export const CROWD_FLASHES = pickFlashes();

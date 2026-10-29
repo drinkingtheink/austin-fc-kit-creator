@@ -122,6 +122,21 @@ function stripComments(root) {
   comments.forEach(comment => comment.remove());
 }
 
+/**
+ * Drops anything marked as belonging to the screen alone.
+ *
+ * The escape hatch for decoration that must not be in the PNG. `filter` is
+ * already outside PAINT_PROPS, which covers an effect built purely on a
+ * drop-shadow, but it does not cover one that has to turn an element on to
+ * have something to light: the crowd's camera flashes animate opacity, and
+ * opacity the exporter does carry. The stadium is not covered by the freeze
+ * the kit gets, so without this a capture landing inside a flash would bake a
+ * lit figure in, and two exports of one kit would differ.
+ */
+function stripScreenOnly(root) {
+  root.querySelectorAll('[data-screen-only]').forEach(node => node.remove());
+}
+
 function svgToImage(svgEl, width, height) {
   const clone = svgEl.cloneNode(true);
 
@@ -130,6 +145,11 @@ function svgToImage(svgEl, width, height) {
   stripComments(clone);
 
   inlinePaint(svgEl, clone);
+
+  // After the pairing above, and it has to be: inlinePaint walks the source
+  // and the clone by index, so dropping a node from one list first would
+  // shift every element after it onto the wrong fill.
+  stripScreenOnly(clone);
 
   // The root's own computed style describes how the element sits on the page —
   // drop shadow, scale, the float animation, the stadium's 34% opacity. None of
