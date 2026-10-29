@@ -585,7 +585,26 @@
           546.7,376.7 546.4,305.5 496.8,305.5 496.8,374.1 428.2,374.1 428.2,306.4 359.6,306.4 359.6,375 291,375 291,306.4 222.4,306.4 
           222.4,375 171.3,375 171.6,446.2 222.4,446.2 222.4,377.6     "/>
       </g>
-      <g data-part="badge" :class="partClass('badge')" id="austin-fc-crest">
+      <!-- Either badge, in the same place and at the same weight: the crest's
+           own box is 58.3 x 75.9 centred on 468.4,158.2, and the roundel is a
+           512-unit square scaled to a 70-unit disc over the same centre. Only
+           one is ever in the DOM, so the exporter never has to be told which
+           one it is looking at. -->
+      <g
+        v-if="showRoundelBadge"
+        data-part="badge"
+        :class="partClass('badge')"
+        id="austin-fc-roundel"
+        transform="translate(433.4,123.2) scale(0.136719)"
+      >
+        <AustinFCRoundel
+          :groundFill="badgeBGFill"
+          :treeFill="badgeFill"
+          :letterFill="badgeTextFill"
+        />
+      </g>
+
+      <g v-else data-part="badge" :class="partClass('badge')" id="austin-fc-crest">
         <g>
           <g>
             <path class="st2" d="M468.4,121.4c9.2,0,18.3,0,27.5,0c0.5,0,0.5,0,0.5,0.5c0,14.9,0,29.8,0,44.7c0,1.3-0.1,2.6-0.2,3.8
@@ -889,8 +908,11 @@
 </template>
 
 <script>
+  import AustinFCRoundel from './AustinFCRoundel.vue';
+
   export default {
     name: 'Kit',
+    components: { AustinFCRoundel },
     props: [ 
       'activeShirtOption',
       'shirtFill',
@@ -916,6 +938,8 @@
       'badgeFill',
       'badgeTextFill',
       'badgeBGFill',
+      // Which badge the shirt wears: the traced crest, or the tree roundel.
+      'showRoundelBadge',
       'collarFill',
       'showButtonCollar',
       'prideColors',

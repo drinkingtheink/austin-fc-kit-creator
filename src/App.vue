@@ -50,6 +50,7 @@
           :badgeFill="badgeFill"
           :badgeTextFill="badgeTextFill"
           :badgeBGFill="badgeBGFill"
+          :showRoundelBadge="showRoundelBadge"
           :numberFill="numberFill"
           :collarFill="collarFill"
           :showButtonCollar="showButtonCollar"
@@ -263,6 +264,23 @@
             :open="openSection === 'badge'"
             v-on:toggle="toggleSection('badge')"
           >
+            <ToolField label="Badge" part="badge">
+              <div class="segmented" role="group" aria-label="Badge style">
+                <button
+                  type="button"
+                  :class="{ active: !showRoundelBadge }"
+                  :aria-pressed="String(!showRoundelBadge)"
+                  v-on:click="setRoundelBadge(false)"
+                >Crest</button>
+                <button
+                  type="button"
+                  :class="{ active: showRoundelBadge }"
+                  :aria-pressed="String(showRoundelBadge)"
+                  v-on:click="setRoundelBadge(true)"
+                >Roundel</button>
+              </div>
+            </ToolField>
+
             <ToolField label="Badge color" part="badge">
               <ColorSwatches label="Badge color" :colors="colors" v-model="badgeFill" />
             </ToolField>
@@ -711,7 +729,7 @@
         'logoStrokeFill',
         'collarFill'
       ],
-      toggles: ['showButtonCollar', 'logoStroke']
+      toggles: ['showButtonCollar', 'logoStroke', 'showRoundelBadge']
     },
     {
       key: 'shorts',
@@ -866,6 +884,8 @@
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
+        // The traced crest unless asked otherwise; it is what the shirt wears.
+        showRoundelBadge: false,
 
         collarFill: black,
         showButtonCollar: false,
@@ -1193,6 +1213,9 @@
       },
       setBadgeBGFill(fill) {
         this.badgeBGFill = fill;
+      },
+      setRoundelBadge(pref) {
+        this.showRoundelBadge = pref;
       },
       setLogoFill(fill) {
         this.logoFill = fill;
