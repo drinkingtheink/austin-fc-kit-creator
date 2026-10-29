@@ -18,5 +18,14 @@ export default [
       // Kit / Stadium / App are established names in this project.
       'vue/multi-word-component-names': 'off'
     }
+  },
+  {
+    // The colour checks run under plain node, not in the browser.
+    files: ['**/*.test.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
   }
 ]

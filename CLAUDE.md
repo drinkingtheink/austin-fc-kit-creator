@@ -4,13 +4,21 @@ Vue 3 + Vite single-page app for designing an Austin FC kit and exporting it as
 a PNG. One component tree, no router, no store.
 
 ```
-npm run dev     # vite on port 8080 (set in vite.config.js, not the default)
-npm run build   # production build
-npm run lint    # eslint
+npm run dev          # vite on port 8080 (set in vite.config.js, not the default)
+npm run build        # production build
+npm run lint         # eslint
+npm run test:colors  # the colour maths in lib/colorTools.js
 ```
 
-There is no test runner. Changes are verified by running the app and driving it
-in a browser.
+There is no test framework. `src/lib/colorTools.test.mjs` is a dependency-free
+script that runs under plain node and exits non-zero on failure — the colour
+maths is the one part of this project that is pure enough to check that way.
+
+Everything else is verified by running the app and driving it in a browser.
+That is not a formality here: most of the real bugs in this project have been
+visual or timing-related, and several were only caught by measuring the running
+page — a frame-rate drop, a clamp drifting over successive events, an export
+that differed from the screen.
 
 ## Where things live
 
