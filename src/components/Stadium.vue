@@ -556,94 +556,81 @@
     to { transform: translateX(38px); }
   }
 
-  /* Ninety-six bulbs across two banks. Seven buckets, each on its own clock,
-     with negative delays so they shimmer from the first frame rather than
-     blinking in unison and only drifting apart later. The durations are
-     deliberately unrelated, which keeps them from ever resynchronising.
+  /* Ninety-six bulbs across two banks.
+     
+     Floodlights are *on*, not strobing. The earlier pass had every bulb
+     striking twice per four-second cycle, which turned the stands into a
+     disco. They now hold a steady lit level and only breathe, on seven
+     unrelated clocks so the banks never pulse as one.
 
      Note: these ellipses carry transform="matrix(...)" from the source art, so
-     nothing here may set a CSS transform -- that would override the attribute
+     nothing here may set a CSS transform -- it would override the attribute
      and scatter the bulbs across the sky. Opacity and filter only. */
   #left-lights ellipse,
   #left-lights_1_ ellipse {
-    animation: lampFlash 4.1s ease-in-out infinite;
+    animation: lampGlow 9s ease-in-out infinite;
   }
 
-  /* One bulb in four also blooms. A drop-shadow is costed per element per
-     frame, and putting one on all ninety-six halved the frame rate (28fps
-     against 61), which is a bad trade for scenery sitting behind the kit.
-     A scattering of flares also looks better than a bank blooming as one. */
+  /* One bulb in four also flares, once per long cycle and briefly -- a camera
+     going off in the stands rather than a light failing. The cycle is more
+     than twice as long as the breathe, so flares stay occasional.
+
+     Only a scattering carries the filter: a drop-shadow is costed per element
+     per frame, and putting one on all ninety-six halved the frame rate (28fps
+     against 61) for scenery sitting behind the kit. */
   #left-lights ellipse:nth-of-type(4n+1),
   #left-lights_1_ ellipse:nth-of-type(4n+1) {
     animation-name: lampFlare;
+    animation-duration: 19s;
   }
 
   #left-lights ellipse:nth-of-type(7n+2),
-  #left-lights_1_ ellipse:nth-of-type(7n+2) { animation-delay: -.9s; animation-duration: 3.4s; }
+  #left-lights_1_ ellipse:nth-of-type(7n+2) { animation-delay: -1.9s; animation-duration: 7.4s; }
 
   #left-lights ellipse:nth-of-type(7n+3),
-  #left-lights_1_ ellipse:nth-of-type(7n+3) { animation-delay: -1.7s; animation-duration: 5.3s; }
+  #left-lights_1_ ellipse:nth-of-type(7n+3) { animation-delay: -3.7s; animation-duration: 11.3s; }
 
   #left-lights ellipse:nth-of-type(7n+4),
-  #left-lights_1_ ellipse:nth-of-type(7n+4) { animation-delay: -2.4s; animation-duration: 4.7s; }
+  #left-lights_1_ ellipse:nth-of-type(7n+4) { animation-delay: -5.4s; animation-duration: 9.7s; }
 
   #left-lights ellipse:nth-of-type(7n+5),
-  #left-lights_1_ ellipse:nth-of-type(7n+5) { animation-delay: -3.1s; animation-duration: 3.8s; }
+  #left-lights_1_ ellipse:nth-of-type(7n+5) { animation-delay: -7.1s; animation-duration: 8.2s; }
 
   #left-lights ellipse:nth-of-type(7n+6),
-  #left-lights_1_ ellipse:nth-of-type(7n+6) { animation-delay: -1.2s; animation-duration: 5.9s; }
+  #left-lights_1_ ellipse:nth-of-type(7n+6) { animation-delay: -2.2s; animation-duration: 12.6s; }
 
   #left-lights ellipse:nth-of-type(7n),
-  #left-lights_1_ ellipse:nth-of-type(7n) { animation-delay: -2.8s; animation-duration: 4.4s; }
+  #left-lights_1_ ellipse:nth-of-type(7n) { animation-delay: -6.8s; animation-duration: 10.4s; }
 
-  /* A hard double-strike rather than a swell, with most of the cycle sitting
-     dark so the flare has somewhere to come from. Opacity only: every bulb
-     runs this, so it has to stay cheap. */
-  @keyframes lampFlash {
-    0%, 100% { opacity: .18; }
-    18% { opacity: .28; }
-    24% { opacity: 1; }
-    30% { opacity: .4; }
-    36% { opacity: 1; }
-    46% { opacity: .3; }
-    64% { opacity: .95; }
-    74% { opacity: .24; }
+  /* Lit, with a slow swell. Every bulb runs this, so it stays opacity-only. */
+  @keyframes lampGlow {
+    0%, 100% { opacity: .62; }
+    50% { opacity: .88; }
   }
 
-  /* The same timeline with a bloom on the peaks. The glow has to be wide to
-     register at all: a bulb is about 16 user units across and the stadium
-     composites at 34% opacity, so a halo narrower than the bulb vanishes. */
+  /* The same resting level, interrupted once by a quick double strike. The
+     glow is wide on purpose: a bulb is about 16 user units across and the
+     stadium composites at 34% opacity, so a halo narrower than the bulb
+     disappears. */
   @keyframes lampFlare {
-    0%, 100% {
-      opacity: .18;
+    0%, 70%, 100% {
+      opacity: .72;
       filter: none;
-    }
-    18% {
-      opacity: .28;
-      filter: none;
-    }
-    24% {
-      opacity: 1;
-      filter: drop-shadow(0 0 18px rgba(255, 255, 255, .95));
-    }
-    30% {
-      opacity: .4;
-      filter: drop-shadow(0 0 4px rgba(255, 255, 255, .35));
-    }
-    36% {
-      opacity: 1;
-      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1));
-    }
-    46% {
-      opacity: .3;
-      filter: none;
-    }
-    64% {
-      opacity: .95;
-      filter: drop-shadow(0 0 16px rgba(255, 255, 255, .8));
     }
     74% {
-      opacity: .24;
+      opacity: 1;
+      filter: drop-shadow(0 0 16px rgba(255, 255, 255, .9));
+    }
+    77% {
+      opacity: .74;
+      filter: none;
+    }
+    80% {
+      opacity: 1;
+      filter: drop-shadow(0 0 28px rgba(255, 255, 255, 1));
+    }
+    86% {
+      opacity: .72;
       filter: none;
     }
   }
