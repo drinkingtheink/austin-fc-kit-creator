@@ -509,7 +509,6 @@
   .st9{fill:#5D5E5B;}
   .st10{opacity:0.4;fill:#FFFFFF;}
   .st11{opacity:0.6;fill:#FFFFFF;}
-  .st12{display:none;}
   .st13{fill:#05B14C;}
   .st14{fill:#01AF4C;stroke:#FFFFFF;stroke-width:4;stroke-miterlimit:10;}
   .dark-gray {fill: #666;}
