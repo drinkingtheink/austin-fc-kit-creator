@@ -15,25 +15,34 @@ Be sure to take screenshots of your favorite designs and post them with #AustinF
 ![Austin FC Kit Creator Color Management](https://i.ibb.co/N2c7Nqw/Screen-Shot-2020-06-18-at-3-59-21-PM.png)
 
 
+## Built With
+
+Vue 3 + Vite.
+
 ## Project setup
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Start the dev server (hot module reload)
 ```
-npm run serve
+npm run dev
 ```
 
-### Compiles and minifies for production
+### Compile and minify for production
 ```
 npm run build
 ```
 
-### Lints and fixes files
+### Preview the production build locally
+```
+npm run preview
+```
+
+### Lint
 ```
 npm run lint
 ```
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See the [Vite config reference](https://vite.dev/config/).
