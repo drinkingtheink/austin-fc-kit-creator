@@ -20,7 +20,7 @@
     <div class="stage-scrim" aria-hidden="true"></div>
 
     <div id="app">
-      <section id="kit-stage" ref="stage">
+      <section id="kit-stage" ref="stage" :class="{ 'is-zoomed': zoom > 1, 'is-panning': panMoved }">
         <!-- The zoom lives on a wrapper, not on the kit: .kit-display already
              animates transform for the float, and an animation beats an inline
              style on the same property. It also keeps the zoom out of the PNG
@@ -29,7 +29,7 @@
         <div
           class="kit-zoom"
           :class="{ smooth: zoomSmooth }"
-          :style="{ transform: `scale(${zoom})` }"
+          :style="{ transform: `translate(${panX}px, ${panY}px) scale(${zoom})` }"
         >
         <Kit
           ref="kit"
@@ -433,6 +433,25 @@
   const ZOOM_IN_KEYS = ['+', '='];
   const ZOOM_OUT_KEYS = ['-', '_'];
 
+  // How far a pointer may travel before a click stops counting as a click and
+  // starts counting as a drag. Painting and panning share the same gesture,
+  // and this is the whole of what tells them apart.
+  const PAN_SLOP = 4;
+
+  /**
+   * Clamps a pan offset to the range that keeps the kit covering the stage.
+   *
+   * `lead` is the offset that lines the kit's top (or left) edge up with the
+   * stage's; `trail` the one that lines up the bottom (or right). When the kit
+   * is smaller than the stage the two cross over, which means there is no
+   * overhang to drag into view and the only sensible offset is none.
+   */
+  function clampPan(value, lead, trail) {
+    if (trail > lead) return 0;
+
+    return Math.min(lead, Math.max(trail, value));
+  }
+
   // 'Spacebar' is the legacy name older Edge/Firefox reported for the space key.
   const RANDOMIZE_KEYS = [
     'Enter',
@@ -608,6 +627,12 @@
         // Eased only when something other than a gesture moves it; following a
         // pinch through a transition would feel like dragging treacle.
         zoomSmooth: false,
+        // Where the zoomed kit has been dragged to, in screen pixels.
+        panX: 0,
+        panY: 0,
+        // True once the current gesture has travelled far enough to be a drag,
+        // which is what stops it also painting on release.
+        panMoved: false,
 
         colors: null,
 
@@ -689,12 +714,69 @@
       setZoom(next, smooth = false) {
         this.zoomSmooth = smooth;
         this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next));
+
+        // Zooming out shrinks how far the kit may be dragged, so a pan that
+        // was legal a moment ago may now be off the end of its leash. Let the
+        // new size settle first, then pull it back in.
+        this.$nextTick(() => this.setPan(this.panX, this.panY));
+      },
+      /**
+       * Move the zoomed kit, never further than its own overhang.
+       *
+       * Without the clamp the kit could be dragged off the stage entirely and
+       * there would be no way to find it again short of resetting.
+       */
+      setPan(x, y) {
+        const kit = this.$refs.kit && this.$refs.kit.$el;
+        const stage = this.$refs.stage;
+
+        if (!kit || !stage) return;
+
+        const kitBox = kit.getBoundingClientRect();
+        const stageBox = stage.getBoundingClientRect();
+        const padding = window.getComputedStyle(stage);
+        const padTop = parseFloat(padding.paddingTop) || 0;
+        const padBottom = parseFloat(padding.paddingBottom) || 0;
+        const padLeft = parseFloat(padding.paddingLeft) || 0;
+        const padRight = parseFloat(padding.paddingRight) || 0;
+
+        // Where the kit sits with no pan applied: centred in the stage's
+        // content box, which is not the centre of the stage. The padding is
+        // asymmetric -- 28px at the top against 76px at the bottom, to clear
+        // the download button -- so the kit rests above centre and has further
+        // to travel down than up. Treating the overhang as evenly split left
+        // the top of the shirt stranded off the top of the stage.
+        //
+        // Derived from the padding rather than read back out of the kit's
+        // current rect. Several wheel events can land inside one frame, and
+        // reading a rect Vue has not re-rendered yet while using the pan value
+        // it has not applied yet made the bounds drift a little further every
+        // call -- the pan ran away to five figures instead of clamping.
+        // Width and height are safe to read: panning does not change them.
+        const restLeft = stageBox.left + padLeft
+          + (stageBox.width - padLeft - padRight) / 2 - kitBox.width / 2;
+        const restTop = stageBox.top + padTop
+          + (stageBox.height - padTop - padBottom) / 2 - kitBox.height / 2;
+
+        this.panX = clampPan(
+          x,
+          stageBox.left - restLeft,
+          stageBox.right - (restLeft + kitBox.width)
+        );
+        this.panY = clampPan(
+          y,
+          stageBox.top - restTop,
+          stageBox.bottom - (restTop + kitBox.height)
+        );
       },
       nudgeZoom(factor) {
         this.setZoom(this.zoom * factor, true);
       },
       resetZoom() {
-        this.setZoom(1, true);
+        this.zoomSmooth = true;
+        this.zoom = 1;
+        this.panX = 0;
+        this.panY = 0;
       },
       /**
        * Trackpad pinch and ctrl+wheel both arrive here; the browser reports a
@@ -703,12 +785,54 @@
        * above the whole toolbar.
        */
       onStageWheel(event) {
-        if (!event.ctrlKey) return;
+        if (event.ctrlKey) {
+          event.preventDefault();
+          // Exponential, so a given finger movement scales by the same ratio
+          // whatever the zoom already is.
+          this.setZoom(this.zoom * Math.exp(-event.deltaY * 0.01));
+
+          return;
+        }
+
+        // Plain scrolling is left alone at natural size, so narrow screens --
+        // where the stage sits above the whole toolbar -- still scroll the
+        // page. Once zoomed there is something to scroll *within*.
+        if (this.zoom === 1) return;
 
         event.preventDefault();
-        // Exponential, so a given finger movement scales by the same ratio
-        // whatever the zoom already is.
-        this.setZoom(this.zoom * Math.exp(-event.deltaY * 0.01));
+        this.zoomSmooth = false;
+        this.setPan(this.panX - event.deltaX, this.panY - event.deltaY);
+      },
+      onStagePointerDown(event) {
+        // Every gesture starts clean, so a pan that ended without a click
+        // cannot swallow the next real one.
+        this.panMoved = false;
+
+        if (this.zoom === 1 || !event.isPrimary) return;
+
+        this.panPointer = event.pointerId;
+        this.panFrom = { x: event.clientX, y: event.clientY, panX: this.panX, panY: this.panY };
+      },
+      onStagePointerMove(event) {
+        if (this.panFrom === null || this.panPointer !== event.pointerId) return;
+
+        const dx = event.clientX - this.panFrom.x;
+        const dy = event.clientY - this.panFrom.y;
+
+        // Below the slop this is still a click on its way to painting a part.
+        if (!this.panMoved && Math.hypot(dx, dy) < PAN_SLOP) return;
+
+        this.panMoved = true;
+        this.zoomSmooth = false;
+        this.setPan(this.panFrom.panX + dx, this.panFrom.panY + dy);
+      },
+      onStagePointerUp(event) {
+        if (this.panPointer !== event.pointerId) return;
+
+        this.panPointer = null;
+        this.panFrom = null;
+        // panMoved deliberately survives until paintPart has seen it: the
+        // click that ends a drag arrives after pointerup.
       },
       pinchSpan(touches) {
         const [a, b] = touches;
@@ -895,6 +1019,10 @@
        * click would feel like the app arguing with them.
        */
       paintPart(part) {
+        // The click that ends a drag lands on whatever was under the finger.
+        // Dragging the kit around should not repaint it on the way past.
+        if (this.panMoved) return;
+
         const model = PART_MODELS[part];
 
         if (!model || !this.currentColor || this[model] === this.currentColor) return;
@@ -1199,6 +1327,14 @@
       stage.addEventListener('touchend', this.onStageTouchEnd);
       stage.addEventListener('touchcancel', this.onStageTouchEnd);
 
+      // Pointer events cover mouse and touch with one set of handlers. Move
+      // and up go on the window so a drag that leaves the stage still tracks,
+      // and still ends.
+      stage.addEventListener('pointerdown', this.onStagePointerDown);
+      window.addEventListener('pointermove', this.onStagePointerMove);
+      window.addEventListener('pointerup', this.onStagePointerUp);
+      window.addEventListener('pointercancel', this.onStagePointerUp);
+
       // Either may already hold a restored value, so only fall back when
       // nothing was persisted.
       // Copy, don't alias: addColor() pushes onto this array.
@@ -1226,7 +1362,12 @@
         stage.removeEventListener('touchmove', this.onStageTouchMove);
         stage.removeEventListener('touchend', this.onStageTouchEnd);
         stage.removeEventListener('touchcancel', this.onStageTouchEnd);
+        stage.removeEventListener('pointerdown', this.onStagePointerDown);
       }
+
+      window.removeEventListener('pointermove', this.onStagePointerMove);
+      window.removeEventListener('pointerup', this.onStagePointerUp);
+      window.removeEventListener('pointercancel', this.onStagePointerUp);
 
       clearTimeout(this.toastTimer);
       clearTimeout(this.flashTimer);
@@ -1382,6 +1523,18 @@
 
   .kit-zoom.smooth {
     transition: transform .26s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  /* Once zoomed, the stage owns the gesture: without this the browser pans
+     and rubber-bands the page itself and the drag never reaches us. */
+  #kit-stage.is-zoomed {
+    touch-action: none;
+    cursor: grab;
+  }
+
+  #kit-stage.is-panning,
+  #kit-stage.is-panning .kit-zoom [data-part] {
+    cursor: grabbing;
   }
 
   /* Only there once the kit is off its natural size, and it is the way back. */
