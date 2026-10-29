@@ -2,29 +2,51 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
    viewBox="0 0 2833 1618.5" style="enable-background:new 0 0 2833 1618.5;" xml:space="preserve">
 <defs>
-  <!-- Crowd. Three tiled patterns rather than thousands of nodes; the figures
-       and the reasoning behind their tones and jitter live in lib/crowd.js.
+  <!-- Crowd. One tile of twenty-two people, drawn by hand, repeated across
+       the decks. The two other patterns are the same tile at a larger scale,
+       inherited through href so the figures have one home: the decks sit at
+       three distances and that is the whole of the perspective.
 
-       Two rules govern anything added inside this defs block.
+       Sizes are deliberate, not arbitrary. Rows sit 3 apart in a tile 12
+       high, so the fourth row meets the first of the tile below at the same
+       spacing; no radius exceeds 1.5, so no figure crosses an edge and gets
+       sliced into a seam. Change either number and the tile stops matching
+       itself at the join.
 
        Paint goes on as a presentation attribute, never a class. The exporter
-       skips the contents of defs when it inlines computed styles (inlinePaint
-       in kitToPng.js), so a class here would render on screen and come out
-       blank in the PNG.
+       skips the contents of defs when it inlines computed styles, so a class
+       here would render on screen and come out blank in the PNG. -->
+  <pattern id="crowd-far" patternUnits="userSpaceOnUse"
+           width="21" height="12" patternTransform="rotate(4)">
+    <circle cx="1.8"  cy="1.5"  r="1.45" fill="#0B0D0B"/>
+    <circle cx="5.1"  cy="1.6"  r="1.30" fill="#00B140"/>
+    <circle cx="8.9"  cy="1.4"  r="1.40" fill="#151A16"/>
+    <circle cx="12.4" cy="1.6"  r="1.20" fill="#0B6B36"/>
+    <circle cx="15.6" cy="1.5"  r="1.45" fill="#00B140"/>
+    <circle cx="19.3" cy="1.4"  r="1.25" fill="#D7DBD5"/>
 
-       Comments here may not contain a doubled hyphen. XML forbids it, Vue's
-       HTML parser does not, so such a comment survives into the DOM and then
-       makes XMLSerializer emit a document the data URL parser rejects. That
-       does not fail loudly: paintStadium catches it and drops the backdrop,
-       so the whole stadium silently disappears from the export. -->
-  <pattern v-for="deck in decks" :key="deck.id"
-           :id="`crowd-${deck.id}`" patternUnits="userSpaceOnUse"
-           :width="deck.width" :height="deck.height"
-           :patternTransform="deck.rake ? `rotate(${deck.rake})` : null">
-    <ellipse v-for="(figure, i) in deck.figures" :key="i"
-             :cx="figure.cx" :cy="figure.cy"
-             :rx="figure.rx" :ry="figure.ry" :fill="figure.fill"/>
+    <circle cx="3.4"  cy="4.5"  r="1.35" fill="#0E8C42"/>
+    <circle cx="7.1"  cy="4.6"  r="1.45" fill="#232A24"/>
+    <circle cx="10.4" cy="4.4"  r="1.20" fill="#C98A5E"/>
+    <circle cx="14.2" cy="4.5"  r="1.40" fill="#00B140"/>
+    <circle cx="17.4" cy="4.6"  r="1.30" fill="#1A1614"/>
+
+    <circle cx="1.9"  cy="7.5"  r="1.30" fill="#124E2A"/>
+    <circle cx="5.3"  cy="7.4"  r="1.45" fill="#0B0D0B"/>
+    <circle cx="8.7"  cy="7.6"  r="1.25" fill="#8A938B"/>
+    <circle cx="12.6" cy="7.5"  r="1.40" fill="#06C455"/>
+    <circle cx="15.9" cy="7.4"  r="1.20" fill="#2A2A32"/>
+    <circle cx="19.1" cy="7.6"  r="1.35" fill="#0E8C42"/>
+
+    <circle cx="3.6"  cy="10.5" r="1.45" fill="#151A16"/>
+    <circle cx="7.3"  cy="10.4" r="1.25" fill="#1B7A4E"/>
+    <circle cx="10.6" cy="10.6" r="1.40" fill="#F2F4EF"/>
+    <circle cx="14.1" cy="10.5" r="1.30" fill="#00B140"/>
+    <circle cx="17.6" cy="10.4" r="1.45" fill="#333B34"/>
   </pattern>
+
+  <pattern id="crowd-mid"  xlink:href="#crowd-far" patternTransform="rotate(-2.5) scale(1.25)"/>
+  <pattern id="crowd-near" xlink:href="#crowd-far" patternTransform="scale(1.65)"/>
 
   <!-- The decks, clipped from the polygons that already draw them. A second
        copy of those points would be a second home for the same numbers, and
@@ -542,15 +564,8 @@
 </template>
 
 <script>
-  import { CROWD_DECKS } from '../lib/crowd.js';
-
   export default {
-    name: 'Stadium',
-    data() {
-      // Not reactive state; it never changes. It sits here only so the
-      // template can reach it.
-      return { decks: CROWD_DECKS };
-    }
+    name: 'Stadium'
   };
 </script>
 
