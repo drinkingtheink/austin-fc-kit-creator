@@ -57,6 +57,8 @@
           :highlight="highlight"
           :flash="flash"
           :revealing="revealing"
+          :spinReels="spinReels"
+          :landedReels="landedReels"
           :frozen="frozen"
           :paintColor="currentColor"
           v-on:paint="paintPart"
@@ -116,7 +118,11 @@
           </div>
 
           <div class="toolbar-actions">
-            <button class="btn btn-primary" v-on:click="randomizeKit">Feeling Lucky</button>
+            <button
+              class="btn btn-primary"
+              :class="{ 'is-pulling': spinning }"
+              v-on:click="randomizeKit"
+            >{{ spinning ? 'Spinning...' : 'Feeling Lucky' }}</button>
             <button class="btn btn-ghost" v-on:click="showColors = true">Colors</button>
           </div>
         </header>
@@ -330,7 +336,11 @@
     </div>
 
     <div class="mobile-actions show-on-mobile">
-      <button class="btn btn-primary" v-on:click="randomizeKit">Randomize</button>
+      <button
+        class="btn btn-primary"
+        :class="{ 'is-pulling': spinning }"
+        v-on:click="randomizeKit"
+      >{{ spinning ? 'Spinning...' : 'Feeling Lucky' }}</button>
       <button class="btn btn-ghost" v-on:click="showColors = true">Colors</button>
     </div>
 
@@ -545,6 +555,72 @@
     { on: 'badgeTextFill', over: ['badgeBGFill'], min: READ }
   ];
 
+  /* ---- Slot machine ----------------------------------------------------- */
+
+  // Cadence of a reel's colour changes: quick at the pull, slowing into the
+  // stop. A constant cadence reads as a strobe rather than as deceleration,
+  // and holds the whole kit at one flicker rate for a second and a half,
+  // which is a good deal less pleasant to sit through than it sounds.
+  const SPIN_TICK_MS = 90;
+  const SPIN_TICK_SLOWEST = 280;
+
+  // How long a landed reel keeps its clunk. Matches reelLand in Kit.vue.
+  const LAND_MS = 420;
+
+  /**
+   * The reels, in the order they come to rest.
+   *
+   * `stop` is how long after the pull each one lands, in ms; the gaps widen so
+   * that the last reel carries the anticipation. `key` doubles as the group it
+   * blurs -- Kit.vue matches `.spin-<key> #<key>` -- so each one has to stay
+   * the id of a group in the artwork.
+   *
+   * Between them the reels name every field a spin moves, and the outcome is
+   * rolled from this same table: a new colour joins the spin by joining a reel
+   * and nowhere else.
+   */
+  const REELS = [
+    {
+      key: 'shirt',
+      stop: 560,
+      // The pattern is the one reel symbol that is not a colour, so it turns
+      // with the shirt rather than on a reel of its own.
+      designs: true,
+      fills: [
+        'shirtFill',
+        'shirtTypeFill',
+        'shirtSecondaryFill',
+        'shirtCuffFill',
+        'shirtSleeveFill',
+        'shirtMakerFill',
+        'logoFill',
+        'collarFill'
+      ],
+      toggles: ['showButtonCollar']
+    },
+    {
+      key: 'shorts',
+      stop: 940,
+      fills: ['shortsFill', 'shortsCuffsFill', 'numberFill'],
+      toggles: []
+    },
+    {
+      key: 'socks',
+      stop: 1400,
+      fills: ['socksFill', 'socksCuffsFill', 'socksHoopsFill'],
+      toggles: ['socksHoops']
+    }
+  ];
+
+  // The spin is driven by timers, so the global reduced-motion rule in the
+  // stylesheet -- which flattens every animation and transition -- cannot
+  // reach it. Ask directly, and hand such a visitor the outcome without the
+  // performance.
+  function prefersReducedMotion() {
+    return !!(window.matchMedia
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
   const shirtOptions = [
     'barcode',
     'stripes',
@@ -610,8 +686,18 @@
         highlight: null,
         flash: null,
         // A randomize changes seventeen colors at once, which would flash the
-        // whole kit. The reveal speaks for it instead.
+        // whole kit. The reels and the reveal speak for it instead.
         suppressFlash: false,
+
+        // Slot machine. `spinReels` holds the reels still turning and
+        // `landedReels` the ones that landed a moment ago; Kit.vue reads both
+        // as classes. `spinTarget` is the outcome, rolled and made legible
+        // before the first reel turns -- the way a real machine does it, which
+        // is also what keeps the legibility pass off the decoy colours.
+        spinning: false,
+        spinReels: [],
+        landedReels: [],
+        spinTarget: null,
         revealing: false,
         // Holds the kit still while the exporter reads its computed styles.
         frozen: false,
@@ -707,6 +793,10 @@
         }
       },
       persistedKit(kit) {
+        // Decoy colours fly past ten a second mid-spin and not one of them is
+        // a kit anybody designed. The settle writes the real one.
+        if (this.spinning) return;
+
         writeKit(kit);
       }
     },
@@ -1076,37 +1166,171 @@
         let randomChoice = options[Math.floor(Math.random()*options.length)];
         return randomChoice;
       },
+      /**
+       * Pull the lever: three reels spin and stop one at a time.
+       *
+       * The whole outcome is decided here, before anything turns, and the
+       * reels only perform it. That is how the machine it is imitating works,
+       * and it is also what keeps the kit honest: the legibility pass runs
+       * once, on the kit that will still be there when the reels stop, rather
+       * than chasing colours that are about to be thrown away.
+       */
       randomizeKit() {
-        // Seventeen colors are about to move. Let the reveal below carry the
-        // change rather than flashing every part at once.
+        // The exporter is reading computed styles off the live kit. Spinning
+        // seventeen fills underneath it would bake a decoy into the PNG.
+        if (this.exporting) return;
+
+        // A second pull mid-spin slams the reels rather than queueing another
+        // spin. Enter and Space are the headline shortcut and they get mashed;
+        // sitting out a spin already running would read as a dropped keypress.
+        if (this.spinning) {
+          this.settleSpin();
+
+          return;
+        }
+
+        // Seventeen colors are about to move. Let the reels and the reveal
+        // carry the change rather than flashing every part at once.
         this.suppressFlash = true;
 
-        this.setShirtOption(this.getRandomShirtDesign());
-        this.setShirtFill(this.getRandomColor());
-        this.setShirtTypeFill(this.getRandomColor());
-        // Neither of these was randomized before, so the four designs that use
-        // a secondary color always drew it black, and the brand mark never
-        // moved off its default at all.
-        this.setShirtSecondaryFill(this.getRandomColor());
-        this.setShirtMakerFill(this.getRandomColor());
-        this.setShirtCuffFill(this.getRandomColor());
-        this.setShirtSleeveFill(this.getRandomColor());
-        this.setLogoFill(this.getRandomColor());
-        this.setCollarFill(this.getRandomColor());
-        this.setCollarButton(this.getRandomTrueFalse());
-        this.setShortsFill(this.getRandomColor());
-        this.setShortsCuffsFill(this.getRandomColor());
-        this.setSocksFill(this.getRandomColor());
-        this.setSocksCuffsFill(this.getRandomColor());
-        this.setNumberFill(this.getRandomColor());
-        this.setSocksHoops(this.getRandomTrueFalse());
-        this.setSocksHoopsFill(this.getRandomColor());
+        this.spinTarget = this.rollKit();
+
+        // The backdrop turns over on the pull, not at the stop: its crossfade
+        // is 800ms, so starting it with the last reel would land the new sky
+        // well after the kit had settled in front of it.
         this.getSetting();
 
-        this.enforceLegibility();
+        if (prefersReducedMotion()) {
+          this.finishSpin();
+
+          return;
+        }
+
+        this.spinning = true;
+        this.spinReels = REELS.map(reel => reel.key);
+        this.spinStartedAt = performance.now();
+
+        REELS.forEach((reel, index) => this.turnReel(index));
+      },
+      /**
+       * Turn one reel until its stop time, then land it.
+       *
+       * Each tick schedules the next with a longer delay than its own, so the
+       * reel slows into the stop. Timed off the clock rather than off a tick
+       * count, because a backgrounded tab throttles timers: counting ticks
+       * would leave all three reels still turning on the way back to it.
+       */
+      turnReel(index) {
+        const reel = REELS[index];
+        const left = reel.stop - (performance.now() - this.spinStartedAt);
+
+        if (left <= 0) {
+          this.landReel(index);
+
+          return;
+        }
+
+        this.applyReel(reel, this.rollReel(reel));
+
+        // Squared, so the slowing gathers in the last few ticks instead of
+        // being spread evenly across the spin where it reads as nothing.
+        const run = 1 - left / reel.stop;
+        const delay = SPIN_TICK_MS + (SPIN_TICK_SLOWEST - SPIN_TICK_MS) * run * run;
+
+        this.spinTimers.push(
+          setTimeout(() => this.turnReel(index), Math.min(delay, left))
+        );
+      },
+      /** A reel comes to rest on the value the pull already decided. */
+      landReel(index) {
+        const reel = REELS[index];
+
+        this.applyReel(reel, this.spinTarget);
+
+        this.spinReels = this.spinReels.filter(key => key !== reel.key);
+        this.landedReels = [...this.landedReels, reel.key];
+
+        // One timer for all three, reset by each landing. The clunk is a
+        // one-shot animation that leaves nothing behind, so a reel holding the
+        // class a little past its own landing looks no different.
+        clearTimeout(this.landTimer);
+        this.landTimer = setTimeout(() => { this.landedReels = []; }, LAND_MS);
+
+        if (!this.spinReels.length) this.finishSpin();
+      },
+      /** Slam: everything still turning comes to rest at once. */
+      settleSpin() {
+        this.clearSpinTimers();
+
+        REELS.forEach((reel, index) => {
+          if (this.spinReels.includes(reel.key)) this.landReel(index);
+        });
+      },
+      /**
+       * The decided kit, now on screen in full.
+       *
+       * Applied whole rather than reel by reel, because the legibility pass
+       * can move things no reel turns -- the crest above all, which is the one
+       * thing a spin never rolls and the one thing that vanishes if it is left
+       * black on a shirt that just came up black.
+       */
+      finishSpin() {
+        this.clearSpinTimers();
+
+        this.spinning = false;
+        this.spinReels = [];
+
+        this.applyKit(this.spinTarget);
+        this.spinTarget = null;
 
         this.revealKit();
         this.backToTop();
+      },
+      clearSpinTimers() {
+        this.spinTimers.forEach(timer => clearTimeout(timer));
+        this.spinTimers = [];
+      },
+      /** Random values for one reel's fields, and nothing else's. */
+      rollReel(reel) {
+        const values = {};
+
+        if (reel.designs) values.activeShirtOption = this.getRandomShirtDesign();
+
+        reel.fills.forEach(model => { values[model] = this.getRandomColor(); });
+        reel.toggles.forEach(model => { values[model] = this.getRandomTrueFalse(); });
+
+        return values;
+      },
+      /**
+       * Roll a whole kit: what the reels are going to land on.
+       *
+       * Starts from the kit on screen so that the legibility pass can judge
+       * the parts a spin never moves against the ones it does, and so that
+       * every fill the pass might rewrite has a value to rewrite.
+       */
+      rollKit() {
+        const kit = {};
+
+        Object.keys(FILL_PARTS).forEach(model => { kit[model] = this[model]; });
+
+        REELS.forEach(reel => Object.assign(kit, this.rollReel(reel)));
+
+        this.enforceLegibility(kit);
+
+        return kit;
+      },
+      /** Write one reel's share of a rolled kit onto the live one. */
+      applyReel(reel, values) {
+        if (reel.designs && 'activeShirtOption' in values) {
+          this.setShirtOption(values.activeShirtOption);
+        }
+
+        reel.fills.concat(reel.toggles).forEach(model => {
+          if (model in values) this[model] = values[model];
+        });
+      },
+      applyKit(kit) {
+        Object.keys(kit).forEach(model => { this[model] = kit[model]; });
       },
       /**
        * Keep every element legible against whatever it sits on.
@@ -1120,21 +1344,26 @@
        * This pass is single-shot: backgrounds are resolved before the things
        * that sit on them, and nothing rewrites its own background.
        *
+       * Takes the kit to judge, which is the live component by default and a
+       * rolled outcome during a spin -- a slot machine decides before it
+       * performs, so the pass has to be able to run on a kit that is not on
+       * screen yet.
+       *
        * Shared by the randomizer and by a club palette swap. The swap moves
        * every fill to its nearest match in the new set, which collapses
        * distinct colors together -- a two-color palette turned a white sponsor
        * and a white shirt into the same yellow, and the sponsor vanished.
        */
-      enforceLegibility() {
+      enforceLegibility(kit = this) {
         LEGIBILITY.forEach(({ on, over, min = SEEN }) => {
-          const backgrounds = over.map(ground => this[ground]);
+          const backgrounds = over.map(ground => kit[ground]);
           const worst = Math.min(
-            ...backgrounds.map(background => contrast(this[on], background))
+            ...backgrounds.map(background => contrast(kit[on], background))
           );
 
           if (worst >= min) return;
 
-          this[on] = this.mostLegibleAgainst(backgrounds, min);
+          kit[on] = this.mostLegibleAgainst(backgrounds, min);
         });
       },
       /**
@@ -1213,6 +1442,11 @@
       },
       async downloadKit() {
         if (this.exporting) return;
+
+        // Reels in flight are wearing decoy colours, and the exporter reads
+        // fills straight off them. Land the kit the pull already decided and
+        // save that instead of whatever happened to be going past.
+        if (this.spinning) this.settleSpin();
 
         this.exporting = true;
 
@@ -1307,6 +1541,9 @@
       }
     },
     created() {
+      // One handle per reel still turning, cleared together at the stop.
+      this.spinTimers = [];
+
       // Seventeen near-identical watchers, declared once. Each one tells the
       // kit which part just changed color so it can flash.
       Object.entries(FILL_PARTS).forEach(([model, part]) => {
@@ -1372,6 +1609,8 @@
       clearTimeout(this.toastTimer);
       clearTimeout(this.flashTimer);
       clearTimeout(this.revealTimer);
+      clearTimeout(this.landTimer);
+      this.clearSpinTimers();
     }
   };
 </script>
@@ -2024,6 +2263,20 @@
 
   .btn-primary:hover {
     background-color: var(--verde-bright);
+  }
+
+  /* The lever reads on the button as well as on the kit, so a spin started
+     from the keyboard still has something to look at, and a second press --
+     which slams the reels rather than starting again -- has something to aim
+     at. Both buttons stand in a flex row that splits the width evenly, so the
+     shorter label cannot shift the one beside it. */
+  .btn-primary.is-pulling {
+    animation: pullPulse .42s ease-in-out infinite alternate;
+  }
+
+  @keyframes pullPulse {
+    from { background-color: var(--verde); }
+    to { background-color: var(--verde-bright); }
   }
 
   .btn-ghost {

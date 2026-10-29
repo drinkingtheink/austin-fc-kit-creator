@@ -10,7 +10,7 @@
     style="enable-background:new 0 0 709 1307;" 
     xml:space="preserve"
     class="kit-display"
-    :class="{ 'is-revealing': revealing, 'is-frozen': frozen, 'is-paintable': !!paintColor }"
+    :class="[reelClasses, { 'is-revealing': revealing, 'is-frozen': frozen, 'is-paintable': !!paintColor }]"
     v-on:click="onPaint"
     v-on:pointerover="onPointerOver"
     v-on:pointerleave="$emit('hover', null)"
@@ -63,6 +63,15 @@
         <use href="#right-sock" transform="translate(0,-40)" />
         <use href="#left-sock" transform="translate(0,-40)" />
       </clipPath>
+
+      <!-- Reel smear, for the slot machine spin. Vertical only, so a turning
+           reel reads as symbols flying past rather than as the kit going out
+           of focus; CSS blur() is isotropic, which is the whole reason this is
+           an SVG filter. stdDeviation is in user units, and this viewBox is
+           709 across. -->
+      <filter id="reelBlur" x="-15%" y="-15%" width="130%" height="130%">
+        <feGaussianBlur stdDeviation="0.6 7" />
+      </filter>
     </defs>
 
     <!-- Shorts and socks ride up together, closing the gap under the
@@ -841,12 +850,35 @@
       'flash',
       // Set briefly after a randomize, to stagger the parts back in.
       'revealing',
+      // Slot machine: the reels still turning, and the ones that just landed.
+      'spinReels',
+      'landedReels',
       // Holds every part still while the PNG exporter reads computed styles.
       'frozen',
       // The color a click would apply. Null leaves the kit inert.
       'paintColor'
     ],
     emits: ['paint', 'hover'],
+    computed: {
+      // A turning reel blurs; one that has just landed clunks. Built here
+      // rather than in the template because the class names are derived from
+      // the reel keys, which are the ids of the groups they move.
+      reelClasses() {
+        const turning = this.spinReels || [];
+        const landed = this.landedReels || [];
+
+        return [
+          // Covers the clunk as well as the turn: the last reel lands in the
+          // same frame the spin ends, and if transitions were back on by then
+          // it would ease into its colour over a third of a second instead of
+          // snapping to it. Measured -- the socks were still interpolating
+          // 300ms after the machine had stopped.
+          ...(turning.length || landed.length ? ['is-spinning'] : []),
+          ...turning.map(key => `spin-${key}`),
+          ...landed.map(key => `land-${key}`)
+        ];
+      }
+    },
     methods: {
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
@@ -979,6 +1011,54 @@
     100% {
       filter: brightness(1) drop-shadow(0 0 0 rgba(255, 255, 255, 0));
     }
+  }
+
+  /* ---- Slot machine ---------------------------------------------------- */
+
+  /* A turning reel blurs and brightens, and lands with a clunk.
+     `filter` is the whole of it, for two reasons. #socks and #shorts carry
+     transform="translate(0,-40)" from the source artwork, and a CSS transform
+     on them overrides the attribute and drops them 40px off the rest of the
+     kit -- the same trap the stadium's floodlights set. And the PNG
+     exporter captures `transform` and `opacity` but not `filter`, so a capture
+     taken the instant a reel went past cannot bake any of this in. */
+
+  /* Reel symbols snap, through the landing. With the fill transition left on,
+     a colour every 90ms
+     never arrives: all three reels average into one mid-tone mud and the spin
+     reads as the kit dimming rather than as anything moving. The pattern
+     cross-fade goes the same way, for the same reason. */
+  .is-spinning *,
+  .is-spinning {
+    transition: none !important;
+  }
+
+  .spin-shirt #shirt,
+  .spin-shorts #shorts,
+  .spin-socks #socks {
+    animation: reelSpin .24s ease-in-out infinite alternate;
+  }
+
+  @keyframes reelSpin {
+    from { filter: url(#reelBlur) brightness(1.06); }
+    to { filter: url(#reelBlur) brightness(1.42); }
+  }
+
+  /* .42s here is LAND_MS in App.vue, which is how long the class stays on. */
+  .land-shirt #shirt,
+  .land-shorts #shorts,
+  .land-socks #socks {
+    animation: reelLand .42s ease-out 1;
+  }
+
+  /* The jump at 30% is deliberate and unavoidable in equal measure: a filter
+     list holding a url() cannot interpolate into one that does not, so the
+     smear holds and then snaps off. A reel coming to rest is the one place in
+     this app where a hard cut beats an ease. */
+  @keyframes reelLand {
+    0% { filter: url(#reelBlur) brightness(1.9); }
+    30% { filter: brightness(1.4) drop-shadow(0 0 11px rgba(255, 255, 255, .75)); }
+    100% { filter: brightness(1) drop-shadow(0 0 0 rgba(255, 255, 255, 0)); }
   }
 
   /* ---- Painting -------------------------------------------------------- */
