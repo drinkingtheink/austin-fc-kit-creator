@@ -249,7 +249,7 @@
 
         <footer class="toolbar-footer">
           <p class="hashtag">
-            Screenshot your favorites and post them with
+            Download your favorites and post them with
             <strong>#AustinFCKitCreator</strong>
           </p>
           <nav class="footer-links">
@@ -293,8 +293,8 @@
           </p>
 
           <p class="modal-note">
-            Be sure to take screenshots of your favorite designs and post them with
-            <strong>#AustinFCKitCreator</strong>
+            Hit <strong>Download PNG</strong> to save your favorite designs, then post
+            them with <strong>#AustinFCKitCreator</strong>
           </p>
 
           <div class="modal-actions">
