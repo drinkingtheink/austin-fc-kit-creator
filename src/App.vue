@@ -50,6 +50,9 @@
           :badgeFill="badgeFill"
           :badgeTextFill="badgeTextFill"
           :badgeBGFill="badgeBGFill"
+          :shortsBadgeFill="shortsBadgeFill"
+          :shortsBadgeTextFill="shortsBadgeTextFill"
+          :shortsBadgeBGFill="shortsBadgeBGFill"
           :showRoundelBadge="showRoundelBadge"
           :showBadgeDisc="showBadgeDisc"
           :numberFill="numberFill"
@@ -301,17 +304,22 @@
               </ToolField>
             </transition>
 
+            <!-- Two badges, two sets. Each field names the garment rather
+                 than the badge, and lights the badge it belongs to on hover,
+                 so which is which needs no explaining. -->
+            <p class="field-group">On the shirt</p>
+
             <ToolField label="Badge color" part="badge">
-              <ColorSwatches label="Badge color" :colors="colors" v-model="badgeFill" />
+              <ColorSwatches label="Shirt badge color" :colors="colors" v-model="badgeFill" />
             </ToolField>
 
             <transition name="field-pop">
               <ToolField
                 v-if="!showRoundelBadge || showBadgeDisc"
-                label="Badge text color"
+                label="Text color"
                 part="badge"
               >
-                <ColorSwatches label="Badge text color" :colors="colors" v-model="badgeTextFill" />
+                <ColorSwatches label="Shirt badge text color" :colors="colors" v-model="badgeTextFill" />
               </ToolField>
             </transition>
 
@@ -320,10 +328,36 @@
             <transition name="field-pop">
               <ToolField
                 v-if="!showRoundelBadge || showBadgeDisc"
-                label="Badge background"
+                label="Background"
                 part="badge"
               >
-                <ColorSwatches label="Badge background color" :colors="colors" v-model="badgeBGFill" />
+                <ColorSwatches label="Shirt badge background" :colors="colors" v-model="badgeBGFill" />
+              </ToolField>
+            </transition>
+
+            <p class="field-group">On the shorts</p>
+
+            <ToolField label="Badge color" part="shortsBadge">
+              <ColorSwatches label="Shorts badge color" :colors="colors" v-model="shortsBadgeFill" />
+            </ToolField>
+
+            <transition name="field-pop">
+              <ToolField
+                v-if="!showRoundelBadge || showBadgeDisc"
+                label="Text color"
+                part="shortsBadge"
+              >
+                <ColorSwatches label="Shorts badge text color" :colors="colors" v-model="shortsBadgeTextFill" />
+              </ToolField>
+            </transition>
+
+            <transition name="field-pop">
+              <ToolField
+                v-if="!showRoundelBadge || showBadgeDisc"
+                label="Background"
+                part="shortsBadge"
+              >
+                <ColorSwatches label="Shorts badge background" :colors="colors" v-model="shortsBadgeBGFill" />
               </ToolField>
             </transition>
 
@@ -642,6 +676,9 @@
     badgeFill: 'badge',
     badgeTextFill: 'badge',
     badgeBGFill: 'badge',
+    shortsBadgeFill: 'shortsBadge',
+    shortsBadgeTextFill: 'shortsBadge',
+    shortsBadgeBGFill: 'shortsBadge',
     shortsFill: 'shorts',
     shortsCuffsFill: 'shortsTrim',
     numberFill: 'number',
@@ -682,20 +719,16 @@
   //
   // shirtFill, shirtSleeveFill, shortsFill and socksFill are the grounds. They
   // are never adjusted; everything else is judged against them.
-  // What the badge's device sits on, which depends on the badge. The crest
+  // What a badge's device sits on, which depends on the badge. The crest
   // carries its own backing and the roundel can be given a disc, and in both
   // cases that is the ground. A roundel without a disc is printed straight
-  // onto the cloth, so the cloth is what it has to stand off -- all three
-  // garments it is worn over, since one set of badge colors serves the shirt
-  // and the shorts alike.
+  // onto the cloth, so the cloth is what it has to stand off.
   //
   // Written as a function because it is the one thing in this table that is
-  // not knowable until the kit is in hand. Both branches name fills that are
-  // resolved before this entry runs, so the pass stays single-shot.
-  const BADGE_GROUND = kit => (
-    kit.showRoundelBadge && !kit.showBadgeDisc
-      ? ['shirtFill', 'shirtTypeFill', 'shortsFill']
-      : ['badgeBGFill']
+  // not knowable until the kit is in hand. Every branch names fills that are
+  // resolved before these entries run, so the pass stays single-shot.
+  const badgeGround = (ground, cloth) => kit => (
+    kit.showRoundelBadge && !kit.showBadgeDisc ? cloth : [ground]
   );
 
   // Fields the table reads to decide what sits on what, rather than fields it
@@ -737,11 +770,20 @@
     // the shirt randomized to black around it, and the crest disappeared.
     // Held to READ rather than SEEN, because a crest that merely differs from
     // the shirt is not the same as a crest that stands out from it.
-    { on: 'badgeBGFill', over: ['shirtFill', 'shirtTypeFill', 'shortsFill'], min: READ },
-    { on: 'badgeFill', over: BADGE_GROUND },
+    // Each badge against the garment it is actually worn over, and no other.
+    // Holding one set of colors to the shirt, the stripes across it and the
+    // shorts at once was arithmetic that often had no answer: a quarter of
+    // rolled kits had a backing that could not clear all three, and the pass
+    // fell back to whichever read best on the shirt.
+    { on: 'badgeBGFill', over: ['shirtFill', 'shirtTypeFill'], min: READ },
+    { on: 'badgeFill', over: badgeGround('badgeBGFill', ['shirtFill', 'shirtTypeFill']) },
     // Always against the ground: a badge with no ground has no lettering of
     // its own to judge, because the mark is then printed in one color.
-    { on: 'badgeTextFill', over: ['badgeBGFill'], min: READ }
+    { on: 'badgeTextFill', over: ['badgeBGFill'], min: READ },
+
+    { on: 'shortsBadgeBGFill', over: ['shortsFill'], min: READ },
+    { on: 'shortsBadgeFill', over: badgeGround('shortsBadgeBGFill', ['shortsFill']) },
+    { on: 'shortsBadgeTextFill', over: ['shortsBadgeBGFill'], min: READ }
   ];
 
   /* ---- Slot machine ----------------------------------------------------- */
@@ -941,6 +983,10 @@
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
+        // The same crest on the shorts, until someone colors it otherwise.
+        shortsBadgeFill: green,
+        shortsBadgeTextFill: white,
+        shortsBadgeBGFill: black,
         // The traced crest unless asked otherwise; it is what the kit wears.
         showRoundelBadge: false,
         // The roundel is printed onto the cloth, not onto a disc, until
@@ -1860,6 +1906,9 @@
         this.badgeFill = green;
         this.badgeTextFill = white;
         this.badgeBGFill = black;
+        this.shortsBadgeFill = green;
+        this.shortsBadgeTextFill = white;
+        this.shortsBadgeBGFill = black;
       }
     },
     created() {
@@ -2594,6 +2643,17 @@
   .sock-text-preset:focus-visible {
     outline: 2px solid var(--verde-bright);
     outline-offset: 2px;
+  }
+
+  /* Names the garment a run of fields belongs to. Quieter than a field
+     label, because it labels labels. */
+  .field-group {
+    margin: 4px 0 -2px;
+    color: var(--text-faint);
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
   }
 
   .segmented {
