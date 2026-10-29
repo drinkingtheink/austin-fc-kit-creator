@@ -1,5 +1,5 @@
 <template>
-  <div class="swatches" role="group" :aria-label="label">
+  <transition-group tag="div" name="swatch" class="swatches" role="group" :aria-label="label">
     <button
       v-for="color in colors"
       :key="color"
@@ -15,7 +15,7 @@
         <path d="M7 7l10 10M17 7L7 17" />
       </svg>
     </button>
-  </div>
+  </transition-group>
 </template>
 
 <script>
@@ -56,12 +56,19 @@
     border-radius: 50%;
     background-color: var(--swatch);
     cursor: pointer;
-    transition: box-shadow .18s ease, transform .18s ease;
+    transition: box-shadow .2s ease, transform .2s cubic-bezier(.33, 1, .68, 1);
   }
 
   .swatch:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: 0 0 0 2px var(--bg-panel), 0 0 0 3px var(--line-strong);
+  }
+
+  /* Pressing it squashes under the finger, which makes a palette of 30
+     swatches feel like physical buttons rather than a grid of links. */
+  .swatch:active {
+    transform: translateY(0) scale(.9);
+    transition-duration: .06s;
   }
 
   /* Gap ring reads clearly against any swatch color, light or dark. */
@@ -69,6 +76,15 @@
   .swatch.active:hover {
     transform: none;
     box-shadow: 0 0 0 2px var(--bg-panel), 0 0 0 4px var(--verde);
+    animation: swatchPick .36s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  /* Fires as the ring lands, so the swatch you just chose is unmistakable
+     even when its color is close to its neighbor's. */
+  @keyframes swatchPick {
+    0% { transform: scale(.84); }
+    55% { transform: scale(1.12); }
+    100% { transform: scale(1); }
   }
 
   .swatch:focus-visible {
@@ -87,20 +103,46 @@
     stroke-linecap: round;
     fill: none;
     opacity: 0;
+    transform: scale(.7) rotate(-45deg);
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, .9));
-    transition: opacity .18s ease;
+    transition: opacity .18s ease, transform .22s cubic-bezier(.33, 1, .68, 1);
   }
 
   .swatch.removable:hover .swatch-icon,
   .swatch.removable:focus-visible .swatch-icon {
     opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  /* ---- Palette edits --------------------------------------------------- */
+
+  /* Colors added and removed in the palette manager grow and shrink in place,
+     and the swatches after them slide along rather than jumping. */
+  .swatch-enter-active,
+  .swatch-leave-active {
+    transition: opacity .24s ease, transform .28s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .swatch-enter-from,
+  .swatch-leave-to {
+    opacity: 0;
+    transform: scale(.4);
+  }
+
+  .swatch-move {
+    transition: transform .28s cubic-bezier(.33, 1, .68, 1);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .swatch,
-    .swatch:hover {
+    .swatch:hover,
+    .swatch:active {
       transform: none;
       transition: none;
+    }
+
+    .swatch-icon {
+      transform: none;
     }
   }
 </style>
