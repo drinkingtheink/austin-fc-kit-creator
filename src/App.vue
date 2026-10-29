@@ -2729,8 +2729,12 @@
 
   .toast {
     position: fixed;
-    /* Clears the .help pill, which also sits bottom-center. */
-    bottom: 76px;
+    /* Top, because the bottom of the screen is crowded: the help pill, the
+       download button and, on a narrow screen, the whole action bar all sit
+       down there, and a message that lands among them is a message nobody
+       reads. Nothing but the zoom badge is up here, and that is off to the
+       left. */
+    top: 24px;
     left: 50%;
     z-index: 60;
     transform: translateX(-50%);
@@ -2766,11 +2770,13 @@
     transition: opacity .3s ease, transform .36s cubic-bezier(.33, 1, .68, 1);
   }
 
-  /* Keeps the -50% that centers the pill; only the vertical part moves. */
+  /* Keeps the -50% that centers the pill; only the vertical part moves, and
+     it moves upward now, so the message drops in from off the top edge
+     rather than rising out of the furniture along the bottom. */
   .toast-enter-from,
   .toast-leave-to {
     opacity: 0;
-    transform: translate(-50%, 16px) scale(.96);
+    transform: translate(-50%, -16px) scale(.96);
   }
 
   /* ---- Transitions ----------------------------------------------------- */
@@ -2909,7 +2915,10 @@
     }
 
     .toast {
-      bottom: 86px;
+      top: 16px;
+      /* The stage is the full width here, so a long message has to be
+         allowed to wrap rather than run off the edge of it. */
+      max-width: calc(100% - 32px);
       flex-direction: column;
       gap: 2px;
       align-items: center;
