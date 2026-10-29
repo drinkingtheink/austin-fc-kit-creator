@@ -20,7 +20,17 @@
     <div class="stage-scrim" aria-hidden="true"></div>
 
     <div id="app">
-      <section id="kit-stage">
+      <section id="kit-stage" ref="stage">
+        <!-- The zoom lives on a wrapper, not on the kit: .kit-display already
+             animates transform for the float, and an animation beats an inline
+             style on the same property. It also keeps the zoom out of the PNG
+             for free, since the exporter serializes the SVG and never looks at
+             a parent's transform. -->
+        <div
+          class="kit-zoom"
+          :class="{ smooth: zoomSmooth }"
+          :style="{ transform: `scale(${zoom})` }"
+        >
         <Kit
           ref="kit"
           class="kit-display"
@@ -52,6 +62,17 @@
           v-on:paint="paintPart"
           v-on:hover="setSpotlight($event, highlight)"
         />
+        </div>
+
+        <transition name="badge">
+          <button
+            v-if="zoom !== 1"
+            class="zoom-badge"
+            type="button"
+            title="Reset zoom"
+            v-on:click="resetZoom"
+          >{{ Math.round(zoom * 100) }}%</button>
+        </transition>
 
         <p class="help">
           <kbd>Enter</kbd> <kbd>Space</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd>
@@ -400,6 +421,18 @@
     grey
   ];
 
+  // How far the kit may be scaled, and the step a keypress moves it.
+  //
+  // The floor is the kit's natural size: it is already laid out to fit the
+  // stage, so anything below 1 is just a smaller kit on a larger empty stage.
+  // Zoom only ever grows it.
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 4;
+  const ZOOM_STEP = 1.15;
+
+  const ZOOM_IN_KEYS = ['+', '='];
+  const ZOOM_OUT_KEYS = ['-', '_'];
+
   // 'Spacebar' is the legacy name older Edge/Firefox reported for the space key.
   const RANDOMIZE_KEYS = [
     'Enter',
@@ -569,6 +602,13 @@
         // The brush: clicking a part of the kit paints it this color.
         currentColor: green,
 
+        // How large the kit is drawn on the stage. A view preference, not part
+        // of the design, so it is neither persisted nor exported.
+        zoom: 1,
+        // Eased only when something other than a gesture moves it; following a
+        // pinch through a transition would feel like dragging treacle.
+        zoomSmooth: false,
+
         colors: null,
 
         openSection: 'shirt',
@@ -646,6 +686,51 @@
       }
     },
     methods: {
+      setZoom(next, smooth = false) {
+        this.zoomSmooth = smooth;
+        this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next));
+      },
+      nudgeZoom(factor) {
+        this.setZoom(this.zoom * factor, true);
+      },
+      resetZoom() {
+        this.setZoom(1, true);
+      },
+      /**
+       * Trackpad pinch and ctrl+wheel both arrive here; the browser reports a
+       * pinch as a wheel event with ctrlKey set. Plain scrolling is left alone
+       * so the page still scrolls on narrow screens, where the stage sits
+       * above the whole toolbar.
+       */
+      onStageWheel(event) {
+        if (!event.ctrlKey) return;
+
+        event.preventDefault();
+        // Exponential, so a given finger movement scales by the same ratio
+        // whatever the zoom already is.
+        this.setZoom(this.zoom * Math.exp(-event.deltaY * 0.01));
+      },
+      pinchSpan(touches) {
+        const [a, b] = touches;
+
+        return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      },
+      onStageTouchStart(event) {
+        if (event.touches.length !== 2) return;
+
+        this.pinchFrom = this.pinchSpan(event.touches);
+        this.pinchZoom = this.zoom;
+      },
+      onStageTouchMove(event) {
+        if (event.touches.length !== 2 || !this.pinchFrom) return;
+
+        event.preventDefault();
+        this.setZoom(this.pinchZoom * (this.pinchSpan(event.touches) / this.pinchFrom));
+      },
+      onStageTouchEnd(event) {
+        // Lifting one finger ends the pinch; the other may still be panning.
+        if (event.touches.length < 2) this.pinchFrom = 0;
+      },
       backToTop() {
         let scrollOptions = {
           top: 0
@@ -1051,14 +1136,31 @@
           return;
         }
 
-        if (!RANDOMIZE_KEYS.includes(e.key)) return;
-
         const el = e.target;
         const tag = el && el.tagName;
 
-        // Never hijack typing.
+        // Never hijack typing. Checked before the zoom and randomize keys
+        // alike, so "-" in the hex field stays a minus sign.
         if (el && el.isContentEditable) return;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        // A way in for anyone without a trackpad to pinch with.
+        if (ZOOM_IN_KEYS.includes(e.key)) {
+          this.nudgeZoom(ZOOM_STEP);
+          return;
+        }
+
+        if (ZOOM_OUT_KEYS.includes(e.key)) {
+          this.nudgeZoom(1 / ZOOM_STEP);
+          return;
+        }
+
+        if (e.key === '0') {
+          this.resetZoom();
+          return;
+        }
+
+        if (!RANDOMIZE_KEYS.includes(e.key)) return;
 
         // Enter and Space activate a focused button or link; let them, rather
         // than also randomizing. Arrow keys stay live everywhere, so the
@@ -1086,6 +1188,17 @@
     mounted() {
       window.addEventListener('keyup', this.handleShortcut);
 
+      // Bound by hand rather than in the template, because both have to be
+      // non-passive: a passive listener may not preventDefault, and without
+      // that a trackpad pinch zooms the whole browser page instead of the kit.
+      const stage = this.$refs.stage;
+
+      stage.addEventListener('wheel', this.onStageWheel, { passive: false });
+      stage.addEventListener('touchstart', this.onStageTouchStart, { passive: false });
+      stage.addEventListener('touchmove', this.onStageTouchMove, { passive: false });
+      stage.addEventListener('touchend', this.onStageTouchEnd);
+      stage.addEventListener('touchcancel', this.onStageTouchEnd);
+
       // Either may already hold a restored value, so only fall back when
       // nothing was persisted.
       // Copy, don't alias: addColor() pushes onto this array.
@@ -1104,6 +1217,16 @@
     },
     beforeUnmount() {
       window.removeEventListener('keyup', this.handleShortcut);
+
+      const stage = this.$refs.stage;
+
+      if (stage) {
+        stage.removeEventListener('wheel', this.onStageWheel);
+        stage.removeEventListener('touchstart', this.onStageTouchStart);
+        stage.removeEventListener('touchmove', this.onStageTouchMove);
+        stage.removeEventListener('touchend', this.onStageTouchEnd);
+        stage.removeEventListener('touchcancel', this.onStageTouchEnd);
+      }
 
       clearTimeout(this.toastTimer);
       clearTimeout(this.flashTimer);
@@ -1242,6 +1365,68 @@
     justify-content: center;
     min-width: 0;
     padding: 28px 28px 76px;
+  }
+
+  /* Fills the stage so the kit's max-height:100% still has something definite
+     to resolve against once it is no longer the flex item itself. */
+  .kit-zoom {
+    display: flex;
+    flex: 1;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    will-change: transform;
+  }
+
+  .kit-zoom.smooth {
+    transition: transform .26s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  /* Only there once the kit is off its natural size, and it is the way back. */
+  /* Top-left rather than centred: at any real zoom the kit fills the middle
+     of the stage, and a pill sitting on the shirt is in the way of the thing
+     it is reporting on. */
+  .zoom-badge {
+    position: absolute;
+    top: 22px;
+    left: 28px;
+    z-index: 5;
+    padding: 7px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background-color: rgba(10, 13, 11, .66);
+    backdrop-filter: blur(12px);
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-size: .7rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: color .18s ease, border-color .18s ease;
+  }
+
+  .zoom-badge:hover {
+    border-color: var(--verde);
+    color: var(--text);
+  }
+
+  .zoom-badge:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 3px;
+  }
+
+  .badge-enter-active,
+  .badge-leave-active {
+    transition: opacity .22s ease, transform .28s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .badge-enter-from,
+  .badge-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
   }
 
   .kit-display {
