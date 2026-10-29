@@ -44,29 +44,53 @@ function mulberry32(seed) {
 // repeated 80 times reads as polka dots, so each runs from near-black through
 // to a floodlit highlight, and the eye reads that spread as depth.
 const TONES = [
-  // Black: the largest family, and the one doing the structural work. The
-  // gaps between people are this colour too, not just the clothing.
-  { fill: '#0B0D0B', weight: 14 },
-  { fill: '#151A16', weight: 12 },
-  { fill: '#232A24', weight: 8 },
-  { fill: '#333B34', weight: 6 },
+  // Black: the structural family. The gaps between people are this colour
+  // too, not just the clothing. Spread across hue as well as lightness --
+  // all-neutral blacks go flat, and a warm one next to a cool one reads as
+  // two different coats rather than one colour used twice.
+  { fill: '#0B0D0B', weight: 11 },
+  { fill: '#151A16', weight: 9 },
+  { fill: '#1A1614', weight: 6 },
+  { fill: '#232A24', weight: 6 },
+  { fill: '#2A2A32', weight: 5 },
+  { fill: '#333B34', weight: 4 },
 
-  // Verde, from the deep shade of a sleeve to a shirt catching a floodlight.
-  // #00B140 itself is the club's, and the most common of them.
-  { fill: '#124E2A', weight: 9 },
-  { fill: '#0B6B36', weight: 9 },
-  { fill: '#0E8C42', weight: 9 },
-  { fill: '#00B140', weight: 11 },
-  { fill: '#06C455', weight: 6 },
+  // Verde, the club's, and the largest family. Again spread across hue: a
+  // ramp that only changes lightness reads as one shirt under eight
+  // different lamps. Teal through lime is the range a stand of replica
+  // kits, old kits and merch actually covers.
+  { fill: '#124E2A', weight: 6 },
+  { fill: '#0B6B36', weight: 7 },
+  { fill: '#1B7A4E', weight: 5 },
+  { fill: '#0E8C42', weight: 7 },
+  { fill: '#00B140', weight: 10 },
+  { fill: '#06C455', weight: 5 },
+  { fill: '#3E9E2E', weight: 4 },
+  { fill: '#6ECB3C', weight: 3 },
 
-  // White and a grey-green to sit between the families. Kept scarce: this is
-  // the sparkle, and sparkle stops reading as sparkle once it is common.
+  // White and greys sit between the families. Kept scarce: this is the
+  // sparkle, and sparkle stops reading as sparkle once it is common.
   { fill: '#8A938B', weight: 6 },
-  { fill: '#D7DBD5', weight: 6 },
-  { fill: '#F2F4EF', weight: 4 }
+  { fill: '#B9C0B8', weight: 4 },
+  { fill: '#D7DBD5', weight: 5 },
+  { fill: '#F2F4EF', weight: 3 },
+
+  // Faces. At this size a warm speck is a face above a dark coat, and a
+  // crowd with none in it is a crowd of hoods.
+  { fill: '#C98A5E', weight: 3 },
+  { fill: '#8C5A3C', weight: 3 },
+  { fill: '#E3B591', weight: 2 }
 ];
 
 const TONE_TOTAL = TONES.reduce((sum, tone) => sum + tone.weight, 0);
+
+// How often a figure wears what the one beside it is wearing. Picking every
+// tone independently gives a statistically even field, which is confetti, not
+// a crowd: people arrive together and sit together, so colour comes in short
+// runs. Runs stay short on purpose. The decks are tiled patterns, and a clump
+// large enough to have a shape of its own would hand the eye a landmark to
+// spot the tile repeat by.
+const RUN_CHANCE = 0.34;
 
 function pickTone(random) {
   let roll = random() * TONE_TOTAL;
@@ -82,10 +106,16 @@ function pickTone(random) {
 // seats/rows are how many figures the tile holds; gap/pitch are the spacing
 // between them in viewBox units. rake tilts the rows to follow the deck's own
 // slope -- the far deck's top edge drops 90 units over 1283, hence 4 degrees.
+//
+// size is set close to half the pitch on purpose, so that with jitter the
+// figures crowd each other and sometimes overlap. Smaller, and the colour
+// filling the deck is the grey of the empty stand between them rather than
+// the crowd itself, which is what makes a stand read as speckled concrete
+// however varied the speckles are.
 const DECKS = [
-  { id: 'far',  seats: 13, rows: 8, pitch: 5.6, gap: 5.6, size: 1.65, rake: 4 },
-  { id: 'mid',  seats: 12, rows: 7, pitch: 7.0, gap: 7.0, size: 2.05, rake: -2.5 },
-  { id: 'near', seats: 11, rows: 6, pitch: 9.6, gap: 9.6, size: 2.75, rake: 0 }
+  { id: 'far',  seats: 13, rows: 8, pitch: 5.6, gap: 5.6, size: 2.0, rake: 4 },
+  { id: 'mid',  seats: 12, rows: 7, pitch: 7.0, gap: 7.0, size: 2.5, rake: -2.5 },
+  { id: 'near', seats: 11, rows: 6, pitch: 9.6, gap: 9.6, size: 3.3, rake: 0 }
 ];
 
 function build() {
@@ -99,13 +129,26 @@ function build() {
     for (let row = 0; row < deck.rows; row += 1) {
       // Alternate rows sit half a seat over, the way real seating staggers.
       const stagger = (row % 2) * deck.pitch * 0.5;
+      // Runs do not cross rows: the person behind you is a stranger.
+      let neighbour = null;
 
       for (let seat = 0; seat < deck.seats; seat += 1) {
         // A few seats are empty. Without them every row is a solid bar and the
-        // tile's edges line up into visible columns.
-        if (random() < 0.07) continue;
+        // tile's edges line up into visible columns. An empty seat also ends
+        // whatever run was going, which is what keeps runs short.
+        if (random() < 0.07) {
+          neighbour = null;
+          continue;
+        }
 
-        const size = deck.size * (0.78 + random() * 0.44);
+        const size = deck.size * (0.72 + random() * 0.58);
+        // Aspect varies per figure rather than sitting at one ratio. Some
+        // people are stood, some are sat, some have a scarf up; at this size
+        // that difference is just how tall the blob is, and a deck of
+        // identical blobs is the thing that reads as a pattern swatch.
+        const aspect = 0.95 + random() * 0.6;
+
+        neighbour = (neighbour && random() < RUN_CHANCE) ? neighbour : pickTone(random);
 
         figures.push({
           // Jitter is nearly half a seat: enough to break the lattice, not so
@@ -114,8 +157,8 @@ function build() {
           cy: +(deck.gap * 0.5 + row * deck.gap + (random() - 0.5) * deck.gap * 0.3).toFixed(2),
           rx: +size.toFixed(2),
           // Taller than wide: a head over shoulders, not a ball bearing.
-          ry: +(size * 1.3).toFixed(2),
-          fill: pickTone(random)
+          ry: +(size * aspect).toFixed(2),
+          fill: neighbour
         });
       }
     }
