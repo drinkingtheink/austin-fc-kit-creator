@@ -64,13 +64,15 @@
 </script>
 
 <style scoped>
-  /* A hairline on the active field, mirroring the halo on the kit so the two
-     ends of the connection are obviously the same gesture. */
+  /* No transition on .field itself: nothing animates it, and declaring one at
+     this specificity beat the enter/leave transition App.vue puts on the one
+     field it mounts and unmounts, leaving only its opacity moving. */
   .field {
     position: relative;
-    transition: opacity .2s ease;
   }
 
+  /* A hairline on the active field, mirroring the halo on the kit so the two
+     ends of the connection read as one gesture. */
   .field::before {
     content: '';
     position: absolute;
