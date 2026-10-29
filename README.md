@@ -6,6 +6,9 @@ Do you have a sharp eye for design and a love of our city's great football club?
 
 Be sure to take screenshots of your favorite designs and post them with #AustinFCKitCreator
 
+> **Note:** the screenshots below predate the Vue 3 redesign and no longer
+> match the current interface.
+
 ## Make Your Own Kit or Let the App Do It For You
 ![Austin FC Kit Maker Screenshot](https://i.ibb.co/vZy8c1X/Screen-Shot-2020-06-18-at-9-12-03-AM.png)
 
@@ -17,7 +20,7 @@ Be sure to take screenshots of your favorite designs and post them with #AustinF
 
 ## Built With
 
-Vue 3 + Vite.
+Vue 3 + Vite. Requires Node 20.19+ or 22.12+.
 
 ## Project setup
 ```
