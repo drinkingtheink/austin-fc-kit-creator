@@ -144,7 +144,25 @@
         <path :style="{ fill: numberFill }" class="st1" d="M536.3,821.8L517,763.4l-10.7,3.6l-0.4,0.8c-3,5.4-7,10.3-12.1,14.7l-1.1,1l3.8,11.5l2.5-2
           c3.5-2.7,6.2-5.2,8.1-7.3c0.9-1.1,1.9-2.3,2.8-3.5l14.5,43.6l-15.9,5.3l3.6,10.8l43.5-14.4l-3.6-10.8L536.3,821.8z"/>
       </g>
-      <g data-part="badge" :class="partClass('badge')" id="shorts-crest">
+      <!-- The badge is worn twice, so it changes twice. Same flag, same
+           reasoning as the shirt's below; only the box differs. The crest on
+           the shorts is 69.5 x 81.7 centred on 214.6,816.1, and the disc that
+           stands in for it is 76 units across the same centre. -->
+      <g
+        v-if="showRoundelBadge"
+        data-part="badge"
+        :class="partClass('badge')"
+        id="shorts-roundel"
+        transform="translate(176.6,778.1) scale(0.1484375)"
+      >
+        <AustinFCRoundel
+          :groundFill="badgeBGFill"
+          :treeFill="badgeFill"
+          :letterFill="badgeTextFill"
+        />
+      </g>
+
+      <g v-else data-part="badge" :class="partClass('badge')" id="shorts-crest">
         <g>
           <g>
             <path :style="{ fill: badgeFill }" class="st2" d="M221.3,783.9c8.8,2.5,17.6,4.9,26.5,7.4c0.5,0.1,0.5,0.1,0.4,0.7c-4,14.3-8,28.7-12,43
@@ -589,7 +607,7 @@
            own box is 58.3 x 75.9 centred on 468.4,158.2, and the roundel is a
            512-unit square scaled to a 70-unit disc over the same centre. Only
            one is ever in the DOM, so the exporter never has to be told which
-           one it is looking at. -->
+           one it is looking at. The shorts carry the same pair, above. -->
       <g
         v-if="showRoundelBadge"
         data-part="badge"
