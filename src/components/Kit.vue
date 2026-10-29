@@ -769,8 +769,12 @@
          computed style, and all three inherit, which is why they sit on the
          group rather than on each of the six paths.
 
-         Six units against letterforms 57 tall shows three outside them: an
-         edge you can see across a stadium without it becoming the design.
+         Eight units against letterforms 57 tall shows four outside them. The
+         ceiling is the notches in the E: 8.1 units of shirt between the arms,
+         which the outline closes from both sides at once. Measured on a flat
+         ground at eight times scale, the notch keeps 4.75 units of shirt at a
+         width of 6, 2.13 at 8, 0.75 at 9 and nothing at all at 10. Eight is
+         the thick end of what leaves the E an E.
 
          (Note the dashes in this comment. A double hyphen inside an XML
          comment is a parse error, and Vue keeps template comments in the DOM
@@ -783,7 +787,7 @@
       id="yeti-logo_1_"
       paint-order="stroke"
       stroke-linejoin="round"
-      stroke-width="6"
+      stroke-width="8"
       :stroke="logoStroke ? logoStrokeFill : 'none'"
     >
       <g>

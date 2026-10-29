@@ -566,7 +566,13 @@
   const LEGIBILITY = [
     { on: 'shirtTypeFill', over: ['shirtFill'] },
     { on: 'shirtSecondaryFill', over: ['shirtFill', 'shirtTypeFill'] },
-    { on: 'logoFill', over: ['shirtFill', 'shirtTypeFill'], min: READ },
+    // `rescue` names a flag to switch on when the palette cannot make this
+    // read at all. A two-color kit cannot carry a sponsor that clears both the
+    // shirt and the stripes across it -- the only two candidates *are* the
+    // shirt and the stripes -- and no choice of color gets round that. An
+    // outline does: the letters keep the color that reads best against the
+    // shirt, and the edge below separates them from everything else.
+    { on: 'logoFill', over: ['shirtFill', 'shirtTypeFill'], min: READ, rescue: 'logoStroke' },
     // An outline the color of the letters it outlines is not an outline.
     // Judged against the sponsor itself rather than against the shirt,
     // because a halo in the shirt's own color is a real design and a common
@@ -1400,7 +1406,7 @@
        * and a white shirt into the same yellow, and the sponsor vanished.
        */
       enforceLegibility(kit = this) {
-        LEGIBILITY.forEach(({ on, over, min = SEEN }) => {
+        LEGIBILITY.forEach(({ on, over, min = SEEN, rescue }) => {
           const backgrounds = over.map(ground => kit[ground]);
           const worst = Math.min(
             ...backgrounds.map(background => contrast(kit[on], background))
@@ -1408,7 +1414,14 @@
 
           if (worst >= min) return;
 
-          kit[on] = this.mostLegibleAgainst(backgrounds, min);
+          const { color, settledFor } = this.mostLegibleAgainst(backgrounds, min);
+
+          kit[on] = color;
+
+          // Only ever switched on, and only when the palette left the pass
+          // with nothing that reads. A rule that reads fine leaves the flag
+          // where the designer -- or the reels -- last put it.
+          if (rescue && settledFor) kit[rescue] = true;
         });
       },
       /**
@@ -1417,6 +1430,11 @@
        * Anything clearing the bar is picked from at random, because this runs
        * inside the randomizer and a deterministic repair would make every
        * dark shirt reach for the same sponsor color.
+       *
+       * Returns `settledFor` alongside the color: true when nothing in the
+       * palette cleared the bar and this is a compromise rather than an
+       * answer. A rule carrying a `rescue` uses that to reach for something
+       * other than color.
        */
       mostLegibleAgainst(backgrounds, min) {
         const scored = this.colors.map(color => ({
@@ -1432,7 +1450,10 @@
         const legible = scored.filter(entry => entry.worst >= min);
 
         if (legible.length) {
-          return legible[Math.floor(Math.random() * legible.length)].color;
+          return {
+            color: legible[Math.floor(Math.random() * legible.length)].color,
+            settledFor: false
+          };
         }
 
         // Nothing clears every background. Sometimes that is a palette with no
@@ -1442,7 +1463,10 @@
         // shirt and the stripes. Fall back to whatever reads best against the
         // largest area behind it -- a black sponsor on a yellow shirt with
         // black stripes, rather than an arbitrary pick between the two.
-        return scored.reduce((best, entry) => (entry.primary > best.primary ? entry : best)).color;
+        return {
+          color: scored.reduce((best, entry) => (entry.primary > best.primary ? entry : best)).color,
+          settledFor: true
+        };
       },
       // Socks, then shorts, then shirt. The classes live in Kit.vue; this just
       // arms and disarms them.
