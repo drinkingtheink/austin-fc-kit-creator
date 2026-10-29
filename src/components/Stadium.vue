@@ -556,34 +556,96 @@
     to { transform: translateX(38px); }
   }
 
-  /* Ninety-six bulbs across two banks. Negative delays start each bucket
-     already part-way through, so the banks shimmer from the first frame
-     instead of blinking in unison and then drifting apart. */
+  /* Ninety-six bulbs across two banks. Seven buckets, each on its own clock,
+     with negative delays so they shimmer from the first frame rather than
+     blinking in unison and only drifting apart later. The durations are
+     deliberately unrelated, which keeps them from ever resynchronising.
+
+     Note: these ellipses carry transform="matrix(...)" from the source art, so
+     nothing here may set a CSS transform -- that would override the attribute
+     and scatter the bulbs across the sky. Opacity and filter only. */
   #left-lights ellipse,
   #left-lights_1_ ellipse {
-    animation: lampFlash 5.5s ease-in-out infinite;
+    animation: lampFlash 4.1s ease-in-out infinite;
   }
 
-  #left-lights ellipse:nth-of-type(5n+2),
-  #left-lights_1_ ellipse:nth-of-type(5n+2) { animation-delay: -1.1s; }
+  /* One bulb in four also blooms. A drop-shadow is costed per element per
+     frame, and putting one on all ninety-six halved the frame rate (28fps
+     against 61), which is a bad trade for scenery sitting behind the kit.
+     A scattering of flares also looks better than a bank blooming as one. */
+  #left-lights ellipse:nth-of-type(4n+1),
+  #left-lights_1_ ellipse:nth-of-type(4n+1) {
+    animation-name: lampFlare;
+  }
 
-  #left-lights ellipse:nth-of-type(5n+3),
-  #left-lights_1_ ellipse:nth-of-type(5n+3) { animation-delay: -2.2s; }
+  #left-lights ellipse:nth-of-type(7n+2),
+  #left-lights_1_ ellipse:nth-of-type(7n+2) { animation-delay: -.9s; animation-duration: 3.4s; }
 
-  #left-lights ellipse:nth-of-type(5n+4),
-  #left-lights_1_ ellipse:nth-of-type(5n+4) { animation-delay: -3.3s; }
+  #left-lights ellipse:nth-of-type(7n+3),
+  #left-lights_1_ ellipse:nth-of-type(7n+3) { animation-delay: -1.7s; animation-duration: 5.3s; }
 
-  #left-lights ellipse:nth-of-type(5n),
-  #left-lights_1_ ellipse:nth-of-type(5n) { animation-delay: -4.4s; }
+  #left-lights ellipse:nth-of-type(7n+4),
+  #left-lights_1_ ellipse:nth-of-type(7n+4) { animation-delay: -2.4s; animation-duration: 4.7s; }
 
-  /* Not a smooth sine: the quick dip and recover at the top is what makes a
-     floodlight read as a floodlight rather than a glowing dot. */
+  #left-lights ellipse:nth-of-type(7n+5),
+  #left-lights_1_ ellipse:nth-of-type(7n+5) { animation-delay: -3.1s; animation-duration: 3.8s; }
+
+  #left-lights ellipse:nth-of-type(7n+6),
+  #left-lights_1_ ellipse:nth-of-type(7n+6) { animation-delay: -1.2s; animation-duration: 5.9s; }
+
+  #left-lights ellipse:nth-of-type(7n),
+  #left-lights_1_ ellipse:nth-of-type(7n) { animation-delay: -2.8s; animation-duration: 4.4s; }
+
+  /* A hard double-strike rather than a swell, with most of the cycle sitting
+     dark so the flare has somewhere to come from. Opacity only: every bulb
+     runs this, so it has to stay cheap. */
   @keyframes lampFlash {
-    0%, 100% { opacity: .5; }
-    38% { opacity: 1; }
-    45% { opacity: .6; }
-    52% { opacity: 1; }
-    72% { opacity: .78; }
+    0%, 100% { opacity: .18; }
+    18% { opacity: .28; }
+    24% { opacity: 1; }
+    30% { opacity: .4; }
+    36% { opacity: 1; }
+    46% { opacity: .3; }
+    64% { opacity: .95; }
+    74% { opacity: .24; }
+  }
+
+  /* The same timeline with a bloom on the peaks. The glow has to be wide to
+     register at all: a bulb is about 16 user units across and the stadium
+     composites at 34% opacity, so a halo narrower than the bulb vanishes. */
+  @keyframes lampFlare {
+    0%, 100% {
+      opacity: .18;
+      filter: none;
+    }
+    18% {
+      opacity: .28;
+      filter: none;
+    }
+    24% {
+      opacity: 1;
+      filter: drop-shadow(0 0 18px rgba(255, 255, 255, .95));
+    }
+    30% {
+      opacity: .4;
+      filter: drop-shadow(0 0 4px rgba(255, 255, 255, .35));
+    }
+    36% {
+      opacity: 1;
+      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1));
+    }
+    46% {
+      opacity: .3;
+      filter: none;
+    }
+    64% {
+      opacity: .95;
+      filter: drop-shadow(0 0 16px rgba(255, 255, 255, .8));
+    }
+    74% {
+      opacity: .24;
+      filter: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -603,6 +665,7 @@
     #left-lights ellipse,
     #left-lights_1_ ellipse {
       opacity: 1;
+      filter: none;
     }
   }
 </style>
