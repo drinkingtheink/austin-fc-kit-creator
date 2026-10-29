@@ -53,7 +53,9 @@
     // keeps the same v-on pair off every one of their call sites, as
     // ToolField does with the spotlight.
     inject: {
-      addToPalette: { default: null }
+      addToPalette: { default: null },
+      // Picking a color anywhere loads it into the brush.
+      noteColor: { default: null }
     },
     computed: {
       // <input type="color"> only speaks hex, but the palette has always
@@ -65,6 +67,10 @@
     methods: {
       onClick(color) {
         this.$emit(this.removable ? 'remove' : 'update:modelValue', color);
+
+        if (!this.removable && this.noteColor) {
+          this.noteColor(color);
+        }
       },
       // Fires when the OS picker closes, not on every drag frame, so a slow
       // trip through the spectrum leaves one color behind rather than fifty.
@@ -73,6 +79,10 @@
 
         if (this.addToPalette) {
           this.addToPalette(color);
+        }
+
+        if (this.noteColor) {
+          this.noteColor(color);
         }
       }
     }

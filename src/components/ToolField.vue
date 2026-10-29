@@ -29,7 +29,10 @@
     // App.vue hands down the setter rather than every field wiring up its own
     // listener, which kept ~20 identical v-on pairs out of the template.
     inject: {
-      spotlight: { default: null }
+      spotlight: { default: null },
+      // Which part the app currently has lit, so hovering a part on the kit
+      // lights its field here. The connection runs both ways.
+      spotlightState: { default: null }
     },
     data() {
       return {
@@ -38,12 +41,22 @@
       };
     },
     computed: {
+      // What the field shows. Includes the app's own spotlight, so the kit can
+      // light this field from the other direction.
+      //
+      // No .value: App.vue provides a computed ref, but the Options API
+      // unwraps injected refs, so this is already the part name.
       lit() {
+        return this.selfLit || (!!this.part && this.spotlightState === this.part);
+      },
+      // What the field reports. Deliberately excludes spotlightState: lighting
+      // up because the app said so, then telling the app we are lit, is a loop.
+      selfLit() {
         return this.hovering || this.focused;
       }
     },
     watch: {
-      lit(isLit) {
+      selfLit(isLit) {
         if (!this.part || !this.spotlight) return;
 
         // Hand back the key on the way in and null on the way out, but only

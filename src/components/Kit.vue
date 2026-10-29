@@ -10,32 +10,35 @@
     style="enable-background:new 0 0 709 1347;" 
     xml:space="preserve"
     class="kit-display"
-    :class="{ 'is-revealing': revealing, 'is-frozen': frozen }"
+    :class="{ 'is-revealing': revealing, 'is-frozen': frozen, 'is-paintable': !!paintColor }"
+    v-on:click="onPaint"
+    v-on:pointerover="onPointerOver"
+    v-on:pointerleave="$emit('hover', null)"
   >
     <g id="socks">
-      <polygon :class="partClass('socks')" id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
-      <polygon :class="partClass('socksCuff')" id="right-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
-      <g :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="right-hoops">
+      <polygon data-part="socks" :class="partClass('socks')" id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
+      <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="right-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
+      <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="right-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="297.3,1109.8 156.1,1109.8 164.2,1169 291.6,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="176.7,1260.9 282.7,1260.9 288.4,1201.7 168.6,1201.7    "/>
       </g>
-      <polygon :class="partClass('socks')" id="left-sock" :style="{ fill: socksFill }" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
-      <polygon :class="partClass('socksCuff')" id="left-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
-      <g :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="left-hoops">
+      <polygon data-part="socks" :class="partClass('socks')" id="left-sock" :style="{ fill: socksFill }" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
+      <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="left-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
+      <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="left-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
       </g>
     </g>
     
     <g id="shorts">
-      <path :class="partClass('shorts')" id="shorts-trunk" :style="{ fill: shortsFill }" class="st0" d="M579.1,842.6l-46.3-153.2v-76.8H188.1v77.8l-46,152.2l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56
+      <path data-part="shorts" :class="partClass('shorts')" id="shorts-trunk" :style="{ fill: shortsFill }" class="st0" d="M579.1,842.6l-46.3-153.2v-76.8H188.1v77.8l-46,152.2l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56
         c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l31.7-105l31.7,105l0.5-0.2c0.1,0.2,0.2,0.3,0.3,0.5l185.5-56c0-0.2,0-0.4-0.1-0.6L579.1,842.6z"
         />
-      <path :class="partClass('shortsTrim')" id="right-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M134.4,869.4l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l7.9-26.3
+      <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="right-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M134.4,869.4l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l7.9-26.3
         l-186.8-56.4L134.4,869.4z"/>
-      <path :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
+      <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
         l-7.9-26.3l186.8-56.4L587.8,869.4z"/>
-      <g :class="partClass('number')" id="number">
+      <g data-part="number" :class="partClass('number')" id="number">
         <path :style="{ fill: numberFill }" class="st1" d="M468.1,837.9c0.7-2.7,1.9-5.8,3.5-9l5.9-11.6c3.4-6.7,5.5-11.8,6.3-15.7c0.8-4,0.7-7.7-0.4-11
           c-1-3-2.7-5.6-5.2-7.7c-2.5-2.2-5.7-3.4-9.4-3.6c-3.5-0.2-7,0.3-10.7,1.5c-2.4,0.8-5.3,2.1-8.8,4c-3.5,1.9-6.8,4.3-9.9,7.3l-1,1
           l3.8,11.6l2.6-2.4c2.7-2.5,4.8-4.3,6-5.2c1.2-0.9,2.7-1.9,4.5-2.8c1.7-0.9,3.3-1.7,4.8-2.1c2.4-0.8,4.6-0.8,6.9-0.2
@@ -44,7 +47,7 @@
         <path :style="{ fill: numberFill }" class="st1" d="M536.3,821.8L517,763.4l-10.7,3.6l-0.4,0.8c-3,5.4-7,10.3-12.1,14.7l-1.1,1l3.8,11.5l2.5-2
           c3.5-2.7,6.2-5.2,8.1-7.3c0.9-1.1,1.9-2.3,2.8-3.5l14.5,43.6l-15.9,5.3l3.6,10.8l43.5-14.4l-3.6-10.8L536.3,821.8z"/>
       </g>
-      <g :class="partClass('badge')" id="shorts-crest">
+      <g data-part="badge" :class="partClass('badge')" id="shorts-crest">
         <g>
           <g>
             <path :style="{ fill: badgeFill }" class="st2" d="M221.3,783.9c8.8,2.5,17.6,4.9,26.5,7.4c0.5,0.1,0.5,0.1,0.4,0.7c-4,14.3-8,28.7-12,43
@@ -257,14 +260,14 @@
     </g>
     
     <g id="shirt">
-      <polygon :class="partClass('sleeve')" id="right-sleeve" :style="{ fill: shirtSleeveFill }" class="st0" points="174.2,190.5 28.4,230.2 28.4,74.2 174.2,34.5  "/>
-      <polygon :class="partClass('sleeve')" id="left-sleeve" :style="{ fill: shirtSleeveFill }" class="st0" points="540.5,190.5 686.4,230.2 686.4,74.2 540.5,34.5   "/>
-      <path :class="partClass('shirt')" id="shirt-trunk" :style="{ fill: shirtFill }" class="st0" d="M545.4,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2H429l-69.3,69.3l-69.3-69.3H175.6
+      <polygon data-part="sleeve" :class="partClass('sleeve')" id="right-sleeve" :style="{ fill: shirtSleeveFill }" class="st0" points="174.2,190.5 28.4,230.2 28.4,74.2 174.2,34.5  "/>
+      <polygon data-part="sleeve" :class="partClass('sleeve')" id="left-sleeve" :style="{ fill: shirtSleeveFill }" class="st0" points="540.5,190.5 686.4,230.2 686.4,74.2 540.5,34.5   "/>
+      <path data-part="shirt" :class="partClass('shirt')" id="shirt-trunk" :style="{ fill: shirtFill }" class="st0" d="M545.4,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2H429l-69.3,69.3l-69.3-69.3H175.6
         c-1.1,0.5-2.1,0.9-2.9,1.2H170l2.1,499.9h0.5c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h371.2c1.4-3.1,2.1-6.2,2.1-9.4
         c0-1.5-0.2-3-0.5-4.5h0.5L545.4,35.7z"/>
-      <polygon :class="partClass('shirtCuff')" id="right-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
-      <polygon :class="partClass('shirtCuff')" id="left-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
+      <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="right-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
+      <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="left-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="389.7,549.5 440.5,549.5 440.5,34.5 429.9,34.5 389.7,74.7     "/>
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M222.8,34.5h-46.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5c-0.3,1.5-0.5,3-0.5,4.5
@@ -272,7 +275,7 @@
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M546.3,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-47.8v515h47.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
           L546.3,35.7z"/>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('hoops') }]" id="hoops">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('hoops') }]" id="hoops">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="171,361 171.1,384.6 546.5,384.6 546.4,361    "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,279.9 170.8,303.5 546.2,303.5 546.1,279.9    "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.8,320.4 170.9,344.1 546.3,344.1 546.2,320.4    "/>
@@ -290,22 +293,22 @@
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.2,158.2 170.3,181.8 545.7,181.8 545.6,158.2    "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170,117.6 170.1,141.3 545.5,141.3 545.4,117.6    "/>
       </g>
-      <polygon :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('chevron') }]" id="chevron" :style="{ fill: shirtTypeFill }" class="st2" points="546.5,261.2 545.9,119.4 359.9,236.2 170.5,117.2 171.1,259.6 359.9,398.3   "/>
-      <path :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('half-panel') }]" id="half-panel" :style="{ fill: shirtTypeFill }" class="st2" d="M359.4,103.8l-69.3-69.3H175.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5
+      <polygon data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('chevron') }]" id="chevron" :style="{ fill: shirtTypeFill }" class="st2" points="546.5,261.2 545.9,119.4 359.9,236.2 170.5,117.2 171.1,259.6 359.9,398.3   "/>
+      <path data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('half-panel') }]" id="half-panel" :style="{ fill: shirtTypeFill }" class="st2" d="M359.4,103.8l-69.3-69.3H175.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5
         c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h185.6V103.8z"/>
-      <path :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('sash') }]" id="sash" :style="{ fill: shirtTypeFill }" class="st2" d="M545.9,152.4l-0.5-116.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-28.7L171.8,466.4l0.3,69.2h0.5
+      <path data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('sash') }]" id="sash" :style="{ fill: shirtTypeFill }" class="st2" d="M545.9,152.4l-0.5-116.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-28.7L171.8,466.4l0.3,69.2h0.5
         c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h54.6L545.9,152.4z"/>
-      <polygon :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('center-stripe') }]" id="center-stripe" :style="{ fill: shirtTypeFill }" class="st2" points="299.6,41.5 299.6,548.3 421.7,548.3 421.7,41.5 360.6,102.6   "/>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('double-sash') }]" id="double-sash">
+      <polygon data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('center-stripe') }]" id="center-stripe" :style="{ fill: shirtTypeFill }" class="st2" points="299.6,41.5 299.6,548.3 421.7,548.3 421.7,41.5 360.6,102.6   "/>
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('double-sash') }]" id="double-sash">
         <path :style="{ fill: shirtTypeFill }" id="top-stripe" class="st2" d="M545.4,35.1h4.1c0,0-1.5-0.4-4.1-1.2h-28.7L171.8,465.8l0.3,69.2h0.5c-0.3,1.5-0.5,3-0.5,4.5
           c0,1.9,0.3,3.8,0.8,5.7L545.6,78.4L545.4,35.1z"/>
         <path :style="{ fill: shirtSecondaryFill }" id="bottom-stripe" class="st2" d="M227.7,550.1L544.8,153l-0.3-73.4L171.8,546.4c0.3,1.2,0.8,2.5,1.3,3.7H227.7z"/>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('off-center-stripe') }]" id="off-center-stripe">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('off-center-stripe') }]" id="off-center-stripe">
         <rect :style="{ fill: shirtTypeFill }" id="left-stripe" x="434.9" y="34.5" class="st2" width="33.7" height="515"/>
         <rect :style="{ fill: shirtSecondaryFill }" id="right-stripe" x="468.6" y="34.5" class="st2" width="33.7" height="515"/>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('shoulder-stripes') }]" id="shoulder-stripes">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('shoulder-stripes') }]" id="shoulder-stripes">
         <g id="cover">
           <path :style="{ fill: shirtSecondaryFill }" class="st2" d="M233.8,33.9l14.5,95.2c3.8-0.8,7.6-1.6,11.4-2.4l-14.2-92.8H233.8z"/>
           <path :style="{ fill: shirtSecondaryFill }" class="st2" d="M202.5,33.9l15.7,103c3.7-1.1,7.5-2.1,11.3-3.2l-15.2-99.8H202.5z"/>
@@ -320,7 +323,7 @@
           <path :style="{ fill: shirtTypeFill }" class="st1" d="M245.6,33.9l14.2,92.8c6.3-1.2,12.6-2.4,19-3.4l-13.6-89.4H245.6z"/>
         </g>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('tiger-stripes') }]" id="tiger-stripes">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('tiger-stripes') }]" id="tiger-stripes">
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M387,454.2c-1.4,5.5-1.7,11.2-3.2,16.6c-2,7.3-4.9,14.3-7.2,21.5c-1.7,5.3-4.4,9.8-8.2,13.8
           c-6.7,7-12.1,14.9-16,23.7c-2.5,5.5-4.4,11.3-6.7,16.9c-0.5,1.3-1.2,2.4-2,3.4h19.7c2.1-6.5,5.3-12.3,10-17.8
           c5.4-6.2,8.8-14.2,12.7-21.6c0.9-1.7,1.1-4.1,0.8-6.1c-1.2-7.3,0.7-13.4,5.8-18.8c4.6-4.9,7.7-10.8,9.4-17.4
@@ -447,13 +450,13 @@
           c-4.3,6.3-6.3,13.1-6.1,20.8c0.4,10.3-2.1,20.1-6.5,29.3c-1.9,4-5.4,7.2-8.1,10.8c-1.7,2.2-3.6,4.4-5.2,6.7c-4,6-7.9,12-11.8,18
           c0.1,0.2,0.1,0.4,0.2,0.6h33.5C212.1,546.2,214.9,541.6,216.8,536.3z"/>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('quarter-panel') }]" id="quarter-panel">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('quarter-panel') }]" id="quarter-panel">
         <path :style="{ fill: shirtTypeFill }" id="top-left" class="st2" d="M359.8,103.8l-69.3-69.3H175.7c-1.1,0.5-2.1,0.9-2.9,1.2H170l1.1,270.2h188.6L359.8,103.8
           L359.8,103.8z"/>
         <path :style="{ fill: shirtTypeFill }" id="bot-right_1_" class="st2" d="M546.6,305.9H359.8v243.6h185.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
           L546.6,305.9z"/>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('barcode') }]" id="barcode">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('barcode') }]" id="barcode">
         <polygon :style="{ fill: shirtTypeFill }" class="st0" points="379.6,122.4 357.7,122.4 357.7,428 345,428 345,549.5 379.7,549.5 379.7,428 379.6,428 		"/>
         <path :style="{ fill: shirtTypeFill }" class="st0" d="M513.3,121.5h4.2V33.3h-5.9v87.1h-4.2V33.3h-5.9v87.1h-4.2V33.3h-5.9v87.1h-4.2V33.3h-5.9v87.1h-44.1V40.9
           L402.4,74v48.4h-4.5V428h4v121.5h34.7V428h40.2V306.6h9.5v242.9h5.9V306.6h4.2v242.9h5.9V306.6h4.2v242.9h5.9V306.6h0.8V121.5z
@@ -470,7 +473,7 @@
         <rect :style="{ fill: shirtTypeFill }" x="521.8" y="33.3" class="st0" width="5.9" height="88.2"/>
         <rect :style="{ fill: shirtTypeFill }" x="531.9" y="33.3" class="st0" width="5.9" height="88.2"/>
       </g>
-      <g :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('checkered') }]" id="checkered">
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('checkered') }]" id="checkered">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,237.8 171,306.4 222.4,306.4 222.4,237.8    "/>
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M545.3,35.7h4.1c0,0-1.5-0.4-4.1-1.2h-48.5v62.6h48.7L545.3,35.7z"/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="291,169.2 359.6,169.2 359.6,237.8 428.2,237.8 428.2,305.5 496.8,305.5 496.8,236.9 428.2,236.9 
@@ -485,7 +488,7 @@
           546.7,376.7 546.4,305.5 496.8,305.5 496.8,374.1 428.2,374.1 428.2,306.4 359.6,306.4 359.6,375 291,375 291,306.4 222.4,306.4 
           222.4,375 171.3,375 171.6,446.2 222.4,446.2 222.4,377.6     "/>
       </g>
-      <g :class="partClass('badge')" id="austin-fc-crest">
+      <g data-part="badge" :class="partClass('badge')" id="austin-fc-crest">
         <g>
           <g>
             <path class="st2" d="M468.4,121.4c9.2,0,18.3,0,27.5,0c0.5,0,0.5,0,0.5,0.5c0,14.9,0,29.8,0,44.7c0,1.3-0.1,2.6-0.2,3.8
@@ -679,19 +682,19 @@
             c0.4,0,0.5,0.1,0.5,0.5c0,0.7,0,1.5,0,2.2C451.6,131.8,451.6,131.9,451.6,132z"/>
         </g>
       </g>
-      <polygon :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
-      <g :class="[partClass('collar'), 'fade-part', { on: showButtonCollar }]" id="button-collar">
+      <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
+      <g data-part="collar" :class="[partClass('collar'), 'fade-part', { on: showButtonCollar }]" id="button-collar">
         <path id="collar-w-fold" :style="{ fill: collarFill }" class="st0" d="M440.9,34.7l0.2-0.2h-11.1l-69.3,69.3l-69.2-69.3h-11.1c-11.3,40.8,21.3,97.7,21.3,97.7
           l36.7-39.5l16.7,16.7l-12.5,23.5l40.2-40.2l36.6,39.4C419.5,132.2,452.1,75.5,440.9,34.7z"/>
         <circle id="button" :style="{ fill: collarFill }" class="st0" cx="366.8" cy="127.7" r="8"/>
       </g>
-      <g :class="partClass('maker')" id="shirt-maker">
+      <g data-part="maker" :class="partClass('maker')" id="shirt-maker">
         <rect :style="{ fill: shirtMakerFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
         <rect :style="{ fill: shirtMakerFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
         <rect :style="{ fill: shirtMakerFill }" x="225.3" y="148" width="8.4" height="12.5"/>
       </g>
     </g>
-    <g :class="partClass('sponsor')" id="yeti-logo_1_">
+    <g data-part="sponsor" :class="partClass('sponsor')" id="yeti-logo_1_">
       <g>
         <path :style="{ fill: logoFill }" class="st1" d="M322.1,249.8c15.7,0,31.4,0,47,0c0,4.7,0,9.3,0,14c-9.8,0-19.6,0-29.3,0c0,2.7,0,5.4,0,8.1
           c8.5,0,17.1,0,25.6,0c0,4.3,0,8.5,0,12.8c-8.6,0-17.1,0-25.5,0c0,2.7,0,5.4,0,8.1c10.1,0,20.1,0,30.2,0c0,0.3,0,0.5,0,0.7
@@ -751,11 +754,32 @@
       // Set briefly after a randomize, to stagger the parts back in.
       'revealing',
       // Holds every part still while the PNG exporter reads computed styles.
-      'frozen'
+      'frozen',
+      // The color a click would apply. Null leaves the kit inert.
+      'paintColor'
     ],
+    emits: ['paint', 'hover'],
     methods: {
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
+      },
+      // Both handlers sit on the root rather than on thirty-four elements.
+      // The crest alone is hundreds of paths, so the listener count matters
+      // more than the indirection costs.
+      partOf(event) {
+        const hit = event.target.closest && event.target.closest('[data-part]');
+
+        return hit ? hit.dataset.part : null;
+      },
+      onPaint(event) {
+        if (!this.paintColor) return;
+
+        const part = this.partOf(event);
+
+        if (part) this.$emit('paint', part);
+      },
+      onPointerOver(event) {
+        this.$emit('hover', this.partOf(event));
       },
       // One binding for both spotlight effects: the toolbar names a part, and
       // whichever elements paint it pick the class up.
@@ -867,6 +891,14 @@
     100% {
       filter: brightness(1) drop-shadow(0 0 0 rgba(255, 255, 255, 0));
     }
+  }
+
+  /* ---- Painting -------------------------------------------------------- */
+
+  /* Only armed when a current color exists, so the kit stays inert rather
+     than inviting clicks that would do nothing. */
+  .is-paintable [data-part] {
+    cursor: pointer;
   }
 
   /* ---- Export freeze --------------------------------------------------- */

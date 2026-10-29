@@ -43,6 +43,9 @@
           :flash="flash"
           :revealing="revealing"
           :frozen="frozen"
+          :paintColor="currentColor"
+          v-on:paint="paintPart"
+          v-on:hover="setSpotlight($event, highlight)"
         />
 
         <p class="help">
@@ -103,12 +106,12 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
-          <ColorSwatches
-            label="Palette"
-            :colors="colors"
-            :modelValue="null"
-            v-on:update:modelValue="addColor"
-          />
+          <ColorSwatches label="Palette" :colors="colors" v-model="currentColor" />
+
+          <p class="palette-current">
+            <span class="palette-current-chip" :style="{ backgroundColor: currentColor }"></span>
+            <span>Click the kit to paint with <strong>{{ currentColor }}</strong></span>
+          </p>
         </div>
 
         <div class="toolbar-sections">
@@ -368,6 +371,7 @@
   import ToolField from './components/ToolField.vue';
   import ShirtThumb from './components/ShirtThumb.vue';
   import ColorPanel from './components/ColorPanel.vue';
+  import { computed } from 'vue';
   import { isValidColor, nearest, toHex } from './lib/colorTools.js';
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
@@ -425,6 +429,16 @@
     socksHoopsFill: 'socksHoops'
   };
 
+  // Reverse of FILL_PARTS: the fill a click on that part writes to. Several
+  // colors share one part -- the badge has three -- and the first declared
+  // wins, so painting the crest sets its main color while the other two stay
+  // toolbar-only.
+  const PART_MODELS = Object.entries(FILL_PARTS).reduce((models, [model, part]) => {
+    if (!models[part]) models[part] = model;
+
+    return models;
+  }, {});
+
   const shirtOptions = [
     'barcode',
     'stripes',
@@ -459,7 +473,13 @@
       return {
         spotlight: (part, key) => this.setSpotlight(part, key),
         // Every inline picker, in every field, feeds the one palette.
-        addToPalette: color => this.addColor(color)
+        addToPalette: color => this.addColor(color),
+        // Touching a color anywhere makes it the current one, so the brush
+        // holds whatever was last chosen.
+        noteColor: color => { this.currentColor = color; },
+        // Reactive, so a part lit by hovering the kit lights its field in the
+        // toolbar too. A plain value would be read once and never update.
+        spotlightState: computed(() => this.highlight)
       };
     },
     data() {
@@ -490,6 +510,9 @@
         frozen: false,
 
         showColors: false,
+
+        // The brush: clicking a part of the kit paints it this color.
+        currentColor: green,
 
         colors: null,
 
@@ -552,6 +575,13 @@
       }
     },
     watch: {
+      colors(next) {
+        // A club swap, a reset or a removal can retire the color the brush
+        // was holding.
+        if (next.length && !next.includes(this.currentColor)) {
+          this.currentColor = next[0];
+        }
+      },
       persistedKit(kit) {
         writeKit(kit);
       },
@@ -717,6 +747,20 @@
         if (part && this.flash === part) {
           this.flash = null;
         }
+      },
+      /**
+       * Paint a part of the kit with the current color.
+       *
+       * No legibility guard here, unlike the randomizer: this is someone
+       * deliberately putting a color somewhere, and second-guessing a direct
+       * click would feel like the app arguing with them.
+       */
+      paintPart(part) {
+        const model = PART_MODELS[part];
+
+        if (!model || !this.currentColor || this[model] === this.currentColor) return;
+
+        this[model] = this.currentColor;
       },
       flashPart(part) {
         // Nothing to announce: the part is already wearing a halo, or a
@@ -1360,6 +1404,33 @@
   .palette-explore:focus-visible {
     outline: 2px solid var(--verde-bright);
     outline-offset: 3px;
+  }
+
+  /* Says what the brush is holding and what to do with it. The kit gives no
+     other clue that it can be clicked until the pointer is already over it. */
+  .palette-current {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+    color: var(--text-faint);
+    font-size: .7rem;
+    line-height: 1.4;
+  }
+
+  .palette-current-chip {
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    transition: background-color .3s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .palette-current strong {
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
   }
 
   /* ---- Colors panel ---------------------------------------------------- */
