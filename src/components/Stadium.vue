@@ -2,52 +2,6 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
    viewBox="0 0 2833 1618.5" style="enable-background:new 0 0 2833 1618.5;" xml:space="preserve">
 <defs>
-  <!-- Crowd. One tile of twenty-two people, drawn by hand, repeated across
-       the decks. The two other patterns are the same tile at a larger scale,
-       inherited through href so the figures have one home: the decks sit at
-       three distances and that is the whole of the perspective.
-
-       Sizes are deliberate, not arbitrary. Rows sit 3 apart in a tile 12
-       high, so the fourth row meets the first of the tile below at the same
-       spacing; no radius exceeds 1.5, so no figure crosses an edge and gets
-       sliced into a seam. Change either number and the tile stops matching
-       itself at the join.
-
-       Paint goes on as a presentation attribute, never a class. The exporter
-       skips the contents of defs when it inlines computed styles, so a class
-       here would render on screen and come out blank in the PNG. -->
-  <pattern id="crowd-far" patternUnits="userSpaceOnUse"
-           width="21" height="12" patternTransform="rotate(4)">
-    <circle cx="1.8"  cy="1.5"  r="1.45" fill="#0B0D0B"/>
-    <circle cx="5.1"  cy="1.6"  r="1.30" fill="#00B140"/>
-    <circle cx="8.9"  cy="1.4"  r="1.40" fill="#151A16"/>
-    <circle cx="12.4" cy="1.6"  r="1.20" fill="#0B6B36"/>
-    <circle cx="15.6" cy="1.5"  r="1.45" fill="#00B140"/>
-    <circle cx="19.3" cy="1.4"  r="1.25" fill="#D7DBD5"/>
-
-    <circle cx="3.4"  cy="4.5"  r="1.35" fill="#0E8C42"/>
-    <circle cx="7.1"  cy="4.6"  r="1.45" fill="#232A24"/>
-    <circle cx="10.4" cy="4.4"  r="1.20" fill="#C98A5E"/>
-    <circle cx="14.2" cy="4.5"  r="1.40" fill="#00B140"/>
-    <circle cx="17.4" cy="4.6"  r="1.30" fill="#1A1614"/>
-
-    <circle cx="1.9"  cy="7.5"  r="1.30" fill="#124E2A"/>
-    <circle cx="5.3"  cy="7.4"  r="1.45" fill="#0B0D0B"/>
-    <circle cx="8.7"  cy="7.6"  r="1.25" fill="#8A938B"/>
-    <circle cx="12.6" cy="7.5"  r="1.40" fill="#06C455"/>
-    <circle cx="15.9" cy="7.4"  r="1.20" fill="#2A2A32"/>
-    <circle cx="19.1" cy="7.6"  r="1.35" fill="#0E8C42"/>
-
-    <circle cx="3.6"  cy="10.5" r="1.45" fill="#151A16"/>
-    <circle cx="7.3"  cy="10.4" r="1.25" fill="#1B7A4E"/>
-    <circle cx="10.6" cy="10.6" r="1.40" fill="#F2F4EF"/>
-    <circle cx="14.1" cy="10.5" r="1.30" fill="#00B140"/>
-    <circle cx="17.6" cy="10.4" r="1.45" fill="#333B34"/>
-  </pattern>
-
-  <pattern id="crowd-mid"  xlink:href="#crowd-far" patternTransform="rotate(-2.5) scale(1.25)"/>
-  <pattern id="crowd-near" xlink:href="#crowd-far" patternTransform="scale(1.65)"/>
-
   <!-- The decks, clipped from the polygons that already draw them. A second
        copy of those points would be a second home for the same numbers, and
        the two would drift. A clip path takes geometry only, so the grey fill
@@ -106,7 +60,10 @@
 </g>
 <!-- Clipped to the deck above rather than carrying a second copy of its
      points, and painted before #right-wall so the wall stays in front. -->
-<rect class="crowd" width="100%" height="100%" clip-path="url(#crowd-near-deck)" fill="url(#crowd-near)"/>
+<g class="crowd" clip-path="url(#crowd-near-deck)">
+  <circle v-for="(person, i) in deckPeople('near')" :key="i"
+          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+</g>
 <polygon id="right-wall" points="1814.7,883.2 1814.7,857.8 2834.4,895.9 2834.4,937.5 "/>
 <polygon id="far-stand-bg" class="st2" points="20.4,810.3 147.2,810.3 147.2,629.8 123.3,587.5 128.9,548 1428.9,638.2 1588,780.7 
   1588,810.3 1654.9,798.7 1826.4,884.6 20.4,1033.1 "/>
@@ -119,7 +76,10 @@
   <polygon id="far-bottom-stand-3" class="st3" points="431.4,821.7 521.5,958.3 717.6,940 611.7,818.6  "/>
   <polygon id="far-bottom-stand-4" class="st3" points="639,824 730.3,928.7 1649.5,865.3 1558.9,813.2  "/>
 </g>
-<rect class="crowd" width="100%" height="100%" clip-path="url(#crowd-mid-deck)" fill="url(#crowd-mid)"/>
+<g class="crowd" clip-path="url(#crowd-mid-deck)">
+  <circle v-for="(person, i) in deckPeople('mid')" :key="i"
+          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+</g>
 <path id="field-markings" class="st5" d="M1826.6,880.4l-0.2,0L398,1001.5l186,112.5l84.7,51.2h0l476.4,288.1l0.8,0.5l1608.6-505.8
   l10.7-3.4L1826.6,880.4z M2474.1,928.9l-78.9,20.4l-543.5-40.3l117.8-14.5L2474.1,928.9z M614.1,1127.2l-88.8-53.7l168.8-18.9
   l182.1,79.4l-206.6,26.7L614.1,1127.2z M891.9,1136.3l-196.7-85.8l-0.5-0.2l-175.4,19.6l-55.9-33.8l411.1-38.8l527,141.4
@@ -140,7 +100,10 @@
   <polygon class="st7" points="176.8,996.4 1654.9,881.5 1654.9,861 147.2,968.9  "/>
 </g>
 <polygon id="far-top-stand" class="st3" points="137.3,554.6 193.7,765.9 1577.7,777.2 1420,644.4 "/>
-<rect class="crowd" width="100%" height="100%" clip-path="url(#crowd-far-deck)" fill="url(#crowd-far)"/>
+<g class="crowd" clip-path="url(#crowd-far-deck)">
+  <circle v-for="(person, i) in deckPeople('far')" :key="i"
+          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+</g>
 <g id="far-top-wall">
   <polygon class="st7" points="182.4,780.7 182.4,808.9 1577.7,796.6 1577.7,780.7  "/>
 </g>
@@ -564,8 +527,17 @@
 </template>
 
 <script>
+  import { CROWD_DECKS } from '../lib/crowd.js';
+
   export default {
-    name: 'Stadium'
+    name: 'Stadium',
+    methods: {
+      // Not reactive state; the crowd is generated once at module load and
+      // never changes. This only lets the template reach it by deck.
+      deckPeople(id) {
+        return CROWD_DECKS.find(deck => deck.id === id).people;
+      }
+    }
   };
 </script>
 
