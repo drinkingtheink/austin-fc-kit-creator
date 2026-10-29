@@ -9,8 +9,12 @@ const OUTPUT_HEIGHT = 1600;
 const FIT_WIDTH = 0.78;
 const FIT_HEIGHT = 0.86;
 
-// Matches .stadium-stage in App.vue.
+// Matches .stadium-stage in App.vue. Both values are repainted here rather
+// than read off the element, because the exporter strips the root's own style
+// before serializing it, so they have to be stated twice. Change one and
+// change the other.
 const STADIUM_OPACITY = 0.34;
+const STADIUM_FILTER = 'saturate(0.7) brightness(0.72)';
 
 // Everything that decides how a shape is painted. Most of the kit sets `fill`
 // inline, but ~124 elements take theirs from Kit.vue's *scoped* classes, which
@@ -251,10 +255,10 @@ async function paintStadium(ctx, stadiumSvg) {
   }
 
   ctx.save();
-  // Matches .stadium-stage: opacity .34, filter saturate(.7). ctx.filter is
-  // unsupported on some older Safari builds, where it is simply ignored.
+  // ctx.filter is unsupported on some older Safari builds, where it is simply
+  // ignored; there the exported backdrop comes out brighter than the screen.
   ctx.globalAlpha = STADIUM_OPACITY;
-  ctx.filter = 'saturate(0.7)';
+  ctx.filter = STADIUM_FILTER;
   ctx.drawImage(image, rect.x, rect.y, rect.width, rect.height);
   ctx.restore();
 }
