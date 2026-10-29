@@ -36,6 +36,11 @@ const OPACITY_PROPS = new Set(['opacity', 'fill-opacity', 'stroke-opacity']);
 function shouldSkip(prop, value) {
   if (!value) return true;
 
+  // A paint server reference, e.g. fill="url(#kitRound)" on the shading layer.
+  // The element already carries it as an attribute, and round-tripping it
+  // through a style attribute means serializing nested quotes for no gain.
+  if (value.includes('url(')) return true;
+
   // `display` is the one property where "none" is the whole point: v-show hides
   // the twelve unselected shirt patterns and the sock hoops that way, and this
   // function's caller overwrites the inline style that carried it. Dropping it
@@ -60,6 +65,13 @@ function inlinePaint(source, clone) {
     const target = cloneNodes[i];
 
     if (!target) return;
+
+    // Never restyle the contents of <defs>. Gradients, their stops, patterns
+    // and clip paths are definitions rather than drawn output, and computing a
+    // style for something that is never rendered can hand back `display: none`
+    // — which, written back as an inline style, silently empties the gradient.
+    // Both lists stay full so the index pairing holds.
+    if (node.closest('defs')) return;
 
     const computed = window.getComputedStyle(node);
     const declarations = [];
