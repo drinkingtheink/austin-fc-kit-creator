@@ -378,6 +378,17 @@
     grey
   ];
 
+  // 'Spacebar' is the legacy name older Edge/Firefox reported for the space key.
+  const RANDOMIZE_KEYS = [
+    'Enter',
+    ' ',
+    'Spacebar',
+    'ArrowLeft',
+    'ArrowUp',
+    'ArrowRight',
+    'ArrowDown'
+  ];
+
   const shirtOptions = [
     'barcode',
     'stripes',
@@ -461,7 +472,11 @@
           this.shirtFill = white;
         }
       },
-      showWelcomeBack() {
+      showWelcomeBack(isVisible) {
+        // Only arm the timer on the way up; it used to re-arm when the toast
+        // dismissed itself, scheduling a pointless second timeout each time.
+        if (!isVisible) return;
+
         setTimeout(() => {
           this.showWelcomeBack = false;
         }, 2000);
@@ -508,7 +523,7 @@
         this.setting = randomSetting;
       },
       addColor(color) {
-        if(this.colorToAdd) {
+        if(this.colorToAdd && !this.colors.includes(color)) {
           this.colors.push(color);
         }
 
@@ -596,6 +611,16 @@
         let randomColor = this.colors[Math.floor(Math.random()*this.colors.length)];
         return randomColor;
       },
+      getRandomColorExcept(...avoid) {
+        let candidates = this.colors.filter(color => !avoid.includes(color));
+
+        // A single-color palette has nothing else to offer.
+        if (!candidates.length) {
+          candidates = this.colors;
+        }
+
+        return candidates[Math.floor(Math.random()*candidates.length)];
+      },
       getRandomShirtDesign() {
         let randomDesign = this.shirtOptions[Math.floor(Math.random()*this.shirtOptions.length)];
         return randomDesign;
@@ -627,20 +652,26 @@
         this.setSocksHoopsFill(this.getRandomColor());
         this.getSetting();
 
-        if(this.collarFill === (this.shirtFill || this.shirtTypeFill)) {
-          this.setCollarFill(this.getRandomColor);
-        }
-
+        // Keep each element legible against what it sits on. Order matters:
+        // a guard has to see the final value of everything it compares
+        // against, so each one runs after whatever can still rewrite its
+        // inputs. The collar goes last of the shirt guards because the
+        // sponsor guard below can still move shirtTypeFill.
         if(this.logoFill === this.shirtFill) {
-          this.setLogoFill(this.getRandomColor);
-        }
-
-        if(this.numberFill === this.shortsFill) {
-          this.setNumberFill(this.getRandomColor);
+          this.setLogoFill(this.getRandomColorExcept(this.shirtFill));
         }
 
         if(this.logoFill === this.shirtTypeFill) {
-          this.setShirtTypeFill(this.getRandomColor);
+          this.setShirtTypeFill(this.getRandomColorExcept(this.logoFill, this.shirtFill));
+        }
+
+        // `(a || b)` only ever compared against `a`, so this half worked.
+        if(this.collarFill === this.shirtFill || this.collarFill === this.shirtTypeFill) {
+          this.setCollarFill(this.getRandomColorExcept(this.shirtFill, this.shirtTypeFill));
+        }
+
+        if(this.numberFill === this.shortsFill) {
+          this.setNumberFill(this.getRandomColorExcept(this.shortsFill));
         }
 
         this.backToTop();
@@ -669,23 +700,37 @@
         let newColor = event.target.value;
         this.colorToAdd = newColor;
       },
+      handleShortcut(e) {
+        if (!RANDOMIZE_KEYS.includes(e.key)) return;
+
+        const el = e.target;
+        const tag = el && el.tagName;
+
+        // Never hijack typing.
+        if (el && el.isContentEditable) return;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        // Enter and Space activate a focused button or link; let them, rather
+        // than also randomizing. Arrow keys stay live everywhere, so the
+        // headline shortcut still works right after clicking a swatch.
+        const activates = e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar';
+
+        if (activates && (tag === 'BUTTON' || tag === 'A')) return;
+
+        this.randomizeKit();
+        this.showGreeting = false;
+        this.manageColors = false;
+      },
       resetBadge() {
         this.badgeFill = green;
         this.badgeTextFill = white;
         this.badgeBGFill = black;
       }
     },
-    created() {
-      window.addEventListener('keyup', (e) => {
-        if (e.keyCode == 13 || e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 32 || e.keyCode == 40) {
-          this.randomizeKit();
-          this.showGreeting = false;
-          this.manageColors = false;
-        }
-      });
-    },
     mounted() {
-      this.colors = defaultColors;
+      window.addEventListener('keyup', this.handleShortcut);
+      // Copy, don't alias: addColor() pushes onto this array.
+      this.colors = [...defaultColors];
       this.getSetting();
 
       let hasVisited = localStorage.getItem('visitedAustinFCKitDesigner');
@@ -697,6 +742,9 @@
       } else {
         this.showWelcomeBack = true;
       }
+    },
+    beforeUnmount() {
+      window.removeEventListener('keyup', this.handleShortcut);
     }
   };
 </script>
