@@ -256,7 +256,14 @@
     </div>
 
     <transition name="fade">
-      <div class="modal-backdrop" v-show="showGreeting" role="dialog" aria-modal="true" aria-labelledby="greeting-title">
+      <div
+        class="modal-backdrop"
+        v-show="showGreeting"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="greeting-title"
+        v-on:click.self="dismissModal"
+      >
         <div class="modal">
           <p class="modal-eyebrow">Austin FC Kit Creator</p>
           <h2 class="modal-title" id="greeting-title">The Future Looks Bright Verde</h2>
@@ -293,7 +300,14 @@
     </transition>
 
     <transition name="fade">
-      <div class="modal-backdrop" v-show="manageColors" role="dialog" aria-modal="true" aria-labelledby="colors-title">
+      <div
+        class="modal-backdrop"
+        v-show="manageColors"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="colors-title"
+        v-on:click.self="dismissModal"
+      >
         <div class="modal">
           <p class="modal-eyebrow">Palette</p>
           <h2 class="modal-title" id="colors-title">Manage Colors</h2>
@@ -700,7 +714,21 @@
         let newColor = event.target.value;
         this.colorToAdd = newColor;
       },
+      dismissModal() {
+        if (this.showGreeting) {
+          this.handleGreetingClose(false);
+        } else if (this.manageColors) {
+          this.manageColorWindow(false);
+        }
+      },
       handleShortcut(e) {
+        // Checked before the typing guard: Escape in the hex field should
+        // still close the dialog.
+        if (e.key === 'Escape') {
+          this.dismissModal();
+          return;
+        }
+
         if (!RANDOMIZE_KEYS.includes(e.key)) return;
 
         const el = e.target;
