@@ -14,7 +14,7 @@ const FIT_HEIGHT = 0.86;
 // before serializing it, so they have to be stated twice. Change one and
 // change the other.
 const STADIUM_OPACITY = 0.34;
-const STADIUM_FILTER = 'saturate(0.7) brightness(0.72)';
+const STADIUM_FILTER = 'saturate(0.7)';
 
 // Everything that decides how a shape is painted. Most of the kit sets `fill`
 // inline, but ~124 elements take theirs from Kit.vue's *scoped* classes, which

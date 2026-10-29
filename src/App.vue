@@ -1968,11 +1968,10 @@
        the edges and brings the stands up behind the kit. */
     transform: scale(1.21);
     opacity: .34;
-    /* Dimmed so the kit is the brightest thing on the stage. Keep this in
-       step with STADIUM_FILTER in kitToPng.js, which repaints the same
-       composite onto the canvas; drift between them and the exported
-       backdrop stops matching the one on screen. */
-    filter: saturate(.7) brightness(.72);
+    /* Keep this in step with STADIUM_FILTER in kitToPng.js, which repaints
+       the same composite onto the canvas; drift between them and the
+       exported backdrop stops matching the one on screen. */
+    filter: saturate(.7);
     pointer-events: none;
   }
 

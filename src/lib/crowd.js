@@ -36,40 +36,52 @@ function mulberry32(seed) {
   };
 }
 
-// A distant crowd is mostly dark, with a scatter of bright specks that read
-// as faces and white shirts. An even spread of mid-tones has no sparkle and
-// flattens into gravel, so the extremes have to be genuine black and
-// near-white to survive the stand beneath (#AEAEAF) and the 34% composite.
+// This is a home crowd in a verde stand, so verde is most of it: roughly
+// three fans in five, against one in five in black. The club plays in
+// '#00B140', '#000000', '#FFFFFF' (clubPalettes.js), and the greens carry
+// the deck while black, white and skin break it up.
 //
-// The club plays in '#00B140', '#000000', '#FFFFFF' (clubPalettes.js) and a
-// home crowd wears it. Both families spread across hue as well as lightness:
-// a ramp that only changes lightness reads as one shirt under eight lamps.
+// Weighting one colour that far up is what makes the spread within it
+// matter. Eight greens, across hue as well as lightness: a ramp that only
+// changes lightness reads as one shirt under eight lamps, whereas teal
+// through lime is the range a stand of replica kits, old kits and merch
+// actually covers. Without that, a 60% share is a green bedsheet.
+//
+// Black still has to be genuinely black and white genuinely white. The
+// stand beneath is #AEAEAF and the whole stadium composites at 34% under a
+// brightness of .72, and an even spread of mid-tones has no sparkle left
+// after that wash; it flattens into gravel.
 const TONES = [
-  { fill: '#0B0D0B', weight: 11 },
-  { fill: '#151A16', weight: 9 },
-  { fill: '#1A1614', weight: 6 },
-  { fill: '#232A24', weight: 6 },
-  { fill: '#2A2A32', weight: 5 },
-  { fill: '#333B34', weight: 4 },
+  // Verde, the majority.
+  { fill: '#124E2A', weight: 8 },
+  { fill: '#0B6B36', weight: 10 },
+  { fill: '#1B7A4E', weight: 7 },
+  { fill: '#0E8C42', weight: 11 },
+  { fill: '#00B140', weight: 16 },
+  { fill: '#06C455', weight: 8 },
+  { fill: '#3E9E2E', weight: 6 },
+  { fill: '#6ECB3C', weight: 5 },
 
-  { fill: '#124E2A', weight: 6 },
-  { fill: '#0B6B36', weight: 7 },
-  { fill: '#1B7A4E', weight: 5 },
-  { fill: '#0E8C42', weight: 7 },
-  { fill: '#00B140', weight: 10 },
-  { fill: '#06C455', weight: 5 },
-  { fill: '#3E9E2E', weight: 4 },
-  { fill: '#6ECB3C', weight: 3 },
+  // Black: no longer the bulk of the stand, but still what the greens read
+  // against. The gaps between people are this colour too, not just coats.
+  { fill: '#0B0D0B', weight: 7 },
+  { fill: '#151A16', weight: 6 },
+  { fill: '#1A1614', weight: 3 },
+  { fill: '#232A24', weight: 3 },
+  { fill: '#2A2A32', weight: 3 },
+  { fill: '#333B34', weight: 2 },
 
-  { fill: '#8A938B', weight: 6 },
-  { fill: '#B9C0B8', weight: 4 },
-  { fill: '#D7DBD5', weight: 5 },
-  { fill: '#F2F4EF', weight: 3 },
+  // White and greys: the sparkle, and sparkle stops reading as sparkle once
+  // it is common.
+  { fill: '#8A938B', weight: 3 },
+  { fill: '#B9C0B8', weight: 2 },
+  { fill: '#D7DBD5', weight: 3 },
+  { fill: '#F2F4EF', weight: 2 },
 
   // Faces. At this size a warm speck is a face above a dark coat, and a
   // crowd with none in it is a crowd of hoods.
   { fill: '#C98A5E', weight: 3 },
-  { fill: '#8C5A3C', weight: 3 },
+  { fill: '#8C5A3C', weight: 2 },
   { fill: '#E3B591', weight: 2 }
 ];
 

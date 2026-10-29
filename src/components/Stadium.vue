@@ -54,9 +54,9 @@
 <polygon id="right-stands-bg" class="st2" points="1654.9,798.7 1722.5,798.7 1722.5,780.2 1807,780.2 1830.3,743.7 1910.5,743.7 
   1959.1,703.5 2834.4,680.3 2834.4,902.4 1811.3,864.3 1756.3,868.5 "/>
 <g id="right-stands">
-  <polygon id="right-stand-1" class="st3" points="1986.5,712.5 1842.1,855.7 2113.3,867 2244.7,704.1  "/>
-  <polygon id="right-stand-2" class="st3" points="2255.5,704.1 2126.6,867 2485.1,878.2 2580.2,697  "/>
-  <polygon id="right-stand-3" class="st3" points="2593.5,697 2499.9,878.2 2834.4,887.4 2834.4,690.7  "/>
+  <polygon id="right-stand-1" class="seating" points="1986.5,712.5 1842.1,855.7 2113.3,867 2244.7,704.1  "/>
+  <polygon id="right-stand-2" class="seating" points="2255.5,704.1 2126.6,867 2485.1,878.2 2580.2,697  "/>
+  <polygon id="right-stand-3" class="seating" points="2593.5,697 2499.9,878.2 2834.4,887.4 2834.4,690.7  "/>
 </g>
 <!-- Clipped to the deck above rather than carrying a second copy of its
      points, and painted before #right-wall so the wall stays in front. -->
@@ -71,10 +71,10 @@
 <polygon id="field-bg" class="st2" points="20.4,1033.1 0,1302.8 -0.9,1618.5 2833,1618.5 2834.4,937.5 1784.3,848.2 "/>
 <polygon id="field_2_" class="st4" points="320.2,998.8 1133.5,1618.5 2851,941.7 1826.4,882.5 1249.7,935.3 "/>
 <g id="far-bottom-stand">
-  <polygon id="far-bottom-stand-1" class="st3" points="20.4,820.2 172.6,820.2 243,975.9 20.4,1011.9   "/>
-  <polygon id="far-bottom-stand-2" class="st3" points="206.7,821.4 243,975.9 497.9,958.3 403.5,820.3  "/>
-  <polygon id="far-bottom-stand-3" class="st3" points="431.4,821.7 521.5,958.3 717.6,940 611.7,818.6  "/>
-  <polygon id="far-bottom-stand-4" class="st3" points="639,824 730.3,928.7 1649.5,865.3 1558.9,813.2  "/>
+  <polygon id="far-bottom-stand-1" class="seating" points="20.4,820.2 172.6,820.2 243,975.9 20.4,1011.9   "/>
+  <polygon id="far-bottom-stand-2" class="seating" points="206.7,821.4 243,975.9 497.9,958.3 403.5,820.3  "/>
+  <polygon id="far-bottom-stand-3" class="seating" points="431.4,821.7 521.5,958.3 717.6,940 611.7,818.6  "/>
+  <polygon id="far-bottom-stand-4" class="seating" points="639,824 730.3,928.7 1649.5,865.3 1558.9,813.2  "/>
 </g>
 <g class="crowd" clip-path="url(#crowd-mid-deck)">
   <circle v-for="(person, i) in deckPeople('mid')" :key="i"
@@ -99,7 +99,7 @@
 <g id="far-lower-wall">
   <polygon class="st7" points="176.8,996.4 1654.9,881.5 1654.9,861 147.2,968.9  "/>
 </g>
-<polygon id="far-top-stand" class="st3" points="137.3,554.6 193.7,765.9 1577.7,777.2 1420,644.4 "/>
+<polygon id="far-top-stand" class="seating" points="137.3,554.6 193.7,765.9 1577.7,777.2 1420,644.4 "/>
 <g class="crowd" clip-path="url(#crowd-far-deck)">
   <circle v-for="(person, i) in deckPeople('far')" :key="i"
           :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
@@ -546,6 +546,14 @@
   .st1{opacity:0.5;fill:#AEAEAF;}
   .st2{fill:#333332;}
   .st3{fill:#AEAEAF;}
+
+  /* The seating decks, split off from .st3 so they can be darkened without
+     taking the roof and trusses with them. Dark concrete in the shade of the
+     roof: the crowd is three fifths verde and has to read against this, and
+     at #AEAEAF the stand was a bright field that greyed every figure on it.
+     The eight polygons wearing this are the same eight the crowd's clip
+     paths are built from, so the colour and the clip cannot drift apart. */
+  .seating{fill:#363C38;}
   .st4{fill:#5C9241;}
   .st5{fill:#FFFFFF;}
   .st6{fill:none;stroke:#FFFFFF;stroke-width:3;stroke-miterlimit:10;}
