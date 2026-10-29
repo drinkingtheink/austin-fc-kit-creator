@@ -1,11 +1,12 @@
 <template>
-  <main :class="setting">
-    <Stadium class="stadium-stage" aria-hidden="true" />
+  <main :class="setting" :style="{ backgroundImage: stageGradient }">
+    <Stadium ref="stadium" class="stadium-stage" aria-hidden="true" />
     <div class="stage-scrim" aria-hidden="true"></div>
 
     <div id="app">
       <section id="kit-stage">
         <Kit
+          ref="kit"
           class="kit-display"
           :activeShirtOption="activeShirtOption"
           :shirtFill="shirtFill"
@@ -33,6 +34,19 @@
           <kbd>Enter</kbd> <kbd>Space</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd>
           <span>to randomize</span>
         </p>
+
+        <button
+          class="download-kit"
+          type="button"
+          :disabled="exporting"
+          :title="exportError || 'Download this kit as a PNG'"
+          v-on:click="downloadKit"
+        >
+          <svg class="download-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16" />
+          </svg>
+          <span>{{ exporting ? 'Rendering...' : (exportError || 'Download PNG') }}</span>
+        </button>
       </section>
 
       <aside id="toolbar">
@@ -379,6 +393,8 @@
   import Stadium from './components/Stadium.vue';
   import ColorSwatches from './components/ColorSwatches.vue';
   import ToolSection from './components/ToolSection.vue';
+  import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
+  import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
 
   const green ='#00B140';
   const black = '#000000';
@@ -442,6 +458,9 @@
 
         openSection: 'shirt',
 
+        exporting: false,
+        exportError: null,
+
         shirtOptions,
         activeShirtOption: 'barcode',
         shirtFill: green,
@@ -472,6 +491,9 @@
     computed: {
       defaultPaletteEnabled() {
         return this.arraysMatch(this.colors, defaultColors);
+      },
+      stageGradient() {
+        return toCssGradient(getBackdrop(this.setting));
       },
       brightVerde() {
         return green;
@@ -525,16 +547,7 @@
         return true;
       },
       getSetting() {
-        const settings = [
-          'one',
-          'two',
-          'three',
-          'four'
-        ];
-
-        let randomSetting = settings[Math.floor(Math.random()*settings.length)];;
-
-        this.setting = randomSetting;
+        this.setting = STAGE_NAMES[Math.floor(Math.random()*STAGE_NAMES.length)];
       },
       addColor(color) {
         if(this.colorToAdd && !this.colors.includes(color)) {
@@ -714,6 +727,34 @@
         let newColor = event.target.value;
         this.colorToAdd = newColor;
       },
+      kitFilename() {
+        const design = this.activeShirtOption || 'solid';
+        const stamp = new Date().toISOString().slice(0, 10);
+
+        return `austin-fc-kit-${design}-${stamp}.png`;
+      },
+      async downloadKit() {
+        if (this.exporting) return;
+
+        this.exporting = true;
+        this.exportError = null;
+
+        try {
+          const blob = await kitToPngBlob(
+            this.$refs.kit.$el,
+            getBackdrop(this.setting),
+            this.$refs.stadium.$el
+          );
+
+          downloadBlob(blob, this.kitFilename());
+        } catch (err) {
+          this.exportError = 'Export failed. Try again?';
+          // Leave a trace for anyone debugging a browser-specific failure.
+          console.error('[kit-export]', err);
+        } finally {
+          this.exporting = false;
+        }
+      },
       dismissModal() {
         if (this.showGreeting) {
           this.handleGreetingClose(false);
@@ -837,12 +878,9 @@
     overflow: hidden;
   }
 
-  /* Four dusk-lit moods. Kept dark so the kit art stays the brightest thing
-     on screen; the old neon gradients fought the stadium for attention. */
-  .one { background: linear-gradient(165deg, #1B1035 0%, #3D2A6B 48%, #A8458A 100%); }
-  .two { background: linear-gradient(165deg, #2A1206 0%, #8A3B12 52%, #DB9A3C 100%); }
-  .three { background: linear-gradient(165deg, #04171C 0%, #0E4A52 50%, #3C8A88 100%); }
-  .four { background: linear-gradient(165deg, #04150B 0%, #0B4A24 52%, #00B140 100%); }
+  /* Four dusk-lit moods, kept dark so the kit art stays the brightest thing on
+     screen. The stops live in src/lib/stageBackdrops.js, because the PNG export
+     paints the same gradient onto a canvas. */
 
   .stadium-stage {
     position: absolute;
@@ -919,6 +957,52 @@
     color: var(--text-dim);
     font-size: .74rem;
     white-space: nowrap;
+  }
+
+  .download-kit {
+    position: absolute;
+    right: 28px;
+    bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px 9px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background-color: rgba(10, 13, 11, .66);
+    backdrop-filter: blur(12px);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: .76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+
+  .download-kit:hover:not(:disabled) {
+    border-color: var(--verde);
+    background-color: var(--verde);
+    color: var(--verde-ink);
+  }
+
+  .download-kit:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 3px;
+  }
+
+  .download-kit:disabled {
+    cursor: progress;
+    opacity: .65;
+  }
+
+  .download-icon {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
   }
 
   kbd {
@@ -1434,6 +1518,12 @@
 
     .help {
       display: none;
+    }
+
+    .download-kit {
+      right: 50%;
+      bottom: 16px;
+      transform: translateX(50%);
     }
 
     .show-on-mobile {

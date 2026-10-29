@@ -4,7 +4,8 @@ Do you have a sharp eye for design and a love of our city's great football club?
 
 ## [Design Your Own Austin FC Kit](https://austin-fc-kit-creator.netlify.app/)
 
-Be sure to take screenshots of your favorite designs and post them with #AustinFCKitCreator
+Hit **Download PNG** to export your kit as a 1200x1600 image on the stadium
+backdrop, then post it with #AustinFCKitCreator
 
 > **Note:** the screenshots below predate the Vue 3 redesign and no longer
 > match the current interface.
