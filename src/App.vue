@@ -1,102 +1,12 @@
 <template>
   <main :class="setting">
-    <section class="mobile-welcome show-on-mobile">
-      <p>This app is better experienced on a tablet/desktop, but I hope you still have fun.</p>
-    </section>
-
-    <transition name="fade">
-      <section class="greeting" v-show="showGreeting">
-        <div class="greeting-main">
-          <h2>The Future Looks Bright Verde</h2>
-          <p>Do you have a sharp eye for design and a love of our city's great football club? This retro-esque tool allows you to design a kit by choosing your own selections from the toolbar or randomize it and start from there <span class="not-mobile">(hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize as well)</span>. Either way, hope you have fun and let's GROW THE LEGEND!</p>
-
-          <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
-
-          <button v-on:click="handleGreetingClose(false)">Start From Here</button>
-          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
-          <button v-on:click="handleGreetingToManageColors">Manage Colors</button>
-        </div>
-      </section>
-    </transition>
-
-    <transition name="fade">
-      <section class="greeting" v-show="showWelcomeBack">
-        <div class="greeting-main">
-          <h2>Welcome Back!</h2>
-
-          <p>Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
-        </div>
-      </section>
-    </transition>
-
-    <transition name="fade">
-      <section class="color-mgmt greeting" v-show="manageColors">
-        <div class="greeting-main">
-          <h2>Manage Colors</h2>
-          <p>Add or Remove Your Own Colors (<a href="https://htmlcolorcodes.com/color-chart/" target="_blank">hex values</a> or <a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank">named colors</a> only)</p>
-
-          <section class="color-select color-display">
-            <span 
-              v-for="color in colors" 
-              class="color-option"
-              :style="{ backgroundColor: color }"
-              :key="color"
-            >
-              <button v-on:click="removeColor(color)">X</button>
-            </span>
-            <button 
-              class="add-color-option"
-              v-on:click="addColor(colorToAdd)"
-              :style="{ backgroundColor: colorToAdd }"
-            >
-              ADD
-            </button>
-            <input 
-              class="color-to-add"
-              type="text" 
-              placeholder="Add a Hex Value w/ #"
-              v-model="colorToAdd"
-              v-on:keyup.enter="addColor(colorToAdd)"
-              v-bind:style="{ borderColor: `${colorToAddBorderColor}` }"
-            />
-
-            <div class="color-picker">
-              <label for="colorPicker" class="color-picker-label">Choose a color:</label>
-              <input 
-                id="colorPicker" 
-                type="color" 
-                :value="brightVerde"
-                v-on:input="updateActiveColor"
-                class="color-picker-input"
-              />
-            </div>
-          </section>
-
-          <button v-on:click="handleGreetingClose(false)">Go From Here</button>
-          <button v-on:click="resetColors">Reset Colors</button>
-          <button v-on:click="handleGreetingClose(true)">Randomize Kit</button>
-        </div>
-      </section>
-    </transition>
+    <Stadium class="stadium-stage" aria-hidden="true" />
+    <div class="stage-scrim" aria-hidden="true"></div>
 
     <div id="app">
-      <section class="mob-randomize">
-        <button 
-          v-on:click="randomizeKit" 
-          class="mob-randomize-random"
-          v-show="!showGreeting && !manageColors"
-        >Randomize Design</button>
-
-        <button 
-          v-on:click="handleGreetingToManageColors"
-          class="mob-randomize-color"
-          v-show="!showGreeting && !manageColors"
-        >Manage Colors</button>
-      </section>
-
       <section id="kit-stage">
-        <Kit 
-          class="kit-display" 
+        <Kit
+          class="kit-display"
           :activeShirtOption="activeShirtOption"
           :shirtFill="shirtFill"
           :shirtTypeFill="shirtTypeFill"
@@ -118,301 +28,334 @@
           :socksHoopsFill="socksHoopsFill"
           :shirtMakerFill="shirtMakerFill"
         />
+
+        <p class="help">
+          <kbd>Enter</kbd> <kbd>Space</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd>
+          <span>to randomize</span>
+        </p>
       </section>
 
-      <section id="toolbar">
-        <header>
-          <a href="https://austinfc.com/" target="_blank">
+      <aside id="toolbar">
+        <header class="toolbar-header">
+          <a
+            href="https://austinfc.com/"
+            target="_blank"
+            rel="noopener"
+            class="toolbar-badge-link"
+            aria-label="Austin FC official site"
+          >
             <AustinFCBadge class="toolbar-badge" />
           </a>
-          <h2>Create Your Kit</h2>
-          <p class="hashtag">Be sure to take screenshots of your favorite designs and post them with <strong>#AustinFCKitCreator</strong></p>
-          
-          <button v-on:click="randomizeKit">Feeling Lucky</button>
-          <button v-on:click="manageColorWindow(true)" class="manage-colors-action-create-header">Manage Colors</button>
+
+          <div class="toolbar-titles">
+            <h1 class="wordmark">Kit Creator</h1>
+            <p class="toolbar-sub">Design your own Austin FC kit</p>
+          </div>
+
+          <div class="toolbar-actions">
+            <button class="btn btn-primary" v-on:click="randomizeKit">Feeling Lucky</button>
+            <button class="btn btn-ghost" v-on:click="manageColorWindow(true)">Colors</button>
+          </div>
         </header>
 
-        <h3>Shirt</h3>
-        <h4>Primary Color</h4>
-          <section class="color-select">
-            <button 
-              v-for="color in colors" 
-              class="color-option"
-              :class="{ active: color === shirtFill }"
-              :style="{ backgroundColor: color }"
-              v-on:click="setShirtFill(color)"
-              :key="color"
-            >
-            </button>
-          </section>
+        <p class="mobile-welcome show-on-mobile">
+          This app is better experienced on a tablet or desktop, but I hope you still have fun.
+        </p>
 
-        <h4>Design</h4>
-        <section class="shirt-type-selection">
-          <button 
-            v-on:click="clearShirtOption()"
-            :class="{ active: !activeShirtOption }"
-          >Solid</button>
-          <button 
-            v-for="option in shirtOptions"
-            v-on:click="setShirtOption(option)"
-            :class="{ active: option === activeShirtOption }"
-            :key="option"
+        <div class="toolbar-sections">
+          <ToolSection
+            title="Shirt"
+            :open="openSection === 'shirt'"
+            v-on:toggle="toggleSection('shirt')"
           >
-            {{ option }}
-          </button>
-        </section>
+            <div class="field">
+              <span class="field-label">Design</span>
+              <div class="design-grid">
+                <button
+                  type="button"
+                  class="design-option"
+                  :class="{ active: !activeShirtOption }"
+                  :aria-pressed="String(!activeShirtOption)"
+                  v-on:click="clearShirtOption()"
+                >Solid</button>
+                <button
+                  v-for="option in shirtOptions"
+                  :key="option"
+                  type="button"
+                  class="design-option"
+                  :class="{ active: option === activeShirtOption }"
+                  :aria-pressed="String(option === activeShirtOption)"
+                  v-on:click="setShirtOption(option)"
+                >{{ formatOption(option) }}</button>
+              </div>
+            </div>
 
-        <h4>Design Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === shirtTypeFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setShirtTypeFill(color)"
-            :key="color" 
+            <div class="field">
+              <span class="field-label">Primary color</span>
+              <ColorSwatches label="Shirt primary color" :colors="colors" v-model="shirtFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Design color</span>
+              <ColorSwatches label="Shirt design color" :colors="colors" v-model="shirtTypeFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Secondary color</span>
+              <ColorSwatches label="Shirt secondary color" :colors="colors" v-model="shirtSecondaryFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Sponsor color</span>
+              <ColorSwatches label="Sponsor color" :colors="colors" v-model="logoFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Collar</span>
+              <div class="segmented" role="group" aria-label="Collar type">
+                <button
+                  type="button"
+                  :class="{ active: !showButtonCollar }"
+                  :aria-pressed="String(!showButtonCollar)"
+                  v-on:click="setCollarButton(false)"
+                >Plain</button>
+                <button
+                  type="button"
+                  :class="{ active: showButtonCollar }"
+                  :aria-pressed="String(showButtonCollar)"
+                  v-on:click="setCollarButton(true)"
+                >Buttoned</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field-label">Collar color</span>
+              <ColorSwatches label="Collar color" :colors="colors" v-model="collarFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Sleeve color</span>
+              <ColorSwatches label="Sleeve color" :colors="colors" v-model="shirtSleeveFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Cuff color</span>
+              <ColorSwatches label="Cuff color" :colors="colors" v-model="shirtCuffFill" />
+            </div>
+
+            <div class="field">
+              <span class="field-label">Brand mark color</span>
+              <ColorSwatches label="Shirt brand mark color" :colors="colors" v-model="shirtMakerFill" />
+            </div>
+          </ToolSection>
+
+          <ToolSection
+            title="Badge"
+            :open="openSection === 'badge'"
+            v-on:toggle="toggleSection('badge')"
           >
-          </button>
-        </section>
+            <div class="field">
+              <span class="field-label">Badge color</span>
+              <ColorSwatches label="Badge color" :colors="colors" v-model="badgeFill" />
+            </div>
 
-        <h4>Secondary Color</h4>
-          <section class="color-select">
-            <button 
-              v-for="color in colors" 
-              class="color-option"
-              :class="{ active: color === shirtSecondaryFill }"
-              :style="{ backgroundColor: color }"
-              v-on:click="setShirtSecondaryFill(color)"
-              :key="color"
-            >
-            </button>
-          </section>
+            <div class="field">
+              <span class="field-label">Badge text color</span>
+              <ColorSwatches label="Badge text color" :colors="colors" v-model="badgeTextFill" />
+            </div>
 
-        <h4>Sponsor Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === logoFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setLogoFill(color)"
-            :key="color" 
+            <div class="field">
+              <span class="field-label">Badge background</span>
+              <ColorSwatches label="Badge background color" :colors="colors" v-model="badgeBGFill" />
+            </div>
+
+            <button class="btn btn-ghost btn-block" v-on:click="resetBadge">Reset badge</button>
+          </ToolSection>
+
+          <ToolSection
+            title="Shorts"
+            :open="openSection === 'shorts'"
+            v-on:toggle="toggleSection('shorts')"
           >
-          </button>
-        </section>
+            <div class="field">
+              <span class="field-label">Primary color</span>
+              <ColorSwatches label="Shorts primary color" :colors="colors" v-model="shortsFill" />
+            </div>
 
-        <h4>Collar Type</h4>
-        <button 
-          class="toggle active"
-          v-if="showButtonCollar"
-          v-on:click="setCollarButton(false)"
-        >No Button Collar</button>
+            <div class="field">
+              <span class="field-label">Trim color</span>
+              <ColorSwatches label="Shorts trim color" :colors="colors" v-model="shortsCuffsFill" />
+            </div>
 
-        <button 
-          class="toggle"
-          v-else
-          v-on:click="setCollarButton(true)"
-        >Button Collar</button>
-        
-        <h4>Collar Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === collarFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setCollarFill(color)"
-            :key="color" 
+            <div class="field">
+              <span class="field-label">Number color</span>
+              <ColorSwatches label="Number color" :colors="colors" v-model="numberFill" />
+            </div>
+          </ToolSection>
+
+          <ToolSection
+            title="Socks"
+            :open="openSection === 'socks'"
+            v-on:toggle="toggleSection('socks')"
           >
-          </button>
-        </section>
+            <div class="field">
+              <span class="field-label">Primary color</span>
+              <ColorSwatches label="Socks primary color" :colors="colors" v-model="socksFill" />
+            </div>
 
-        <h4>Shirt Brand Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === shirtMakerFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setShirtMakerFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-        
-        <h4>Sleeve Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === shirtSleeveFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setShirtSleeveFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
+            <div class="field">
+              <span class="field-label">Top color</span>
+              <ColorSwatches label="Sock top color" :colors="colors" v-model="socksCuffsFill" />
+            </div>
 
-        <h4>Cuff Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === shirtCuffFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setShirtCuffFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
+            <div class="field">
+              <span class="field-label">Hoops</span>
+              <div class="segmented" role="group" aria-label="Sock hoops">
+                <button
+                  type="button"
+                  :class="{ active: !socksHoops }"
+                  :aria-pressed="String(!socksHoops)"
+                  v-on:click="setSocksHoops(false)"
+                >Off</button>
+                <button
+                  type="button"
+                  :class="{ active: socksHoops }"
+                  :aria-pressed="String(socksHoops)"
+                  v-on:click="setSocksHoops(true)"
+                >On</button>
+              </div>
+            </div>
 
-        <h3>Badge</h3>
-        <h4>Badge Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === badgeFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setBadgeFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
+            <div class="field" v-show="socksHoops">
+              <span class="field-label">Hoops color</span>
+              <ColorSwatches label="Sock hoops color" :colors="colors" v-model="socksHoopsFill" />
+            </div>
+          </ToolSection>
+        </div>
 
-        <h4>Badge Text Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === badgeTextFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setBadgeTextFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h4>Badge BG Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === badgeBGFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setBadgeBGFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h3>Shorts</h3>
-        <h4>Primary Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === shortsFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setShortsFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-        
-        <h4>Trim Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === shortsCuffsFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setShortsCuffsFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h4>Number Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === numberFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setNumberFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h3>Socks</h3>
-        <h4>Primary Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === socksFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setSocksFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-        
-        <h4>Top Color</h4>
-        <section class="color-select">
-          <button 
-            v-for="color in colors" 
-            class="color-option"
-            :class="{ active: color === socksCuffsFill }"
-            :style="{ backgroundColor: color }"
-            v-on:click="setSocksCuffsFill(color)"
-            :key="color" 
-          >
-          </button>
-        </section>
-
-        <h4>Sock Hoops</h4>
-        <button 
-          class="toggle active"
-          v-if="socksHoops"
-          v-on:click="setSocksHoops(false)"
-        >Hide Hoops</button>
-
-        <button 
-          class="toggle"
-          v-else
-          v-on:click="setSocksHoops(true)"
-        >Hoop Them</button>
-
-        <section class="hoops-color">
-          <h4>Hoops Color</h4>
-          <section class="color-select">
-            <button 
-              v-for="color in colors"
-              class="color-option"
-              :class="{ active: color === socksFill }"
-              :style="{ backgroundColor: color }"
-              v-on:click="setSocksHoopsFill(color)"
-              :key="color" 
-            >
-            </button>
-          </section>
-        </section>
-
-        <p class="attribution">Austin FC owns all rights to the Austin FC Badge and any other intellectual property under their purview. I am merely a huge supporter.</p>
-
-        <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" class="block-link" target="_blank">About this Project</a>
-        <a href="http://drinkingtheink.com/" class="block-link" target="_blank">About the Author</a>
-      </section>
+        <footer class="toolbar-footer">
+          <p class="hashtag">
+            Screenshot your favorites and post them with
+            <strong>#AustinFCKitCreator</strong>
+          </p>
+          <nav class="footer-links">
+            <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" target="_blank" rel="noopener">About this project</a>
+            <a href="http://drinkingtheink.com/" target="_blank" rel="noopener">About the author</a>
+          </nav>
+          <p class="attribution">
+            Austin FC owns all rights to the Austin FC Badge and any other intellectual
+            property under their purview. I am merely a huge supporter.
+          </p>
+        </footer>
+      </aside>
     </div>
 
-    <section class="help">
-      <p>Hit <strong>Enter</strong>, <strong>Space Bar</strong> or <strong>Directional Arrows</strong> at any time to randomize kit</p>
-    </section>
+    <div class="mobile-actions show-on-mobile">
+      <button class="btn btn-primary" v-on:click="randomizeKit">Randomize</button>
+      <button class="btn btn-ghost" v-on:click="manageColorWindow(true)">Colors</button>
+    </div>
 
-    <Stadium class="stadium-stage" />
+    <transition name="fade">
+      <div class="modal-backdrop" v-show="showGreeting" role="dialog" aria-modal="true" aria-labelledby="greeting-title">
+        <div class="modal">
+          <p class="modal-eyebrow">Austin FC Kit Creator</p>
+          <h2 class="modal-title" id="greeting-title">The Future Looks Bright Verde</h2>
+
+          <p>
+            Do you have a sharp eye for design and a love of our city's great football club?
+            This retro-esque tool lets you design a kit by choosing your own selections from
+            the toolbar, or randomize it and start from there<span
+              class="not-mobile"
+            > (hit <kbd>Enter</kbd>, <kbd>Space</kbd> or the <kbd>arrow keys</kbd> at any
+              time to randomize as well)</span>. Either way, hope you have fun and let's
+            GROW THE LEGEND!
+          </p>
+
+          <p class="modal-note">
+            Be sure to take screenshots of your favorite designs and post them with
+            <strong>#AustinFCKitCreator</strong>
+          </p>
+
+          <div class="modal-actions">
+            <button class="btn btn-primary" v-on:click="handleGreetingClose(false)">Start from here</button>
+            <button class="btn btn-ghost" v-on:click="handleGreetingClose(true)">Randomize kit</button>
+            <button class="btn btn-ghost" v-on:click="handleGreetingToManageColors">Manage colors</button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="fade">
+      <div class="toast" v-show="showWelcomeBack" role="status">
+        <strong>Welcome back.</strong>
+        <span>Post your favorites with #AustinFCKitCreator</span>
+      </div>
+    </transition>
+
+    <transition name="fade">
+      <div class="modal-backdrop" v-show="manageColors" role="dialog" aria-modal="true" aria-labelledby="colors-title">
+        <div class="modal">
+          <p class="modal-eyebrow">Palette</p>
+          <h2 class="modal-title" id="colors-title">Manage Colors</h2>
+
+          <p>
+            Add or remove your own colors &mdash;
+            <a href="https://htmlcolorcodes.com/color-chart/" target="_blank" rel="noopener">hex values</a>
+            or
+            <a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank" rel="noopener">named colors</a>
+            only.
+          </p>
+
+          <div class="palette-block">
+            <span class="field-label">Your palette <em>(click a swatch to remove)</em></span>
+            <ColorSwatches
+              label="Your palette"
+              :colors="colors"
+              removable
+              v-on:remove="removeColor"
+            />
+          </div>
+
+          <div class="palette-block">
+            <span class="field-label">Add a color</span>
+            <div class="add-color-row">
+              <input
+                class="color-to-add"
+                type="text"
+                placeholder="#00B140"
+                aria-label="Hex value or named color"
+                v-model="colorToAdd"
+                v-on:keyup.enter="addColor(colorToAdd)"
+              />
+              <span
+                class="color-preview"
+                :class="{ empty: !colorToAdd }"
+                :style="colorToAdd ? { backgroundColor: colorToAdd } : null"
+                aria-hidden="true"
+              ></span>
+              <button class="btn btn-primary" v-on:click="addColor(colorToAdd)">Add</button>
+            </div>
+
+            <div class="color-picker">
+              <label for="colorPicker">Or pick one</label>
+              <input
+                id="colorPicker"
+                type="color"
+                :value="brightVerde"
+                v-on:input="updateActiveColor"
+                class="color-picker-input"
+              />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-primary" v-on:click="handleGreetingClose(false)">Go from here</button>
+            <button class="btn btn-ghost" v-on:click="resetColors">Reset colors</button>
+            <button class="btn btn-ghost" v-on:click="handleGreetingClose(true)">Randomize kit</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </main>
 </template>
 
@@ -420,6 +363,8 @@
   import Kit from './components/Kit.vue';
   import AustinFCBadge from './components/AustinFCBadge.vue';
   import Stadium from './components/Stadium.vue';
+  import ColorSwatches from './components/ColorSwatches.vue';
+  import ToolSection from './components/ToolSection.vue';
 
   const green ='#00B140';
   const black = '#000000';
@@ -454,7 +399,9 @@
     components: {
       Kit,
       AustinFCBadge,
-      Stadium
+      Stadium,
+      ColorSwatches,
+      ToolSection
     },
     data() {
       return {
@@ -462,11 +409,13 @@
         showGreeting: false,
 
         showWelcomeBack: false,
-        
+
         manageColors: false,
         colorToAdd: null,
 
         colors: null,
+
+        openSection: 'shirt',
 
         shirtOptions,
         activeShirtOption: 'barcode',
@@ -480,13 +429,13 @@
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
-        
+
         collarFill: black,
         showButtonCollar: false,
-        
+
         shortsFill: black,
         shortsCuffsFill: green,
-        
+
         socksFill: black,
         socksCuffsFill: black,
         socksHoops: false,
@@ -526,6 +475,12 @@
 
         window.scrollTo(scrollOptions);
       },
+      toggleSection(name) {
+        this.openSection = this.openSection === name ? null : name;
+      },
+      formatOption(option) {
+        return option.replace(/-/g, ' ');
+      },
       arraysMatch(_arr1, _arr2) {
         if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
           return false;
@@ -556,7 +511,7 @@
         if(this.colorToAdd) {
           this.colors.push(color);
         }
-        
+
         setTimeout(() => {
           this.colorToAdd = null;
         }, 200);
@@ -687,7 +642,7 @@
         if(this.logoFill === this.shirtTypeFill) {
           this.setShirtTypeFill(this.getRandomColor);
         }
-        
+
         this.backToTop();
       },
       handleGreetingClose(randomizePref) {
@@ -734,7 +689,7 @@
       this.getSetting();
 
       let hasVisited = localStorage.getItem('visitedAustinFCKitDesigner');
-      
+
       if (!hasVisited) {
         setTimeout(() => {
           this.showGreeting = true;
@@ -747,19 +702,36 @@
 </script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
+  :root {
+    --verde: #00B140;
+    --verde-bright: #27D566;
+    --verde-ink: #042A12;
 
-  @keyframes floatABit {
-    10% { transform: translateY(-0.5px); }
-    80% { transform: translateY(0.5px); }
+    --bg-panel: rgba(11, 14, 13, .93);
+    --bg-raised: #171B19;
+    --bg-sunken: #0C100E;
+
+    --line: rgba(255, 255, 255, .09);
+    --line-strong: rgba(255, 255, 255, .18);
+
+    --text: #EDF0EE;
+    --text-dim: #969E9A;
+    --text-faint: #6B736F;
+
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 16px;
+
+    --font-display: 'Bungee Inline', system-ui, sans-serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    --toolbar-w: clamp(320px, 27vw, 400px);
   }
 
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter-from, .fade-leave-to {
-    opacity: 0;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
   html {
@@ -768,315 +740,33 @@
 
   html,
   body {
-    padding: 0;
     margin: 0;
-    font-size: 12pt;
-    font-family: 'Bungee Inline', cursive;
-  }
-
-  .one {
-    background: rgb(131,58,180);
-    background: linear-gradient(38deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
-  }
-
-  .two {
-    background-color: #FFE53B;
-    background-image: linear-gradient(147deg, #FFE53B 0%, #FF2525 74%);
-  }
-
-  .three {
-    background-color: #A9C9FF;
-    background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
-  }
-
-  .four {
-    background-color: rgba(255,85,85,1);
-    background-image: linear-gradient( 90.1deg,  rgba(255,85,85,1) 0.1%, rgba(85,85,255,1) 100% );
-  }
-
-  body {
+    padding: 0;
     overflow: hidden;
+    background-color: var(--bg-sunken);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
   }
 
-  * {
-    transition: all .2s;
-  }
-
-  span,
-  p,
-  li {
-    font-family: 'Cairo', sans-serif;
-  }
-
-  a {
-    text-decoration: none;
-    color: #F4D03F;
-    opacity: .8;
-  }
-
-  a:hover {
-    text-decoration: none;
-    opacity: 1;
-  }
-
-  a.block-link {
-    display: block;
-    margin-bottom: 1em;
-    text-align: center;
-  }
-
-  h3 {
-    padding: .25em .25em .25em 1em;
-    margin-left: -1em;
-    background-color: #00B140;
-    color: black;
-  }
-
-  button {
-    text-transform: uppercase;
-    margin: 0 .25rem .25rem 0;
-    padding: .5em 1em;
-    outline: 0;
-    border: none;
-    padding: none;
-    border-radius: 4px;
-    background-color: #CCC;
-  }
-
-  button:hover {
-    background-color: white;
-    cursor: pointer;
-    color: #00B140;
-  }
-
-  button.active {
-    background-color: #00B140;
-    color: white;
-  }
+  /* ---- Stage backdrop -------------------------------------------------- */
 
   main {
     position: relative;
-  }
-
-  .greeting {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 10;
-  }
-
-  .greeting-main {
-    padding: 2em;
-    margin: 1em auto 0 auto;
-    max-width: 65%;
-    background-color: #000000;
-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='72' viewBox='0 0 36 72'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23333333' fill-opacity='0.81'%3E%3Cpath d='M2 6h12L8 18 2 6zm18 36h12l-6 12-6-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    color: white;
-    position: static;
-    z-index: 100;
-  }
-
-  @media screen and (max-height: 600px) {
-    .greeting-main {
-      margin: 0 auto;
-      padding: 0;
-    }
-  }
-
-  .greeting-main h2 {
-    color: #00B140;
-    font-size: 240%;
-    margin: 0 0 .5rem 0;
-  }
-
-  .greeting-main p {
-    font-size: 1.25em;
-  }
-
-  .greeting-main button {
-    background-color: #00B140;
-    color: black;
-    font-size: 1.25em;
-  }
-
-  .greeting-main button:hover {
-    color: white;
-  }
-
-  #app {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-    position: static;
-    z-index: 2;
-  }
-
-  #toolbar {
-    width: 30vw;
     min-height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    overflow: auto;
-    padding: 1em 0 5em 1em;
-    position: static;
-    z-index: 2;
+    /* .stadium-stage is scaled up, and a transformed element still contributes
+       its scaled bounds to scrollable overflow. Without this the document picks
+       up ~37px of phantom scroll height. */
+    overflow: hidden;
   }
 
-  #toolbar header {
-    text-align: center;
-  }
-
-  #toolbar header h2 {
-    margin: 0;
-    padding: 0;
-  }
-
-  #toolbar h4 {
-    margin: .5em 0 .25em 0;
-    color: #ccc;
-  }
-
-  #toolbar header .toolbar-badge {
-    transition: all .2s;
-    width: 2.5em;
-  }
-
-  #toolbar p {
-    line-height: 1.2;
-  }
-
-  .toolbar-badge:hover {
-    transform: scale(1.3);
-  }
-
-  #kit-stage {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    padding-top: 2em;
-    animation: floatABit 1s infinite ease-in-out;
-    position: static;
-    z-index: 9;
-  }
-
-  .kit-display {
-    height: 90vh;
-  }
-
-  .shirt-type-selection {
-    padding-right: 2em;
-  }
-
-  .color-select {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .color-select.color-display .color-option:hover {
-    cursor: default;
-  }
-
-  .color-mgmt .color-display {
-    margin-bottom: 2em;
-  }
-
-  .color-display input.color-to-add {
-    width: 15em;
-    padding-left: 1em;
-    border: 4px solid;
-  }
-
-  @media screen and (max-width: 860px) {
-    .color-display input.color-to-add {
-      padding: 20px;
-    }
-  }
-
-  .color-option {
-    width: 3em;
-    height: 3em;
-    border-radius: 50%;
-    margin: 0 .5em .5em 0;
-    border: 4px solid rgba(255,255,255,0.4);
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-  }
-
-  .color-option:hover {
-    border: 4px solid rgba(255,255,255,0.7);
-  }
-
-  .color-option.active {
-    border-color: #F4D03F;
-  }
-
-  .color-option button {
-    padding: 0;
-    margin: 0;
-    background-color: transparent;
-    position: absolute;
-    top: 10px;
-    right: 0;
-    left: 15px;
-    margin: auto;
-    opacity: 0;
-    transition: all .2s;
-    pointer-events: none;
-  }
-
-  .color-option:hover button {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .color-picker-label {
-    display: block;
-  }
-
-  .color-picker-input {
-    width: 100%;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  .help {
-    position: absolute;
-    bottom: 0;
-    padding: 1em;
-    background-color: rgba(0,0,0,0.7);
-    color: white;
-    right: 0;
-    left: 0;
-    margin: auto;
-    max-width: 30em;
-    text-align: center;
-    z-index: 1;
-  }
-
-  .help p {
-    padding: 0;
-    margin: 0;
-    font-size: 0.8em;
-  }
-
-  .invisible {
-    visibility: hidden;
-  }
-
-  strong {
-    color: #00B140;
-  }
-
-  .attribution {
-    font-size: 0.8rem;
-    line-height: 1;
-  }
+  /* Four dusk-lit moods. Kept dark so the kit art stays the brightest thing
+     on screen; the old neon gradients fought the stadium for attention. */
+  .one { background: linear-gradient(165deg, #1B1035 0%, #3D2A6B 48%, #A8458A 100%); }
+  .two { background: linear-gradient(165deg, #2A1206 0%, #8A3B12 52%, #DB9A3C 100%); }
+  .three { background: linear-gradient(165deg, #04171C 0%, #0E4A52 50%, #3C8A88 100%); }
+  .four { background: linear-gradient(165deg, #04150B 0%, #0B4A24 52%, #00B140 100%); }
 
   .stadium-stage {
     position: absolute;
@@ -1085,141 +775,647 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     height: 100vh;
     z-index: 0;
     transform: scale(1.1);
-    opacity: .5;
+    opacity: .34;
+    filter: saturate(.7);
+    pointer-events: none;
   }
 
-  @media screen and (max-width: 1100px) {
-    .stadium-stage {
-      transform: scale(1.7);
-      height: 100vh;
-    }
+  /* Vignette: darkens the edges so the centered kit reads first. */
+  .stage-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 60% at 38% 45%, transparent 0%, rgba(4, 6, 5, .55) 100%),
+      linear-gradient(to top, rgba(4, 6, 5, .5) 0%, transparent 32%);
   }
 
-  @media screen and (max-width: 760px) {
-    .stadium-stage {
-      transform: scale(3);
-      height: 100vh;
-    }
-  }
+  /* ---- Shell ----------------------------------------------------------- */
 
-  @media screen and (max-width: 490px) {
-    .stadium-stage {
-      transform: scale(3.5);
-      height: 100vh;
-    }
-  }
-
-  @keyframes rainbow { 
-    0%{background-position:0% 82%}
-    50%{background-position:100% 19%}
-    100%{background-position:0% 82%}
-  }
-
-  .mobile-welcome {
-    background-color: black;
-    width: 100%;
-    justify-content: center;
-    align-content: center;
-    color: white;
+  #app {
     position: relative;
-    z-index: 10;
-    padding: .25rem;
-    border-top: 5px solid #00B140;
+    z-index: 2;
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 
-  .mobile-welcome p {
+  #kit-stage {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 28px 28px 76px;
+  }
+
+  .kit-display {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, .45));
+    animation: floatABit 6s infinite ease-in-out;
+  }
+
+  @keyframes floatABit {
+    0%, 100% { transform: translateY(-4px); }
+    50% { transform: translateY(4px); }
+  }
+
+  .help {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin: 0;
-    padding: 0;
-    font-size: .8em;
-    padding: 0 1.5em;
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background-color: rgba(10, 13, 11, .66);
+    backdrop-filter: blur(12px);
+    color: var(--text-dim);
+    font-size: .74rem;
+    white-space: nowrap;
+  }
+
+  kbd {
+    padding: 2px 7px;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, .07);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: .68rem;
+    font-weight: 600;
+  }
+
+  /* ---- Toolbar --------------------------------------------------------- */
+
+  #toolbar {
+    display: flex;
+    flex: 0 0 var(--toolbar-w);
+    flex-direction: column;
+    width: var(--toolbar-w);
+    border-left: 1px solid var(--line);
+    background-color: var(--bg-panel);
+    backdrop-filter: blur(24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .toolbar-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 14px;
+    padding: 20px;
+    border-bottom: 1px solid var(--line);
+    background-color: var(--bg-panel);
+    backdrop-filter: blur(24px);
+  }
+
+  .toolbar-badge-link {
+    display: block;
+    grid-row: span 2;
+    align-self: center;
+  }
+
+  .toolbar-badge {
+    display: block;
+    width: 42px;
+    transition: transform .2s ease;
+  }
+
+  .toolbar-badge-link:hover .toolbar-badge {
+    transform: scale(1.08);
+  }
+
+  .toolbar-titles {
+    align-self: center;
+  }
+
+  .wordmark {
+    margin: 0;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    letter-spacing: .01em;
+    line-height: 1.1;
+  }
+
+  .toolbar-sub {
+    margin: 3px 0 0;
+    color: var(--text-faint);
+    font-size: .74rem;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .toolbar-actions .btn {
+    flex: 1;
+  }
+
+  .toolbar-sections {
+    flex: 1 0 auto;
+  }
+
+  /* ---- Fields ---------------------------------------------------------- */
+
+  .field-label {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--text-dim);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .field-label em {
+    color: var(--text-faint);
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: .04em;
+    text-transform: none;
+  }
+
+  .design-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .design-option {
+    padding: 10px 8px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-raised);
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-size: .68rem;
+    font-weight: 500;
+    letter-spacing: .05em;
+    text-transform: uppercase;
     text-align: center;
-    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color .18s ease, color .18s ease, background-color .18s ease;
   }
 
-  .mob-welcome-badge {
-    width: 2em;
+  .design-option:hover {
+    border-color: var(--line-strong);
+    color: var(--text);
   }
 
-  /** RESPONSIVE **/
+  .design-option.active {
+    border-color: var(--verde);
+    background-color: var(--verde);
+    color: var(--verde-ink);
+    font-weight: 700;
+  }
+
+  .design-option:focus-visible,
+  .segmented button:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 2px;
+  }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-sunken);
+  }
+
+  .segmented button {
+    padding: 8px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-size: .72rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .18s ease, color .18s ease;
+  }
+
+  .segmented button:hover {
+    color: var(--text);
+  }
+
+  .segmented button.active {
+    background-color: var(--verde);
+    color: var(--verde-ink);
+    font-weight: 700;
+  }
+
+  /* ---- Buttons --------------------------------------------------------- */
+
+  .btn {
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    font-family: var(--font-ui);
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    cursor: pointer;
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background-color: var(--verde);
+    color: var(--verde-ink);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--verde-bright);
+  }
+
+  .btn-ghost {
+    border-color: var(--line-strong);
+    background-color: transparent;
+    color: var(--text);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--text-faint);
+    background-color: rgba(255, 255, 255, .05);
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* ---- Toolbar footer -------------------------------------------------- */
+
+  .toolbar-footer {
+    padding: 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  .hashtag {
+    margin: 0 0 14px;
+    color: var(--text-dim);
+    font-size: .76rem;
+    line-height: 1.5;
+  }
+
+  .hashtag strong {
+    display: block;
+    margin-top: 2px;
+    color: var(--verde);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  a {
+    color: var(--verde);
+    text-decoration: none;
+    transition: color .18s ease;
+  }
+
+  a:hover {
+    color: var(--verde-bright);
+    text-decoration: underline;
+  }
+
+  .footer-links a {
+    font-size: .76rem;
+  }
+
+  .attribution {
+    margin: 0;
+    color: var(--text-faint);
+    font-size: .66rem;
+    line-height: 1.55;
+  }
+
+  /* ---- Modals ---------------------------------------------------------- */
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background-color: rgba(4, 6, 5, .74);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal {
+    width: min(620px, 100%);
+    max-height: min(88vh, 780px);
+    overflow-y: auto;
+    padding: 34px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+    background-color: var(--bg-raised);
+    box-shadow: 0 28px 70px rgba(0, 0, 0, .62);
+  }
+
+  .modal-eyebrow {
+    margin: 0 0 8px;
+    color: var(--verde);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .modal-title {
+    margin: 0 0 18px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .modal p {
+    margin: 0 0 16px;
+    color: var(--text-dim);
+    font-size: .94rem;
+    line-height: 1.65;
+  }
+
+  .modal-note {
+    padding: 13px 16px;
+    border-left: 2px solid var(--verde);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    background-color: rgba(0, 177, 64, .08);
+  }
+
+  .modal-note strong {
+    color: var(--verde);
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 26px;
+  }
+
+  .palette-block {
+    margin-bottom: 22px;
+  }
+
+  .add-color-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    margin-bottom: 12px;
+  }
+
+  .color-to-add {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-sunken);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: .88rem;
+  }
+
+  .color-to-add::placeholder {
+    color: var(--text-faint);
+  }
+
+  .color-to-add:focus {
+    border-color: var(--verde);
+    outline: none;
+  }
+
+  .color-preview {
+    flex: 0 0 42px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+  }
+
+  .color-preview.empty {
+    border-style: dashed;
+    border-color: var(--text-faint);
+    background-color: transparent;
+  }
+
+  .color-picker {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .color-picker label {
+    color: var(--text-faint);
+    font-size: .76rem;
+  }
+
+  .color-picker-input {
+    width: 54px;
+    height: 32px;
+    padding: 2px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-sunken);
+    cursor: pointer;
+  }
+
+  /* ---- Toast ----------------------------------------------------------- */
+
+  .toast {
+    position: fixed;
+    /* Clears the .help pill, which also sits bottom-center. */
+    bottom: 76px;
+    left: 50%;
+    z-index: 60;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 13px 22px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background-color: rgba(16, 20, 18, .95);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .5);
+    font-size: .82rem;
+    white-space: nowrap;
+  }
+
+  .toast strong {
+    color: var(--verde);
+  }
+
+  .toast span {
+    color: var(--text-dim);
+  }
+
+  /* ---- Transitions ----------------------------------------------------- */
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity .32s ease;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+
+  /* ---- Responsive ------------------------------------------------------ */
+
   .show-on-mobile {
     display: none;
   }
 
-  .mob-randomize {
-    display: none;
-    width: 100%;
-    padding-top: .5rem;
+  .mobile-welcome {
+    margin: 0;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background-color: rgba(0, 177, 64, .08);
+    color: var(--text-dim);
+    font-size: .76rem;
+    line-height: 1.5;
   }
 
-  @media (max-width: 640px) {
+  @media screen and (max-width: 900px) {
+    html,
     body {
-      overflow-y: auto;
-    }
-
-    .mob-randomize {
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      align-content: center;
+      overflow: auto;
     }
 
     #app {
-      flex-wrap: wrap;
+      flex-direction: column;
       height: auto;
-    }
-
-    main {
-      overflow-x: hidden;
+      overflow: visible;
     }
 
     #kit-stage {
-      width: 100vw;
-      padding-top: 0;
+      /* A definite height, not min-height: the kit's max-height:100% has
+         nothing to resolve against once #app stops being viewport-tall. */
+      height: 58vh;
+      min-height: 320px;
+      padding: 20px 20px 24px;
     }
 
     #toolbar {
-      width: 100vw;
-      background-color: rgba(0,0,0,0.9);
+      flex: 1 1 auto;
+      width: 100%;
+      border-top: 1px solid var(--line);
+      border-left: 0;
+      overflow-y: visible;
+    }
+
+    /* The page scrolls as a whole here, and .mobile-actions already pins the
+       same two buttons to the bottom, so the header neither sticks nor repeats
+       them. */
+    .toolbar-header {
+      position: static;
+    }
+
+    .toolbar-actions {
+      display: none;
+    }
+
+    .toolbar-footer {
+      padding-bottom: 92px;
+    }
+
+    .stadium-stage {
+      transform: scale(1.7);
     }
 
     .help {
       display: none;
     }
 
-    .mobile-welcome {
-      display: flex;
-    }
-
-    .color-select {
-      justify-content: center;
-    }
-
-    #toolbar h4 {
-      text-align: center;
-    }
-
-    .shirt-type-selection {
-      justify-content: center;
-      padding-right: 0;
-      text-align: center;
-    }
-
-    h3 {
-      text-align: center;
-    }
-
-    button.toggle {
-      margin: 0 auto;
+    .show-on-mobile {
       display: block;
     }
 
     .not-mobile {
       display: none;
     }
+
+    .mobile-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      display: flex;
+      gap: 9px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      background-color: var(--bg-panel);
+      backdrop-filter: blur(20px);
+    }
+
+    .mobile-actions .btn {
+      flex: 1;
+      padding: 13px 16px;
+    }
+
+    .modal {
+      padding: 24px;
+    }
+
+    .modal-title {
+      font-size: 1.45rem;
+    }
+
+    .toast {
+      bottom: 86px;
+      flex-direction: column;
+      gap: 2px;
+      align-items: center;
+      white-space: normal;
+      text-align: center;
+    }
   }
 
-  .hashtag {
-    max-width: 300px;
-    margin: 0 auto 1rem auto;
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
   }
 </style>
