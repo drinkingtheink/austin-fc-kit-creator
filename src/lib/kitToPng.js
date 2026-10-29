@@ -215,9 +215,15 @@ async function paintStadium(ctx, stadiumSvg) {
 
   try {
     image = await svgToImage(stadiumSvg, rect.width, rect.height);
-  } catch {
+  } catch (err) {
     // The backdrop is decoration. If it will not rasterize, the gradient
     // behind it is still a perfectly good background.
+    //
+    // Say so, though. Swallowing this silently once hid a stadium that had
+    // stopped exporting entirely: an XML comment containing a doubled hyphen
+    // made the serialized SVG unparseable, and the only symptom was a PNG
+    // with no stands in it.
+    console.warn('[kit-export] stadium backdrop skipped', err);
     return;
   }
 

@@ -1,6 +1,52 @@
 <template>
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
    viewBox="0 0 2833 1618.5" style="enable-background:new 0 0 2833 1618.5;" xml:space="preserve">
+<defs>
+  <!-- Crowd. Three tiled patterns rather than thousands of nodes; the figures
+       and the reasoning behind their tones and jitter live in lib/crowd.js.
+
+       Two rules govern anything added inside this defs block.
+
+       Paint goes on as a presentation attribute, never a class. The exporter
+       skips the contents of defs when it inlines computed styles (inlinePaint
+       in kitToPng.js), so a class here would render on screen and come out
+       blank in the PNG.
+
+       Comments here may not contain a doubled hyphen. XML forbids it, Vue's
+       HTML parser does not, so such a comment survives into the DOM and then
+       makes XMLSerializer emit a document the data URL parser rejects. That
+       does not fail loudly: paintStadium catches it and drops the backdrop,
+       so the whole stadium silently disappears from the export. -->
+  <pattern v-for="deck in decks" :key="deck.id"
+           :id="`crowd-${deck.id}`" patternUnits="userSpaceOnUse"
+           :width="deck.width" :height="deck.height"
+           :patternTransform="deck.rake ? `rotate(${deck.rake})` : null">
+    <ellipse v-for="(figure, i) in deck.figures" :key="i"
+             :cx="figure.cx" :cy="figure.cy"
+             :rx="figure.rx" :ry="figure.ry" :fill="figure.fill"/>
+  </pattern>
+
+  <!-- The decks, clipped from the polygons that already draw them. A second
+       copy of those points would be a second home for the same numbers, and
+       the two would drift. A clip path takes geometry only, so the grey fill
+       the exporter inlines onto each polygon is ignored here. -->
+  <clipPath id="crowd-far-deck">
+    <use xlink:href="#far-top-stand"/>
+  </clipPath>
+
+  <clipPath id="crowd-mid-deck">
+    <use xlink:href="#far-bottom-stand-1"/>
+    <use xlink:href="#far-bottom-stand-2"/>
+    <use xlink:href="#far-bottom-stand-3"/>
+    <use xlink:href="#far-bottom-stand-4"/>
+  </clipPath>
+
+  <clipPath id="crowd-near-deck">
+    <use xlink:href="#right-stand-1"/>
+    <use xlink:href="#right-stand-2"/>
+    <use xlink:href="#right-stand-3"/>
+  </clipPath>
+</defs>
 <path id="cloud5_1_" class="st0" d="M395.2,352.9c-47.2,40-95.4,78.8-143.6,117.5c-36.8,29.6-73.6,59.2-110.5,88.9
   c-5.1,4.1-10.6,8.4-17.1,9.1c12-19.5,34.3-30.8,46.5-50.2c8.3-13.1,14.1-31.3,29.4-33.7c2.6-0.4,5.4-0.3,7.5-1.9
   c2-1.5,2.7-4.2,3.4-6.6c6.6-23.2,26.6-42.2,50.2-47.4c-2.4-8.5-2.5-17.9,1.2-25.9s11.6-14.3,20.4-14.7c2.9-0.1,5.8,0.3,8.5-0.8
@@ -32,10 +78,13 @@
 <polygon id="right-stands-bg" class="st2" points="1654.9,798.7 1722.5,798.7 1722.5,780.2 1807,780.2 1830.3,743.7 1910.5,743.7 
   1959.1,703.5 2834.4,680.3 2834.4,902.4 1811.3,864.3 1756.3,868.5 "/>
 <g id="right-stands">
-  <polygon class="st3" points="1986.5,712.5 1842.1,855.7 2113.3,867 2244.7,704.1  "/>
-  <polygon class="st3" points="2255.5,704.1 2126.6,867 2485.1,878.2 2580.2,697  "/>
-  <polygon class="st3" points="2593.5,697 2499.9,878.2 2834.4,887.4 2834.4,690.7  "/>
+  <polygon id="right-stand-1" class="st3" points="1986.5,712.5 1842.1,855.7 2113.3,867 2244.7,704.1  "/>
+  <polygon id="right-stand-2" class="st3" points="2255.5,704.1 2126.6,867 2485.1,878.2 2580.2,697  "/>
+  <polygon id="right-stand-3" class="st3" points="2593.5,697 2499.9,878.2 2834.4,887.4 2834.4,690.7  "/>
 </g>
+<!-- Clipped to the deck above rather than carrying a second copy of its
+     points, and painted before #right-wall so the wall stays in front. -->
+<rect class="crowd" width="100%" height="100%" clip-path="url(#crowd-near-deck)" fill="url(#crowd-near)"/>
 <polygon id="right-wall" points="1814.7,883.2 1814.7,857.8 2834.4,895.9 2834.4,937.5 "/>
 <polygon id="far-stand-bg" class="st2" points="20.4,810.3 147.2,810.3 147.2,629.8 123.3,587.5 128.9,548 1428.9,638.2 1588,780.7 
   1588,810.3 1654.9,798.7 1826.4,884.6 20.4,1033.1 "/>
@@ -43,11 +92,12 @@
 <polygon id="field-bg" class="st2" points="20.4,1033.1 0,1302.8 -0.9,1618.5 2833,1618.5 2834.4,937.5 1784.3,848.2 "/>
 <polygon id="field_2_" class="st4" points="320.2,998.8 1133.5,1618.5 2851,941.7 1826.4,882.5 1249.7,935.3 "/>
 <g id="far-bottom-stand">
-  <polygon class="st3" points="20.4,820.2 172.6,820.2 243,975.9 20.4,1011.9   "/>
-  <polygon class="st3" points="206.7,821.4 243,975.9 497.9,958.3 403.5,820.3  "/>
-  <polygon class="st3" points="431.4,821.7 521.5,958.3 717.6,940 611.7,818.6  "/>
-  <polygon class="st3" points="639,824 730.3,928.7 1649.5,865.3 1558.9,813.2  "/>
+  <polygon id="far-bottom-stand-1" class="st3" points="20.4,820.2 172.6,820.2 243,975.9 20.4,1011.9   "/>
+  <polygon id="far-bottom-stand-2" class="st3" points="206.7,821.4 243,975.9 497.9,958.3 403.5,820.3  "/>
+  <polygon id="far-bottom-stand-3" class="st3" points="431.4,821.7 521.5,958.3 717.6,940 611.7,818.6  "/>
+  <polygon id="far-bottom-stand-4" class="st3" points="639,824 730.3,928.7 1649.5,865.3 1558.9,813.2  "/>
 </g>
+<rect class="crowd" width="100%" height="100%" clip-path="url(#crowd-mid-deck)" fill="url(#crowd-mid)"/>
 <path id="field-markings" class="st5" d="M1826.6,880.4l-0.2,0L398,1001.5l186,112.5l84.7,51.2h0l476.4,288.1l0.8,0.5l1608.6-505.8
   l10.7-3.4L1826.6,880.4z M2474.1,928.9l-78.9,20.4l-543.5-40.3l117.8-14.5L2474.1,928.9z M614.1,1127.2l-88.8-53.7l168.8-18.9
   l182.1,79.4l-206.6,26.7L614.1,1127.2z M891.9,1136.3l-196.7-85.8l-0.5-0.2l-175.4,19.6l-55.9-33.8l411.1-38.8l527,141.4
@@ -68,6 +118,7 @@
   <polygon class="st7" points="176.8,996.4 1654.9,881.5 1654.9,861 147.2,968.9  "/>
 </g>
 <polygon id="far-top-stand" class="st3" points="137.3,554.6 193.7,765.9 1577.7,777.2 1420,644.4 "/>
+<rect class="crowd" width="100%" height="100%" clip-path="url(#crowd-far-deck)" fill="url(#crowd-far)"/>
 <g id="far-top-wall">
   <polygon class="st7" points="182.4,780.7 182.4,808.9 1577.7,796.6 1577.7,780.7  "/>
 </g>
@@ -491,8 +542,15 @@
 </template>
 
 <script>
+  import { CROWD_DECKS } from '../lib/crowd.js';
+
   export default {
-    name: 'Stadium'
+    name: 'Stadium',
+    data() {
+      // Not reactive state; it never changes. It sits here only so the
+      // template can reach it.
+      return { decks: CROWD_DECKS };
+    }
   };
 </script>
 
