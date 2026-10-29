@@ -6,6 +6,9 @@
 //
 // Hex only, because that is what the app's palette is made of. Clubs carry
 // between two and six colors; nothing here assumes a count.
+//
+// Houston Dynamo is deliberately absent. Regenerating this list from the
+// source will put it back.
 
 export const CLUB_PALETTES = [
   { id: 'as-roma', name: "A.S. Roma", colors: ['#F0BC42', '#8E1F2F', '#CACACC', '#000000'] },
@@ -39,7 +42,6 @@ export const CLUB_PALETTES = [
   { id: 'getafe', name: "Getafe CF", colors: ['#005999', '#C43A2F', '#FCED0B', '#FFFFFF', '#7DA738'] },
   { id: 'granada', name: "Granada CF", colors: ['#A61B2B', '#FFFFFF'] },
   { id: 'hellas-verona', name: "Hellas Verona", colors: ['#005395', '#FFE74A', '#C49E46', '#221F20'] },
-  { id: 'houston-dynamo', name: "Houston Dynamo", colors: ['#FF6B00', '#101820'] },
   { id: 'huddersfield', name: "Huddersfield Town", colors: ['#0E63AD', '#FFFFFF'] },
   { id: 'inter-miami', name: "Inter Miami CF", colors: ['#F7B5CD', '#231F20'] },
   { id: 'inter-milan', name: "Inter Milan", colors: ['#000000', '#010E80'] },
