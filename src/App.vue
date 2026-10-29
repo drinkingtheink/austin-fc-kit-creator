@@ -11,6 +11,11 @@
       ></div>
     </transition>
 
+    <!-- Only this sky is dark enough overhead to hold them. -->
+    <transition name="stage" :duration="800">
+      <Stars v-if="setting === 'summerNight'" class="stage-stars" />
+    </transition>
+
     <Stadium ref="stadium" class="stadium-stage" aria-hidden="true" />
     <div class="stage-scrim" aria-hidden="true"></div>
 
@@ -366,6 +371,7 @@
   import Kit from './components/Kit.vue';
   import AustinFCBadge from './components/AustinFCBadge.vue';
   import Stadium from './components/Stadium.vue';
+  import Stars from './components/Stars.vue';
   import ColorSwatches from './components/ColorSwatches.vue';
   import ToolSection from './components/ToolSection.vue';
   import ToolField from './components/ToolField.vue';
@@ -461,6 +467,7 @@
       Kit,
       AustinFCBadge,
       Stadium,
+      Stars,
       ColorSwatches,
       ToolSection,
       ToolField,
@@ -949,7 +956,8 @@
           const blob = await kitToPngBlob(
             this.$refs.kit.$el,
             getBackdrop(this.setting),
-            this.$refs.stadium.$el
+            this.$refs.stadium.$el,
+            this.setting === 'summerNight'
           );
 
           downloadBlob(blob, filename);
@@ -1122,13 +1130,19 @@
     opacity: 0;
   }
 
+  .stage-stars {
+    z-index: 1;
+  }
+
   .stadium-stage {
     position: absolute;
     top: 0;
     left: 0;
     height: 100vh;
-    z-index: 1;
-    transform: scale(1.1);
+    z-index: 2;
+    /* Pushed in 10% from the 1.1 it sat at, which crops the empty apron at
+       the edges and brings the stands up behind the kit. */
+    transform: scale(1.21);
     opacity: .34;
     filter: saturate(.7);
     pointer-events: none;
@@ -1138,7 +1152,7 @@
   .stage-scrim {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     pointer-events: none;
     background:
       radial-gradient(ellipse 70% 60% at 38% 45%, transparent 0%, rgba(4, 6, 5, .55) 100%),
@@ -1149,7 +1163,7 @@
 
   #app {
     position: relative;
-    z-index: 3;
+    z-index: 4;
     display: flex;
     height: 100vh;
     height: 100dvh;
@@ -1877,7 +1891,7 @@
     }
 
     .stadium-stage {
-      transform: scale(1.7);
+      transform: scale(1.87);
     }
 
     .help {

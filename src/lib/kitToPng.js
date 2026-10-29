@@ -1,4 +1,5 @@
 import { toCanvasGradient } from './stageBackdrops.js';
+import { paintStars } from './stars.js';
 
 // Portrait, sized to suit a tall subject and the social posts the app asks for.
 const OUTPUT_WIDTH = 1200;
@@ -171,9 +172,10 @@ function loadImage(src) {
  * @param {SVGSVGElement} kitSvg       the mounted kit
  * @param {object} backdrop            an entry from STAGE_BACKDROPS
  * @param {SVGSVGElement} [stadiumSvg] the stadium, drawn behind the kit
+ * @param {boolean} [withStars]        paint the summer-night sky's stars
  * @returns {Promise<Blob>}
  */
-export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null) {
+export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null, withStars = false) {
   const canvas = document.createElement('canvas');
 
   canvas.width = OUTPUT_WIDTH;
@@ -183,6 +185,13 @@ export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null) {
 
   ctx.fillStyle = toCanvasGradient(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT, backdrop);
   ctx.fillRect(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
+
+  // Above the sky, behind the stands, exactly as the page stacks them.
+  // Positions come from stars.js rather than being re-rolled here, so the
+  // export cannot end up painting a different sky from the one on screen.
+  if (withStars) {
+    paintStars(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT);
+  }
 
   if (stadiumSvg) {
     await paintStadium(ctx, stadiumSvg);
