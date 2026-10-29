@@ -774,7 +774,7 @@
     <!-- Painted last so it falls across the whole garment, print included:
          a real shirt's sponsor and number are lit with the cloth. Purely
          luminance, so it works with any color or pattern underneath. -->
-    <g id="kit-shading" aria-hidden="true">
+    <g id="kit-shading" aria-hidden="true" pointer-events="none">
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
         <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
