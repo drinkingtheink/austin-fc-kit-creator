@@ -12,6 +12,56 @@
     class="kit-display"
     :class="{ 'is-revealing': revealing, 'is-frozen': frozen }"
   >
+    <defs>
+      <!-- Light from the upper left. Stops are in objectBoundingBox units, so
+           the same gradient reads as a cylinder on any garment it is painted
+           over, whatever that garment's width. -->
+      <linearGradient id="kitRound" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#000" stop-opacity=".30" />
+        <stop offset=".13" stop-color="#000" stop-opacity=".09" />
+        <stop offset=".33" stop-color="#fff" stop-opacity=".17" />
+        <stop offset=".56" stop-color="#fff" stop-opacity=".03" />
+        <stop offset=".82" stop-color="#000" stop-opacity=".12" />
+        <stop offset="1" stop-color="#000" stop-opacity=".33" />
+      </linearGradient>
+
+      <!-- Vertical falloff: cloth catches light at the shoulder and gathers
+           shadow where it hangs. -->
+      <linearGradient id="kitDepth" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".10" />
+        <stop offset=".5" stop-color="#000" stop-opacity="0" />
+        <stop offset="1" stop-color="#000" stop-opacity=".20" />
+      </linearGradient>
+
+      <!-- Knit weave. userSpaceOnUse so the tile stays a constant size across
+           every garment instead of stretching to each one. -->
+      <pattern id="kitKnit" width="6" height="6" patternUnits="userSpaceOnUse">
+        <path d="M0 1.5h6" stroke="#fff" stroke-opacity=".055" stroke-width="1.5" />
+        <path d="M0 4.5h6" stroke="#000" stroke-opacity=".055" stroke-width="1.5" />
+      </pattern>
+
+      <!-- Each garment is its own cylinder, so each gets its own clip. The
+           cuffs and trims are deliberately absent: `right-cuff` and
+           `left-cuff` are each used twice in this file, once on the socks and
+           once on the sleeves, so a reference by id cannot say which it means. -->
+      <clipPath id="clipShirtTrunk"><use href="#shirt-trunk" /></clipPath>
+      <clipPath id="clipRightSleeve"><use href="#right-sleeve" /></clipPath>
+      <clipPath id="clipLeftSleeve"><use href="#left-sleeve" /></clipPath>
+      <clipPath id="clipShorts"><use href="#shorts-trunk" /></clipPath>
+      <clipPath id="clipRightSock"><use href="#right-sock" /></clipPath>
+      <clipPath id="clipLeftSock"><use href="#left-sock" /></clipPath>
+
+      <!-- Children of a clipPath union, so one weave covers the whole kit. -->
+      <clipPath id="clipKitAll">
+        <use href="#shirt-trunk" />
+        <use href="#right-sleeve" />
+        <use href="#left-sleeve" />
+        <use href="#shorts-trunk" />
+        <use href="#right-sock" />
+        <use href="#left-sock" />
+      </clipPath>
+    </defs>
+
     <g id="socks">
       <polygon :class="partClass('socks')" id="right-sock" :style="{ fill: socksFill }" points="276.8,1316.5 183.8,1316.5 142.2,1011.7 306.4,1011.7  "/>
       <polygon :class="partClass('socksCuff')" id="right-cuff" :style="{ fill: socksCuffsFill }" points="148.5,1057.8 301.9,1057.8 306.4,1011.7 142.2,1011.7   "/>
@@ -714,6 +764,42 @@
           C460,254.2,459.9,254.2,459.8,254.3z M458.3,253.7c0.5,0,0.9,0,1.3-0.1c0.4,0,0.6-0.3,0.6-0.7c0-0.4-0.2-0.6-0.6-0.7
           c-0.4,0-0.8,0-1.3,0C458.3,252.8,458.3,253.2,458.3,253.7z"/>
       </g>
+    </g>
+
+    <!-- Painted last so it falls across the whole garment, print included:
+         a real shirt's sponsor and number are lit with the cloth. Purely
+         luminance, so it works with any color or pattern underneath. -->
+    <g id="kit-shading" aria-hidden="true">
+      <g clip-path="url(#clipShirtTrunk)">
+        <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
+        <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
+      </g>
+      <g clip-path="url(#clipRightSleeve)">
+        <rect x="28" y="34" width="147" height="197" fill="url(#kitRound)" />
+        <rect x="28" y="34" width="147" height="197" fill="url(#kitDepth)" />
+      </g>
+      <g clip-path="url(#clipLeftSleeve)">
+        <rect x="540" y="34" width="147" height="197" fill="url(#kitRound)" />
+        <rect x="540" y="34" width="147" height="197" fill="url(#kitDepth)" />
+      </g>
+      <g clip-path="url(#clipShorts)">
+        <rect x="134" y="612" width="455" height="318" fill="url(#kitRound)" />
+        <rect x="134" y="612" width="455" height="318" fill="url(#kitDepth)" />
+      </g>
+      <g clip-path="url(#clipRightSock)">
+        <rect x="142" y="1011" width="165" height="306" fill="url(#kitRound)" />
+      </g>
+      <g clip-path="url(#clipLeftSock)">
+        <rect x="410" y="1011" width="165" height="306" fill="url(#kitRound)" />
+      </g>
+      <rect
+        clip-path="url(#clipKitAll)"
+        x="0"
+        y="0"
+        width="709"
+        height="1347"
+        fill="url(#kitKnit)"
+      />
     </g>
   </svg>
 </template>
