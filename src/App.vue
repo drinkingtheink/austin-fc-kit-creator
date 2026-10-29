@@ -1,5 +1,16 @@
 <template>
-  <main :class="setting" :style="{ backgroundImage: stageGradient }">
+  <main :class="setting">
+    <!-- Gradients are not interpolable, so a randomize dissolves one whole
+         backdrop into the next rather than animating the stops. -->
+    <transition name="stage" :duration="800">
+      <div
+        class="stage-gradient"
+        :key="setting"
+        :style="{ backgroundImage: stageGradient }"
+        aria-hidden="true"
+      ></div>
+    </transition>
+
     <Stadium ref="stadium" class="stadium-stage" aria-hidden="true" />
     <div class="stage-scrim" aria-hidden="true"></div>
 
@@ -28,6 +39,10 @@
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
           :shirtMakerFill="shirtMakerFill"
+          :highlight="highlight"
+          :flash="flash"
+          :revealing="revealing"
+          :frozen="frozen"
         />
 
         <p class="help">
@@ -39,13 +54,18 @@
           class="download-kit"
           type="button"
           :disabled="exporting"
-          :title="exportError || 'Download this kit as a PNG'"
+          title="Download this kit as a PNG"
           v-on:click="downloadKit"
         >
-          <svg class="download-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <svg
+            class="download-icon"
+            :class="{ working: exporting }"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16" />
           </svg>
-          <span>{{ exporting ? 'Rendering...' : (exportError || 'Download PNG') }}</span>
+          <span>{{ exporting ? 'Rendering...' : 'Download PNG' }}</span>
         </button>
       </section>
 
@@ -82,50 +102,48 @@
             :open="openSection === 'shirt'"
             v-on:toggle="toggleSection('shirt')"
           >
-            <div class="field">
-              <span class="field-label">Design</span>
+            <ToolField label="Design" part="design">
               <div class="design-grid">
                 <button
-                  type="button"
-                  class="design-option"
-                  :class="{ active: !activeShirtOption }"
-                  :aria-pressed="String(!activeShirtOption)"
-                  v-on:click="clearShirtOption()"
-                >Solid</button>
-                <button
-                  v-for="option in shirtOptions"
-                  :key="option"
+                  v-for="option in designOptions"
+                  :key="option || 'solid'"
                   type="button"
                   class="design-option"
                   :class="{ active: option === activeShirtOption }"
                   :aria-pressed="String(option === activeShirtOption)"
                   v-on:click="setShirtOption(option)"
-                >{{ formatOption(option) }}</button>
+                >
+                  <ShirtThumb
+                    class="design-preview"
+                    :design="option"
+                    :shirtFill="shirtFill"
+                    :typeFill="shirtTypeFill"
+                    :secondaryFill="shirtSecondaryFill"
+                    :sleeveFill="shirtSleeveFill"
+                    :collarFill="collarFill"
+                  />
+                  <span class="design-name">{{ formatOption(option) }}</span>
+                </button>
               </div>
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Primary color</span>
+            <ToolField label="Primary color" part="shirt">
               <ColorSwatches label="Shirt primary color" :colors="colors" v-model="shirtFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Design color</span>
+            <ToolField label="Design color" part="design">
               <ColorSwatches label="Shirt design color" :colors="colors" v-model="shirtTypeFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Secondary color</span>
+            <ToolField label="Secondary color" part="design">
               <ColorSwatches label="Shirt secondary color" :colors="colors" v-model="shirtSecondaryFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Sponsor color</span>
+            <ToolField label="Sponsor color" part="sponsor">
               <ColorSwatches label="Sponsor color" :colors="colors" v-model="logoFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Collar</span>
+            <ToolField label="Collar" part="collar">
               <div class="segmented" role="group" aria-label="Collar type">
                 <button
                   type="button"
@@ -140,27 +158,23 @@
                   v-on:click="setCollarButton(true)"
                 >Buttoned</button>
               </div>
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Collar color</span>
+            <ToolField label="Collar color" part="collar">
               <ColorSwatches label="Collar color" :colors="colors" v-model="collarFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Sleeve color</span>
+            <ToolField label="Sleeve color" part="sleeve">
               <ColorSwatches label="Sleeve color" :colors="colors" v-model="shirtSleeveFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Cuff color</span>
+            <ToolField label="Cuff color" part="shirtCuff">
               <ColorSwatches label="Cuff color" :colors="colors" v-model="shirtCuffFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Brand mark color</span>
+            <ToolField label="Brand mark color" part="maker">
               <ColorSwatches label="Shirt brand mark color" :colors="colors" v-model="shirtMakerFill" />
-            </div>
+            </ToolField>
           </ToolSection>
 
           <ToolSection
@@ -168,20 +182,17 @@
             :open="openSection === 'badge'"
             v-on:toggle="toggleSection('badge')"
           >
-            <div class="field">
-              <span class="field-label">Badge color</span>
+            <ToolField label="Badge color" part="badge">
               <ColorSwatches label="Badge color" :colors="colors" v-model="badgeFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Badge text color</span>
+            <ToolField label="Badge text color" part="badge">
               <ColorSwatches label="Badge text color" :colors="colors" v-model="badgeTextFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Badge background</span>
+            <ToolField label="Badge background" part="badge">
               <ColorSwatches label="Badge background color" :colors="colors" v-model="badgeBGFill" />
-            </div>
+            </ToolField>
 
             <button class="btn btn-ghost btn-block" v-on:click="resetBadge">Reset badge</button>
           </ToolSection>
@@ -191,20 +202,17 @@
             :open="openSection === 'shorts'"
             v-on:toggle="toggleSection('shorts')"
           >
-            <div class="field">
-              <span class="field-label">Primary color</span>
+            <ToolField label="Primary color" part="shorts">
               <ColorSwatches label="Shorts primary color" :colors="colors" v-model="shortsFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Trim color</span>
+            <ToolField label="Trim color" part="shortsTrim">
               <ColorSwatches label="Shorts trim color" :colors="colors" v-model="shortsCuffsFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Number color</span>
+            <ToolField label="Number color" part="number">
               <ColorSwatches label="Number color" :colors="colors" v-model="numberFill" />
-            </div>
+            </ToolField>
           </ToolSection>
 
           <ToolSection
@@ -212,18 +220,15 @@
             :open="openSection === 'socks'"
             v-on:toggle="toggleSection('socks')"
           >
-            <div class="field">
-              <span class="field-label">Primary color</span>
+            <ToolField label="Primary color" part="socks">
               <ColorSwatches label="Socks primary color" :colors="colors" v-model="socksFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Top color</span>
+            <ToolField label="Top color" part="socksCuff">
               <ColorSwatches label="Sock top color" :colors="colors" v-model="socksCuffsFill" />
-            </div>
+            </ToolField>
 
-            <div class="field">
-              <span class="field-label">Hoops</span>
+            <ToolField label="Hoops" part="socksHoops">
               <div class="segmented" role="group" aria-label="Sock hoops">
                 <button
                   type="button"
@@ -238,12 +243,13 @@
                   v-on:click="setSocksHoops(true)"
                 >On</button>
               </div>
-            </div>
+            </ToolField>
 
-            <div class="field" v-show="socksHoops">
-              <span class="field-label">Hoops color</span>
-              <ColorSwatches label="Sock hoops color" :colors="colors" v-model="socksHoopsFill" />
-            </div>
+            <transition name="field-pop">
+              <ToolField v-if="socksHoops" label="Hoops color" part="socksHoops">
+                <ColorSwatches label="Sock hoops color" :colors="colors" v-model="socksHoopsFill" />
+              </ToolField>
+            </transition>
           </ToolSection>
         </div>
 
@@ -306,10 +312,17 @@
       </div>
     </transition>
 
-    <transition name="fade">
-      <div class="toast" v-show="showWelcomeBack" role="status">
-        <strong>Welcome back.</strong>
-        <span>Post your favorites with #AustinFCKitCreator</span>
+    <transition name="toast">
+      <div
+        v-if="toast"
+        :key="toast.id"
+        class="toast"
+        :class="`toast-${toast.tone}`"
+        role="status"
+        aria-live="polite"
+      >
+        <strong>{{ toast.title }}</strong>
+        <span v-if="toast.message">{{ toast.message }}</span>
       </div>
     </transition>
 
@@ -393,6 +406,8 @@
   import Stadium from './components/Stadium.vue';
   import ColorSwatches from './components/ColorSwatches.vue';
   import ToolSection from './components/ToolSection.vue';
+  import ToolField from './components/ToolField.vue';
+  import ShirtThumb from './components/ShirtThumb.vue';
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
 
@@ -419,6 +434,35 @@
     'ArrowDown'
   ];
 
+  // How long a toast stays up, and how long a part keeps its flash.
+  const TOAST_MS = 3400;
+  const FLASH_MS = 700;
+
+  // Long enough to cover the staggered reveal in Kit.vue.
+  const REVEAL_MS = 750;
+
+  // Which kit part each color owns, so a change can flash the shape it moved.
+  // Several colors share a part: the badge is one silhouette whoever paints it.
+  const FILL_PARTS = {
+    shirtFill: 'shirt',
+    shirtTypeFill: 'design',
+    shirtSecondaryFill: 'design',
+    shirtCuffFill: 'shirtCuff',
+    shirtSleeveFill: 'sleeve',
+    shirtMakerFill: 'maker',
+    logoFill: 'sponsor',
+    collarFill: 'collar',
+    badgeFill: 'badge',
+    badgeTextFill: 'badge',
+    badgeBGFill: 'badge',
+    shortsFill: 'shorts',
+    shortsCuffsFill: 'shortsTrim',
+    numberFill: 'number',
+    socksFill: 'socks',
+    socksCuffsFill: 'socksCuff',
+    socksHoopsFill: 'socksHoops'
+  };
+
   const shirtOptions = [
     'barcode',
     'stripes',
@@ -442,14 +486,36 @@
       AustinFCBadge,
       Stadium,
       ColorSwatches,
-      ToolSection
+      ToolSection,
+      ToolField,
+      ShirtThumb
+    },
+    // Every field would otherwise repeat the same pair of listeners. Handing
+    // the setter down keeps that out of a template with twenty of them.
+    provide() {
+      return {
+        spotlight: (part, key) => this.setSpotlight(part, key)
+      };
     },
     data() {
       return {
         setting: null,
         showGreeting: false,
 
-        showWelcomeBack: false,
+        // The one passing-message channel: { id, title, message, tone }.
+        toast: null,
+        toastId: 0,
+
+        // Spotlight state, read by Kit.vue. `highlight` follows the pointer
+        // around the toolbar; `flash` marks a part whose color just moved.
+        highlight: null,
+        flash: null,
+        // A randomize changes seventeen colors at once, which would flash the
+        // whole kit. The reveal speaks for it instead.
+        suppressFlash: false,
+        revealing: false,
+        // Holds the kit still while the exporter reads its computed styles.
+        frozen: false,
 
         manageColors: false,
         colorToAdd: null,
@@ -459,7 +525,6 @@
         openSection: 'shirt',
 
         exporting: false,
-        exportError: null,
 
         shirtOptions,
         activeShirtOption: 'barcode',
@@ -498,6 +563,11 @@
       brightVerde() {
         return green;
       },
+      // null is the solid shirt, so it rides along with the patterns and the
+      // grid needs only one loop.
+      designOptions() {
+        return [null, ...this.shirtOptions];
+      },
       colorToAddBorderColor() {
         return this.colorToAdd ? this.colorToAdd : '#000000';
       }
@@ -507,15 +577,6 @@
         if(this.activeShirtOption === 'hoops' || this.activeShirtOption === 'stripes') {
           this.shirtFill = white;
         }
-      },
-      showWelcomeBack(isVisible) {
-        // Only arm the timer on the way up; it used to re-arm when the toast
-        // dismissed itself, scheduling a pointless second timeout each time.
-        if (!isVisible) return;
-
-        setTimeout(() => {
-          this.showWelcomeBack = false;
-        }, 2000);
       }
     },
     methods: {
@@ -530,7 +591,7 @@
         this.openSection = this.openSection === name ? null : name;
       },
       formatOption(option) {
-        return option.replace(/-/g, ' ');
+        return option ? option.replace(/-/g, ' ') : 'solid';
       },
       arraysMatch(_arr1, _arr2) {
         if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
@@ -573,9 +634,6 @@
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
-      },
-      clearShirtOption() {
-        this.activeShirtOption = null;
       },
       setShirtFill(fill) {
         this.shirtFill = fill;
@@ -634,6 +692,49 @@
       setSocksHoopsFill(fill) {
         this.socksHoopsFill = fill;
       },
+      // A field reports itself lit or unlit. It passes its own key back on the
+      // way out so a stale "unlit" cannot wipe the field the pointer has
+      // already moved on to.
+      setSpotlight(part, key) {
+        if (part === null && this.highlight !== key) return;
+
+        this.highlight = part;
+
+        // A halo and a flash on one part would fight over `animation`.
+        if (part && this.flash === part) {
+          this.flash = null;
+        }
+      },
+      flashPart(part) {
+        // Nothing to announce: the part is already wearing a halo, or a
+        // randomize is about to reveal the whole kit anyway.
+        if (this.suppressFlash || this.highlight === part) return;
+
+        clearTimeout(this.flashTimer);
+        this.flash = null;
+
+        // Dropping the class and re-adding it restarts the one-shot
+        // animation, so a run of changes to one part flashes every time
+        // rather than only the first.
+        this.$nextTick(() => {
+          this.flash = part;
+          this.flashTimer = setTimeout(() => {
+            this.flash = null;
+          }, FLASH_MS);
+        });
+      },
+      notify(title, message = null, tone = 'ok') {
+        clearTimeout(this.toastTimer);
+
+        // A fresh id each time, so a second message re-animates instead of
+        // silently swapping its text.
+        this.toastId += 1;
+        this.toast = { id: this.toastId, title, message, tone };
+
+        this.toastTimer = setTimeout(() => {
+          this.toast = null;
+        }, TOAST_MS);
+      },
       getRandomColor() {
         let randomColor = this.colors[Math.floor(Math.random()*this.colors.length)];
         return randomColor;
@@ -662,6 +763,10 @@
         return randomChoice;
       },
       randomizeKit() {
+        // Seventeen colors are about to move. Let the reveal below carry the
+        // change rather than flashing every part at once.
+        this.suppressFlash = true;
+
         this.setShirtOption(this.getRandomShirtDesign());
         this.setShirtFill(this.getRandomColor());
         this.setShirtTypeFill(this.getRandomColor());
@@ -701,7 +806,28 @@
           this.setNumberFill(this.getRandomColorExcept(this.shortsFill));
         }
 
+        this.revealKit();
         this.backToTop();
+      },
+      // Socks, then shorts, then shirt. The classes live in Kit.vue; this just
+      // arms and disarms them.
+      revealKit() {
+        clearTimeout(this.revealTimer);
+        this.revealing = false;
+
+        // Same restart trick as the flash: the animation only replays if the
+        // class is genuinely re-added.
+        this.$nextTick(() => {
+          this.revealing = true;
+
+          // The fill watchers run in this flush, so releasing the guard only
+          // once it has passed keeps the randomize from flashing.
+          this.suppressFlash = false;
+
+          this.revealTimer = setTimeout(() => {
+            this.revealing = false;
+          }, REVEAL_MS);
+        });
       },
       handleGreetingClose(randomizePref) {
         localStorage.setItem('visitedAustinFCKitDesigner', true);
@@ -737,21 +863,35 @@
         if (this.exporting) return;
 
         this.exporting = true;
-        this.exportError = null;
+
+        // kitToPng.js reads computed styles straight off the live SVG, so a
+        // capture taken mid-animation would bake in a half-interpolated fill
+        // or a part still sliding into place. Settle the kit, then let the
+        // browser apply that before the exporter looks.
+        this.highlight = null;
+        this.flash = null;
+        this.revealing = false;
+        this.frozen = true;
 
         try {
+          await this.$nextTick();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+
+          const filename = this.kitFilename();
           const blob = await kitToPngBlob(
             this.$refs.kit.$el,
             getBackdrop(this.setting),
             this.$refs.stadium.$el
           );
 
-          downloadBlob(blob, this.kitFilename());
+          downloadBlob(blob, filename);
+          this.notify('Kit saved.', filename);
         } catch (err) {
-          this.exportError = 'Export failed. Try again?';
+          this.notify('Export failed.', 'Give it another go?', 'warn');
           // Leave a trace for anyone debugging a browser-specific failure.
           console.error('[kit-export]', err);
         } finally {
+          this.frozen = false;
           this.exporting = false;
         }
       },
@@ -796,6 +936,13 @@
         this.badgeBGFill = black;
       }
     },
+    created() {
+      // Seventeen near-identical watchers, declared once. Each one tells the
+      // kit which part just changed color so it can flash.
+      Object.entries(FILL_PARTS).forEach(([model, part]) => {
+        this.$watch(model, () => this.flashPart(part));
+      });
+    },
     mounted() {
       window.addEventListener('keyup', this.handleShortcut);
       // Copy, don't alias: addColor() pushes onto this array.
@@ -809,11 +956,15 @@
           this.showGreeting = true;
         }, 1000);
       } else {
-        this.showWelcomeBack = true;
+        this.notify('Welcome back.', 'Post your favorites with #AustinFCKitCreator');
       }
     },
     beforeUnmount() {
       window.removeEventListener('keyup', this.handleShortcut);
+
+      clearTimeout(this.toastTimer);
+      clearTimeout(this.flashTimer);
+      clearTimeout(this.revealTimer);
     }
   };
 </script>
@@ -882,12 +1033,30 @@
      screen. The stops live in src/lib/stageBackdrops.js, because the PNG export
      paints the same gradient onto a canvas. */
 
+  .stage-gradient {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* The outgoing backdrop holds full opacity underneath while the incoming one
+     fades in over it, so the stage never dips dark mid-swap. Nothing animates
+     on the way out, hence the explicit :duration on the transition. */
+  .stage-enter-active {
+    transition: opacity .8s ease;
+  }
+
+  .stage-enter-from {
+    opacity: 0;
+  }
+
   .stadium-stage {
     position: absolute;
     top: 0;
     left: 0;
     height: 100vh;
-    z-index: 0;
+    z-index: 1;
     transform: scale(1.1);
     opacity: .34;
     filter: saturate(.7);
@@ -898,7 +1067,7 @@
   .stage-scrim {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
     background:
       radial-gradient(ellipse 70% 60% at 38% 45%, transparent 0%, rgba(4, 6, 5, .55) 100%),
@@ -909,7 +1078,7 @@
 
   #app {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     height: 100vh;
     height: 100dvh;
@@ -993,6 +1162,21 @@
   .download-kit:disabled {
     cursor: progress;
     opacity: .65;
+  }
+
+  /* The arrow travels while the canvas renders, which is the only feedback
+     a sub-second export has room for. */
+  .download-icon.working {
+    animation: downloadWork .9s ease-in-out infinite;
+  }
+
+  @keyframes downloadWork {
+    0%, 100% { transform: translateY(-2px); opacity: .55; }
+    50% { transform: translateY(2px); opacity: 1; }
+  }
+
+  .download-kit:active:not(:disabled) {
+    transform: scale(.97);
   }
 
   .download-icon {
@@ -1116,36 +1300,66 @@
 
   .design-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
   }
 
+  /* Each option wears the design rather than naming it, painted in the live
+     palette so the whole grid recolors as the shirt does. */
   .design-option {
-    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 5px 8px;
     border: 1px solid var(--line);
     border-radius: var(--r-sm);
     background-color: var(--bg-raised);
-    color: var(--text-dim);
+    color: var(--text-faint);
     font-family: var(--font-ui);
-    font-size: .68rem;
-    font-weight: 500;
+    font-size: .56rem;
+    font-weight: 600;
     letter-spacing: .05em;
     text-transform: uppercase;
     text-align: center;
     cursor: pointer;
-    transition: border-color .18s ease, color .18s ease, background-color .18s ease;
+    transition: border-color .18s ease, color .18s ease,
+                background-color .18s ease,
+                transform .2s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .design-preview {
+    width: 100%;
+    max-width: 52px;
+    transition: filter .22s ease;
+  }
+
+  .design-name {
+    line-height: 1.25;
   }
 
   .design-option:hover {
     border-color: var(--line-strong);
+    background-color: #1C211E;
     color: var(--text);
+    transform: translateY(-2px);
   }
 
+  .design-option:active {
+    transform: translateY(0) scale(.97);
+    transition-duration: .06s;
+  }
+
+  /* A ring and a tint, not a solid verde fill: the preview is the thing worth
+     looking at, and a flat block of green would swallow it. */
   .design-option.active {
     border-color: var(--verde);
-    background-color: var(--verde);
-    color: var(--verde-ink);
-    font-weight: 700;
+    background-color: rgba(0, 177, 64, .13);
+    color: var(--verde);
+  }
+
+  .design-option.active .design-preview {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .5));
   }
 
   .design-option:focus-visible,
@@ -1185,6 +1399,13 @@
     background-color: var(--verde);
     color: var(--verde-ink);
     font-weight: 700;
+    animation: segmentPick .3s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  @keyframes segmentPick {
+    0% { transform: scale(.92); }
+    60% { transform: scale(1.04); }
+    100% { transform: scale(1); }
   }
 
   /* ---- Buttons --------------------------------------------------------- */
@@ -1198,7 +1419,13 @@
     font-weight: 600;
     letter-spacing: .03em;
     cursor: pointer;
-    transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+    transition: background-color .18s ease, border-color .18s ease,
+                color .18s ease, transform .18s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .btn:active {
+    transform: scale(.97);
+    transition-duration: .06s;
   }
 
   .btn:focus-visible {
@@ -1437,8 +1664,26 @@
     color: var(--verde);
   }
 
+  .toast-warn strong {
+    color: #FFB454;
+  }
+
   .toast span {
     color: var(--text-dim);
+    /* Filenames and hashtags should not force the pill wider than the stage. */
+    overflow-wrap: anywhere;
+  }
+
+  .toast-enter-active,
+  .toast-leave-active {
+    transition: opacity .3s ease, transform .36s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  /* Keeps the -50% that centers the pill; only the vertical part moves. */
+  .toast-enter-from,
+  .toast-leave-to {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(.96);
   }
 
   /* ---- Transitions ----------------------------------------------------- */
@@ -1451,6 +1696,31 @@
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;
+  }
+
+  /* The backdrop fades, the card itself lifts. */
+  .fade-enter-active .modal,
+  .fade-leave-active .modal {
+    transition: opacity .3s ease, transform .36s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .fade-enter-from .modal,
+  .fade-leave-to .modal {
+    opacity: 0;
+    transform: translateY(14px) scale(.97);
+  }
+
+  /* "Hoops color" only exists while hoops are on, so it arrives and leaves
+     rather than blinking in with v-show. */
+  .field-pop-enter-active,
+  .field-pop-leave-active {
+    transition: opacity .26s ease, transform .28s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .field-pop-enter-from,
+  .field-pop-leave-to {
+    opacity: 0;
+    transform: translateY(-7px);
   }
 
   /* ---- Responsive ------------------------------------------------------ */
