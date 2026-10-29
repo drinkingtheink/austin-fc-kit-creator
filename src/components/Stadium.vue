@@ -732,6 +732,96 @@
     }
   }
 
+  /* ---- Goal ------------------------------------------------------------ */
+
+  /* A kit has just been saved, and in this stadium that is a goal. Every bulb
+     swings off white into verde, beats four times, and then holds one long
+     bright flare before coming back down.
+
+     The matrix-transform warning above applies here more than anywhere, this
+     being the one animation that touches all ninety-six bulbs at once: fill,
+     opacity and filter only.
+
+     fill is cheap across ninety-six ellipses -- it repaints, it does not lay
+     out -- but a drop-shadow is not, which is the 28fps lesson above. So the
+     halo is a second animation on a scattering of bulbs while the colour and
+     the beat run on all of them. Two animations rather than one set of
+     keyframes written twice: they touch different properties, so they do not
+     fight.
+
+     One bulb in eight, which is half what the resting flare lights, and that
+     number is measured rather than chosen. Against 61fps idle: every bulb
+     beating with no halo at all, 60. The halo on one in eight, 60. On one in
+     four, 38 -- and still 48 with a single shadow instead of two, so it is
+     the count that costs, not the shadow. The beat is free; the glow is the
+     whole bill.
+
+     Started only once the PNG is in hand. The stadium is not frozen for a
+     capture the way the kit is, and opacity and fill are both properties the
+     exporter carries, so a celebration that began a moment earlier would be
+     in the saved image rather than on the screen. */
+  .is-celebrating #left-lights ellipse,
+  .is-celebrating #left-lights_1_ ellipse {
+    animation: goalBeat 3.4s ease-in-out 1;
+  }
+
+  .is-celebrating #left-lights ellipse:nth-of-type(8n+1),
+  .is-celebrating #left-lights_1_ ellipse:nth-of-type(8n+1) {
+    animation: goalBeat 3.4s ease-in-out 1, goalHalo 3.4s ease-in-out 1;
+  }
+
+  /* Four beats, then the swell. It ends on white at the resting brightness
+     rather than on verde, so that dropping the class hands the bulbs back to
+     lampGlow without a step.
+
+     Saturated verde at the peaks rather than a bright mint, which is the
+     colour a peak wants to be and the wrong one to pick here: the stadium
+     carries saturate(.7) and composites under 50%, and a pale green comes
+     out the far side as grey. Put side by side on alternate bulbs, #7BFFB0
+     read as lavender while #00FF66 read as verde. The filter takes the
+     saturation, so the colour going in has to have some to spare. */
+  @keyframes goalBeat {
+    0% { fill: #00B140; opacity: .55; }
+    7% { fill: #00FF66; opacity: 1; }
+    14% { fill: #00B140; opacity: .5; }
+    21% { fill: #00FF66; opacity: 1; }
+    28% { fill: #00B140; opacity: .5; }
+    35% { fill: #00FF66; opacity: 1; }
+    42% { fill: #00B140; opacity: .5; }
+    49% { fill: #00FF66; opacity: 1; }
+    56% { fill: #00B140; opacity: .6; }
+    70% { fill: #00FF66; opacity: 1; }
+    88% { fill: #00D95A; opacity: .95; }
+    100% { fill: #FFFFFF; opacity: .74; }
+  }
+
+  /* Verde rather than white, and wide: the stadium composites at 34%, so a
+     halo narrower than the bulb disappears -- the same arithmetic as the
+     lamp flare above.
+
+     The `none` either side of every strike is doing the real work here, and
+     it has to sit close enough that the shadow is never half-drawn in
+     between. Eased from none to a shadow and back, as the first version was,
+     the filter is live for most of the animation: 45fps against 61. Struck
+     and dropped at the four beats but still held through the final flare,
+     53. Struck everywhere, including twice across the flare instead of once
+     at length, 60. It is the crowd-flash trick below, for the same reason.
+
+     The flare still reads as a long one. Its brightness is fill and opacity,
+     which every bulb can afford; only the glow around it had to be rationed
+     to two strikes. */
+  @keyframes goalHalo {
+    0%, 5.5%, 8.5%, 19.5%, 22.5%, 33.5%, 36.5%, 47.5%, 50.5%,
+    68.5%, 72%, 78.5%, 82%, 100% {
+      filter: none;
+    }
+    7%, 21%, 35%, 49% { filter: drop-shadow(0 0 16px rgba(0, 255, 102, .95)); }
+    70%, 80% {
+      filter: drop-shadow(0 0 12px rgba(0, 255, 102, 1))
+              drop-shadow(0 0 34px rgba(0, 177, 64, .9));
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     /* These animations have no fill-mode, so the global reduced-motion rule
        collapsing them to nothing already returns both properties to their

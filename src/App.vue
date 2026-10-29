@@ -16,7 +16,12 @@
       <Stars v-if="setting === 'summerNight'" class="stage-stars" />
     </transition>
 
-    <Stadium ref="stadium" class="stadium-stage" aria-hidden="true" />
+    <Stadium
+      ref="stadium"
+      class="stadium-stage"
+      :class="{ 'is-celebrating': celebrating }"
+      aria-hidden="true"
+    />
     <div class="stage-scrim" aria-hidden="true"></div>
 
     <div id="app">
@@ -661,6 +666,10 @@
   // Long enough to cover the staggered reveal in Kit.vue.
   const REVEAL_MS = 750;
 
+  // How long the floodlights celebrate a saved kit. Matches goalBeat in
+  // Stadium.vue, which is where the celebration itself lives.
+  const GOAL_MS = 3400;
+
   // Which kit part each color owns, so a change can flash the shape it moved.
   // Several colors share a part: the badge is one silhouette whoever paints it.
   const FILL_PARTS = {
@@ -937,6 +946,9 @@
         revealing: false,
         // Holds the kit still while the exporter reads its computed styles.
         frozen: false,
+        // Set for a few seconds after a kit is saved: the floodlights go
+        // verde and beat, the way they would for a goal.
+        celebrating: false,
 
         showColors: false,
 
@@ -1827,6 +1839,13 @@
         this.revealing = false;
         this.frozen = true;
 
+        // And put the lights back to normal first. They are not frozen the
+        // way the kit is -- they are not part of it -- so saving twice inside
+        // one celebration would otherwise catch the floodlights verde in the
+        // second file and white in the first.
+        clearTimeout(this.goalTimer);
+        this.celebrating = false;
+
         try {
           await this.$nextTick();
           await new Promise(resolve => requestAnimationFrame(resolve));
@@ -1841,6 +1860,7 @@
 
           downloadBlob(blob, filename);
           this.notify('Kit saved.', filename);
+          this.celebrateGoal();
         } catch (err) {
           this.notify('Export failed.', 'Give it another go?', 'warn');
           // Leave a trace for anyone debugging a browser-specific failure.
@@ -1849,6 +1869,29 @@
           this.frozen = false;
           this.exporting = false;
         }
+      },
+      /**
+       * Put the lights up for a saved kit.
+       *
+       * Called once the PNG exists, never before. The stadium is not frozen
+       * for a capture the way the kit is, and both opacity and fill are
+       * properties the exporter carries, so a celebration started a moment
+       * earlier would end up in the file instead of on the screen.
+       */
+      celebrateGoal() {
+        clearTimeout(this.goalTimer);
+        this.celebrating = false;
+
+        // Same restart trick as the flash and the reveal: a one-shot
+        // animation only replays if the class is genuinely re-added, and
+        // saving twice in a row should light the place up twice.
+        this.$nextTick(() => {
+          this.celebrating = true;
+
+          this.goalTimer = setTimeout(() => {
+            this.celebrating = false;
+          }, GOAL_MS);
+        });
       },
       dismissModal() {
         // The greeting sits on top of the panel, so it closes first.
@@ -1980,6 +2023,7 @@
       clearTimeout(this.toastTimer);
       clearTimeout(this.flashTimer);
       clearTimeout(this.revealTimer);
+      clearTimeout(this.goalTimer);
       clearTimeout(this.landTimer);
       this.clearSpinTimers();
     }
@@ -2087,6 +2131,23 @@
        exported backdrop stops matching the one on screen. */
     filter: saturate(.7);
     pointer-events: none;
+    /* Only ever changed by the celebration below. */
+    transition: opacity .55s ease;
+  }
+
+  /* A goal lifts the whole place, not just the bulbs.
+   *
+   * The stadium sits at 34% so the kit stays the brightest thing on screen,
+   * which is also the ceiling on how bright a verde bulb can get: at rest
+   * they come out muted whatever colour they are given. For the few seconds
+   * after a kit is saved it comes up to 46%, which is enough for the bulbs to
+   * read as verde against the sky and still well short of the kit.
+   *
+   * kitToPng mirrors the resting 34% as STADIUM_OPACITY, and that stays true:
+   * the celebration only ever starts once the PNG has been made, and a
+   * capture puts the lights back first. */
+  .stadium-stage.is-celebrating {
+    opacity: .46;
   }
 
   /* Vignette: darkens the edges so the centered kit reads first. */
