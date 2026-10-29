@@ -136,6 +136,46 @@ export function ramp(baseHex, steps = 9) {
   );
 }
 
+/**
+ * The entry in `candidates` that looks closest to `target`.
+ *
+ * Uses the "redmean" weighting rather than plain RGB distance: it costs two
+ * multiplications more and is far better at not calling a saturated red the
+ * nearest match for a mid grey.
+ */
+export function nearest(target, candidates) {
+  const hex = toHex(target);
+
+  if (!hex || !candidates.length) return target;
+
+  const [r1, g1, b1] = toRgb(hex);
+  let best = candidates[0];
+  let bestDistance = Infinity;
+
+  candidates.forEach(candidate => {
+    const other = toHex(candidate);
+
+    if (!other) return;
+
+    const [r2, g2, b2] = toRgb(other);
+    const rMean = (r1 + r2) / 2;
+    const dR = r1 - r2;
+    const dG = g1 - g2;
+    const dB = b1 - b2;
+    const distance =
+      (((512 + rMean) * dR * dR) / 256) +
+      4 * dG * dG +
+      (((767 - rMean) * dB * dB) / 256);
+
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = candidate;
+    }
+  });
+
+  return best;
+}
+
 /** WCAG relative luminance. */
 export function luminance(hex) {
   const [r, g, b] = toRgb(hex).map(v => {

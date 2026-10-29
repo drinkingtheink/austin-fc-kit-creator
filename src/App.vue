@@ -88,9 +88,28 @@
 
           <div class="toolbar-actions">
             <button class="btn btn-primary" v-on:click="randomizeKit">Feeling Lucky</button>
-            <button class="btn btn-ghost" v-on:click="manageColorWindow(true)">Colors</button>
+            <button class="btn btn-ghost" v-on:click="showColors = true">Colors</button>
           </div>
         </header>
+
+        <!-- The working palette, in reach without opening anything. Its
+             picker adds straight to the palette rather than painting a part,
+             which is why it carries no selection. -->
+        <div class="palette-strip">
+          <div class="palette-strip-head">
+            <span class="field-label">Palette</span>
+            <button type="button" class="palette-explore" v-on:click="showColors = true">
+              Explore
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+          <ColorSwatches
+            label="Palette"
+            :colors="colors"
+            :modelValue="null"
+            v-on:update:modelValue="addColor"
+          />
+        </div>
 
         <div class="toolbar-sections">
           <ToolSection
@@ -264,11 +283,26 @@
           </p>
         </footer>
       </aside>
+
+      <transition name="panel">
+        <ColorPanel
+          v-if="showColors"
+          :colors="colors"
+          :used="usedColors"
+          v-on:close="showColors = false"
+          v-on:add="addColor"
+          v-on:addMany="addColors"
+          v-on:remove="removeColor"
+          v-on:replace="usePalette"
+          v-on:merge="mergePalette"
+          v-on:reset="resetColors"
+        />
+      </transition>
     </div>
 
     <div class="mobile-actions show-on-mobile">
       <button class="btn btn-primary" v-on:click="randomizeKit">Randomize</button>
-      <button class="btn btn-ghost" v-on:click="manageColorWindow(true)">Colors</button>
+      <button class="btn btn-ghost" v-on:click="showColors = true">Colors</button>
     </div>
 
     <transition name="fade">
@@ -302,7 +336,7 @@
           <div class="modal-actions">
             <button class="btn btn-primary" v-on:click="handleGreetingClose(false)">Start from here</button>
             <button class="btn btn-ghost" v-on:click="handleGreetingClose(true)">Randomize kit</button>
-            <button class="btn btn-ghost" v-on:click="handleGreetingToManageColors">Manage colors</button>
+            <button class="btn btn-ghost" v-on:click="handleGreetingToManageColors">Explore colors</button>
           </div>
         </div>
       </div>
@@ -322,77 +356,6 @@
       </div>
     </transition>
 
-    <transition name="fade">
-      <div
-        class="modal-backdrop"
-        v-show="manageColors"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="colors-title"
-        v-on:click.self="dismissModal"
-      >
-        <div class="modal">
-          <p class="modal-eyebrow">Palette</p>
-          <h2 class="modal-title" id="colors-title">Manage Colors</h2>
-
-          <p>
-            Add or remove your own colors &mdash;
-            <a href="https://htmlcolorcodes.com/color-chart/" target="_blank" rel="noopener">hex values</a>
-            or
-            <a href="https://www.rapidtables.com/web/color/html-color-codes.html" target="_blank" rel="noopener">named colors</a>
-            only.
-          </p>
-
-          <div class="palette-block">
-            <span class="field-label">Your palette <em>(click a swatch to remove)</em></span>
-            <ColorSwatches
-              label="Your palette"
-              :colors="colors"
-              removable
-              v-on:remove="removeColor"
-            />
-          </div>
-
-          <div class="palette-block">
-            <span class="field-label">Add a color</span>
-            <div class="add-color-row">
-              <input
-                class="color-to-add"
-                type="text"
-                placeholder="#00B140"
-                aria-label="Hex value or named color"
-                v-model="colorToAdd"
-                v-on:keyup.enter="addColor(colorToAdd)"
-              />
-              <span
-                class="color-preview"
-                :class="{ empty: !colorToAdd }"
-                :style="colorToAdd ? { backgroundColor: colorToAdd } : null"
-                aria-hidden="true"
-              ></span>
-              <button class="btn btn-primary" v-on:click="addColor(colorToAdd)">Add</button>
-            </div>
-
-            <div class="color-picker">
-              <label for="colorPicker">Or pick one</label>
-              <input
-                id="colorPicker"
-                type="color"
-                :value="brightVerde"
-                v-on:input="updateActiveColor"
-                class="color-picker-input"
-              />
-            </div>
-          </div>
-
-          <div class="modal-actions">
-            <button class="btn btn-primary" v-on:click="handleGreetingClose(false)">Go from here</button>
-            <button class="btn btn-ghost" v-on:click="resetColors">Reset colors</button>
-            <button class="btn btn-ghost" v-on:click="handleGreetingClose(true)">Randomize kit</button>
-          </div>
-        </div>
-      </div>
-    </transition>
   </main>
 </template>
 
@@ -404,6 +367,8 @@
   import ToolSection from './components/ToolSection.vue';
   import ToolField from './components/ToolField.vue';
   import ShirtThumb from './components/ShirtThumb.vue';
+  import ColorPanel from './components/ColorPanel.vue';
+  import { isValidColor, nearest, toHex } from './lib/colorTools.js';
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
   import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
@@ -485,13 +450,16 @@
       ColorSwatches,
       ToolSection,
       ToolField,
-      ShirtThumb
+      ShirtThumb,
+      ColorPanel
     },
     // Every field would otherwise repeat the same pair of listeners. Handing
     // the setter down keeps that out of a template with twenty of them.
     provide() {
       return {
-        spotlight: (part, key) => this.setSpotlight(part, key)
+        spotlight: (part, key) => this.setSpotlight(part, key),
+        // Every inline picker, in every field, feeds the one palette.
+        addToPalette: color => this.addColor(color)
       };
     },
     data() {
@@ -521,8 +489,7 @@
         // Holds the kit still while the exporter reads its computed styles.
         frozen: false,
 
-        manageColors: false,
-        colorToAdd: null,
+        showColors: false,
 
         colors: null,
 
@@ -572,16 +539,16 @@
       stageGradient() {
         return toCssGradient(getBackdrop(this.setting));
       },
-      brightVerde() {
-        return green;
-      },
       // null is the solid shirt, so it rides along with the patterns and the
       // grid needs only one loop.
       designOptions() {
         return [null, ...this.shirtOptions];
       },
-      colorToAddBorderColor() {
-        return this.colorToAdd ? this.colorToAdd : '#000000';
+      // Which palette entries are actually painted on the kit, so the panel
+      // can mark the rest as spare rather than leaving seventeen fills to be
+      // eyeballed against the strip.
+      usedColors() {
+        return [...new Set(Object.keys(FILL_PARTS).map(model => this[model]))];
       }
     },
     watch: {
@@ -611,27 +578,72 @@
       getSetting() {
         this.setting = STAGE_NAMES[Math.floor(Math.random()*STAGE_NAMES.length)];
       },
+      // The single way a color enters the palette, whoever asked: a field's
+      // inline picker, the strip, the panel's form, a harmony chip.
       addColor(color) {
-        if(this.colorToAdd && !this.colors.includes(color)) {
-          this.colors.push(color);
-        }
+        if (!color || !isValidColor(color)) return false;
 
-        setTimeout(() => {
-          this.colorToAdd = null;
-        }, 200);
+        // Compare on resolved hex, so "red" and "#FF0000" cannot both land.
+        const hex = toHex(color);
+
+        if (this.colors.some(existing => toHex(existing) === hex)) return false;
+
+        this.colors = [...this.colors, color];
+
+        return true;
+      },
+      addColors(list) {
+        const added = list.filter(color => this.addColor(color)).length;
+
+        this.notify(
+          added ? `Added ${added} color${added === 1 ? '' : 's'}.` : 'Already in your palette.',
+          added ? null : undefined
+        );
       },
       removeColor(color) {
-        this.colors = this.colors.filter(item => item !== color)
+        // The palette is what every field draws from; emptying it would leave
+        // the kit with nothing to pick.
+        if (this.colors.length <= 1) return;
+
+        this.colors = this.colors.filter(item => item !== color);
+      },
+      /**
+       * Swap the whole palette for a club's, and recolor the kit into it.
+       *
+       * Swapping the palette alone left the kit exactly as it was, which made
+       * "use Dortmund's colors" a promise the screen did not keep. Each fill
+       * moves to its nearest match in the new set rather than being
+       * re-randomized, so the design survives the change of strip: whatever
+       * was the light part stays the light part.
+       */
+      usePalette(colors, name) {
+        this.colors = [...colors];
+
+        this.suppressFlash = true;
+
+        Object.keys(FILL_PARTS).forEach(model => {
+          this[model] = nearest(this[model], colors);
+        });
+
+        this.enforceLegibility();
+
+        // Seventeen fills just moved at once, which is what the reveal is for.
+        // It also clears suppressFlash once the watchers have run.
+        this.revealKit();
+        this.notify(`${name}.`, `${colors.length} colors, kit recolored`);
+      },
+      /** Keep what is there and fold a club's colors in alongside. */
+      mergePalette(colors, name) {
+        const added = colors.filter(color => this.addColor(color)).length;
+
+        this.notify(
+          added ? `Added ${added} from ${name}.` : `${name} is already in your palette.`
+        );
       },
       resetColors() {
-        this.colors = [
-          green,
-          black,
-          white,
-          grey
-        ];
-
+        this.colors = [...defaultColors];
         this.resetBadge();
+        this.notify('Back to Austin FC.', 'Verde, black, white, grey');
       },
       setShirtOption(option) {
         this.activeShirtOption = option;
@@ -785,11 +797,26 @@
         this.setSocksHoopsFill(this.getRandomColor());
         this.getSetting();
 
-        // Keep each element legible against what it sits on. Order matters:
-        // a guard has to see the final value of everything it compares
-        // against, so each one runs after whatever can still rewrite its
-        // inputs. The collar goes last of the shirt guards because the
-        // sponsor guard below can still move shirtTypeFill.
+        this.enforceLegibility();
+
+        this.revealKit();
+        this.backToTop();
+      },
+      /**
+       * Keep each element legible against what it sits on.
+       *
+       * Order matters: a guard has to see the final value of everything it
+       * compares against, so each one runs after whatever can still rewrite
+       * its inputs. The collar goes last of the shirt guards because the
+       * sponsor guard above it can still move shirtTypeFill.
+       *
+       * Shared by the randomizer and by a club palette swap. The swap moves
+       * every fill to its nearest match in the new set, which collapses
+       * distinct colors together -- a two-color palette turned a white
+       * sponsor and a white shirt into the same yellow, and the sponsor
+       * disappeared.
+       */
+      enforceLegibility() {
         if(this.logoFill === this.shirtFill) {
           this.setLogoFill(this.getRandomColorExcept(this.shirtFill));
         }
@@ -814,9 +841,6 @@
         if(this.numberFill === this.shortsFill) {
           this.setNumberFill(this.getRandomColorExcept(this.shortsFill));
         }
-
-        this.revealKit();
-        this.backToTop();
       },
       // Socks, then shorts, then shirt. The classes live in Kit.vue; this just
       // arms and disarms them.
@@ -841,7 +865,6 @@
       handleGreetingClose(randomizePref) {
         localStorage.setItem('visitedAustinFCKitDesigner', true);
         this.showGreeting = false;
-        this.manageColors = false;
 
         if(randomizePref) {
           this.randomizeKit();
@@ -851,16 +874,8 @@
       },
       handleGreetingToManageColors() {
         this.showGreeting = false;
-        this.manageColors = true;
+        this.showColors = true;
         this.backToTop();
-      },
-      manageColorWindow(pref) {
-        this.manageColors = pref;
-        this.backToTop();
-      },
-      updateActiveColor(event) {
-        let newColor = event.target.value;
-        this.colorToAdd = newColor;
       },
       kitFilename() {
         const design = this.activeShirtOption || 'solid';
@@ -905,10 +920,11 @@
         }
       },
       dismissModal() {
+        // The greeting sits on top of the panel, so it closes first.
         if (this.showGreeting) {
           this.handleGreetingClose(false);
-        } else if (this.manageColors) {
-          this.manageColorWindow(false);
+        } else if (this.showColors) {
+          this.showColors = false;
         }
       },
       handleShortcut(e) {
@@ -937,7 +953,6 @@
 
         this.randomizeKit();
         this.showGreeting = false;
-        this.manageColors = false;
       },
       resetBadge() {
         this.badgeFill = green;
@@ -1290,6 +1305,76 @@
     flex: 1 0 auto;
   }
 
+  /* ---- Palette strip --------------------------------------------------- */
+
+  .palette-strip {
+    display: grid;
+    gap: 10px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    background-color: rgba(255, 255, 255, .017);
+  }
+
+  .palette-strip-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .palette-strip .field-label {
+    margin-bottom: 0;
+  }
+
+  .palette-explore {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--verde);
+    font-family: var(--font-ui);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color .18s ease;
+  }
+
+  .palette-explore:hover { color: var(--verde-bright); }
+
+  .palette-explore svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    transition: transform .2s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .palette-explore:hover svg { transform: translateX(2px); }
+
+  .palette-explore:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 3px;
+  }
+
+  /* ---- Colors panel ---------------------------------------------------- */
+
+  .panel-enter-active,
+  .panel-leave-active {
+    transition: transform .34s cubic-bezier(.33, 1, .68, 1), opacity .26s ease;
+  }
+
+  .panel-enter-from,
+  .panel-leave-to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
   /* ---- Fields ---------------------------------------------------------- */
 
   .field-label {
@@ -1585,70 +1670,6 @@
     margin-top: 26px;
   }
 
-  .palette-block {
-    margin-bottom: 22px;
-  }
-
-  .add-color-row {
-    display: flex;
-    gap: 8px;
-    align-items: stretch;
-    margin-bottom: 12px;
-  }
-
-  .color-to-add {
-    flex: 1;
-    min-width: 0;
-    padding: 10px 13px;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-sm);
-    background-color: var(--bg-sunken);
-    color: var(--text);
-    font-family: var(--font-ui);
-    font-size: .88rem;
-  }
-
-  .color-to-add::placeholder {
-    color: var(--text-faint);
-  }
-
-  .color-to-add:focus {
-    border-color: var(--verde);
-    outline: none;
-  }
-
-  .color-preview {
-    flex: 0 0 42px;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-sm);
-  }
-
-  .color-preview.empty {
-    border-style: dashed;
-    border-color: var(--text-faint);
-    background-color: transparent;
-  }
-
-  .color-picker {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-  }
-
-  .color-picker label {
-    color: var(--text-faint);
-    font-size: .76rem;
-  }
-
-  .color-picker-input {
-    width: 54px;
-    height: 32px;
-    padding: 2px;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-sm);
-    background-color: var(--bg-sunken);
-    cursor: pointer;
-  }
 
   /* ---- Toast ----------------------------------------------------------- */
 
