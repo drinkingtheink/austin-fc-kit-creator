@@ -37,16 +37,33 @@ function mulberry32(seed) {
 // spread of mid-tones has no sparkle and flattens into gravel. The stand
 // beneath is #AEAEAF and the whole stadium composites at 34%, so the extremes
 // have to be genuine black and near-white to survive the wash.
+//
+// The club plays in '#00B140', '#000000', '#FFFFFF' (clubPalettes.js), and a
+// home crowd wears it, so verde and black carry the stand between them and
+// white is the sparkle on top. Neither family is one colour: a single verde
+// repeated 80 times reads as polka dots, so each runs from near-black through
+// to a floodlit highlight, and the eye reads that spread as depth.
 const TONES = [
-  { fill: '#14110F', weight: 20 },
-  { fill: '#241F1C', weight: 18 },
-  { fill: '#3B3732', weight: 16 },
-  { fill: '#5A5651', weight: 12 },
-  { fill: '#807B74', weight: 8 },
-  { fill: '#D7DBD5', weight: 9 },
-  { fill: '#F2F4EF', weight: 5 },
-  { fill: '#01AF4C', weight: 8 },
-  { fill: '#0C6B38', weight: 4 }
+  // Black: the largest family, and the one doing the structural work. The
+  // gaps between people are this colour too, not just the clothing.
+  { fill: '#0B0D0B', weight: 14 },
+  { fill: '#151A16', weight: 12 },
+  { fill: '#232A24', weight: 8 },
+  { fill: '#333B34', weight: 6 },
+
+  // Verde, from the deep shade of a sleeve to a shirt catching a floodlight.
+  // #00B140 itself is the club's, and the most common of them.
+  { fill: '#124E2A', weight: 9 },
+  { fill: '#0B6B36', weight: 9 },
+  { fill: '#0E8C42', weight: 9 },
+  { fill: '#00B140', weight: 11 },
+  { fill: '#06C455', weight: 6 },
+
+  // White and a grey-green to sit between the families. Kept scarce: this is
+  // the sparkle, and sparkle stops reading as sparkle once it is common.
+  { fill: '#8A938B', weight: 6 },
+  { fill: '#D7DBD5', weight: 6 },
+  { fill: '#F2F4EF', weight: 4 }
 ];
 
 const TONE_TOTAL = TONES.reduce((sum, tone) => sum + tone.weight, 0);
