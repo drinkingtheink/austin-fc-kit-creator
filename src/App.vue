@@ -55,6 +55,8 @@
           :showButtonCollar="showButtonCollar"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
+          :socksText="socksText"
+          :socksTextFill="socksTextFill"
           :shirtMakerFill="shirtMakerFill"
           :highlight="highlight"
           :flash="flash"
@@ -329,6 +331,51 @@
                 <ColorSwatches label="Sock hoops color" :colors="colors" v-model="socksHoopsFill" />
               </ToolField>
             </transition>
+
+            <ToolField label="Sock text" part="socksText">
+              <!-- One pair of listeners around the field and its presets, so
+                   that moving between them stays one visit as far as the kit
+                   is concerned. -->
+              <div
+                class="sock-text"
+                v-on:focusin="focusSocks"
+                v-on:focusout="releaseSocksOnLeave"
+              >
+                <input
+                  class="sock-text-input"
+                  type="text"
+                  :maxlength="MAX_SOCK_TEXT"
+                  :value="socksText"
+                  :placeholder="`Up to ${MAX_SOCK_TEXT} characters`"
+                  aria-label="Sock text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  v-on:input="setSocksText($event.target.value)"
+                />
+                <div class="sock-text-presets">
+                  <button
+                    v-for="preset in SOCK_TEXT_PRESETS"
+                    :key="preset"
+                    type="button"
+                    class="sock-text-preset"
+                    :class="{ active: socksText === preset }"
+                    v-on:click="setSocksText(preset)"
+                  >{{ preset }}</button>
+                  <button
+                    type="button"
+                    class="sock-text-preset"
+                    :disabled="!socksText"
+                    v-on:click="setSocksText('')"
+                  >Clear</button>
+                </div>
+              </div>
+            </ToolField>
+
+            <transition name="field-pop">
+              <ToolField v-if="socksText" label="Text color" part="socksText">
+                <ColorSwatches label="Sock text color" :colors="colors" v-model="socksTextFill" />
+              </ToolField>
+            </transition>
           </ToolSection>
         </div>
 
@@ -442,6 +489,7 @@
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
   import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
+  import { MAX_SOCK_TEXT, SOCK_TEXT_PRESETS, normalizeSockText } from './lib/sockText.js';
 
   const green ='#00B140';
   // The home shirt's stripes are tonal rather than contrasting: a deeper verde
@@ -468,6 +516,26 @@
   const MIN_ZOOM = 1;
   const MAX_ZOOM = 4;
   const ZOOM_STEP = 1.15;
+
+  // Where to look when someone is lettering the socks, and how close.
+  //
+  // All of it as fractions of the kit rather than viewBox units, because
+  // fractions are what the pan is derived from, and deriving rather than
+  // reading a rect back is the point -- see the note in setPan.
+  //
+  // The socks run from 971 to 1276 of the 1307-unit viewBox: 23% of the kit
+  // tall, with their middle 86% of the way down it. The zoom is worked out
+  // from `fill` rather than fixed, because how close a given zoom is depends
+  // on the height of the window, and a number that framed the socks on a
+  // laptop put them off the bottom of a short one.
+  const SOCK_FOCUS = {
+    x: 0.5,
+    y: 1123.5 / 1307,
+    span: 305 / 1307,
+    // How much of the stage the socks should stand, give or take what the pan
+    // clamp allows once the kit runs out of overhang to drag into view.
+    fill: 0.75
+  };
 
   const ZOOM_IN_KEYS = ['+', '='];
   const ZOOM_OUT_KEYS = ['-', '_'];
@@ -529,7 +597,8 @@
     numberFill: 'number',
     socksFill: 'socks',
     socksCuffsFill: 'socksCuff',
-    socksHoopsFill: 'socksHoops'
+    socksHoopsFill: 'socksHoops',
+    socksTextFill: 'socksText'
   };
 
   // Reverse of FILL_PARTS: the fill a click on that part writes to. Several
@@ -586,6 +655,9 @@
     { on: 'shortsCuffsFill', over: ['shortsFill'] },
     { on: 'socksCuffsFill', over: ['socksFill'] },
     { on: 'socksHoopsFill', over: ['socksFill'] },
+    // Lettering is meant to be read, not merely noticed, so it is held to the
+    // same bar as the squad number rather than the one the hoops get.
+    { on: 'socksTextFill', over: ['socksFill'], min: READ },
     // The crest is worn twice, on the shirt and on the shorts, so its backing
     // has to clear both. It is also the one thing the randomizer never
     // touches: without this the badge kept its default black backing while
@@ -650,7 +722,11 @@
     {
       key: 'socks',
       stop: 1400,
-      fills: ['socksFill', 'socksCuffsFill', 'socksHoopsFill'],
+      // socksText is not here on purpose. The reels roll colors and patterns;
+      // the words on a sock are something somebody wrote, and a machine that
+      // threw them away every time it was pulled would be a machine nobody
+      // dared pull. The crest is left alone for the same reason.
+      fills: ['socksFill', 'socksCuffsFill', 'socksHoopsFill', 'socksTextFill'],
       toggles: ['socksHoops']
     }
   ];
@@ -801,6 +877,14 @@
         socksCuffsFill: green,
         socksHoops: false,
         socksHoopsFill: white,
+        // Up to five characters printed on each sock. Empty is the default,
+        // and empty means the lettering is not drawn at all.
+        socksText: '',
+        socksTextFill: white,
+
+        // Read by the template; they belong to lib/sockText.js.
+        MAX_SOCK_TEXT,
+        SOCK_TEXT_PRESETS,
 
         numberFill: white,
 
@@ -863,14 +947,21 @@
        *
        * Without the clamp the kit could be dragged off the stage entirely and
        * there would be no way to find it again short of resetting.
+       *
+       * `size` overrides the measurement of the kit. A pan that accompanies a
+       * *smooth* zoom needs it: the eased transform means the rendered size
+       * lags the zoom by the length of the transition, so a rect read in the
+       * flush after setting it is still the old size, and the clamp computed
+       * from it is the old kit's. Panning alone never needs it, because
+       * panning does not change the size.
        */
-      setPan(x, y) {
+      setPan(x, y, size = null) {
         const kit = this.$refs.kit && this.$refs.kit.$el;
         const stage = this.$refs.stage;
 
         if (!kit || !stage) return;
 
-        const kitBox = kit.getBoundingClientRect();
+        const kitBox = size || kit.getBoundingClientRect();
         const stageBox = stage.getBoundingClientRect();
         const padding = window.getComputedStyle(stage);
         const padTop = parseFloat(padding.paddingTop) || 0;
@@ -1138,6 +1229,80 @@
       },
       setSocksHoopsFill(fill) {
         this.socksHoopsFill = fill;
+      },
+      setSocksText(value) {
+        this.socksText = normalizeSockText(value);
+      },
+      /**
+       * Bring the socks up to fill the stage, for lettering them.
+       *
+       * Five characters are a few pixels tall at rest, which is no way to
+       * judge what you are typing.
+       */
+      focusSocks() {
+        // Where the view was before, so that leaving the field puts it back
+        // rather than dumping someone at a zoom they never asked for. Only
+        // taken on the way in: moving from the field to a preset and back
+        // must not overwrite it with the zoomed-in view.
+        const kit = this.$refs.kit && this.$refs.kit.$el;
+
+        if (!kit) return;
+
+        // Read before anything is set, and divided by the zoom already
+        // applied: a rect is a rendered size, and what the pan below needs is
+        // the kit's own. Reading it after setting the zoom is the mistake
+        // setPan carries a paragraph about.
+        const box = kit.getBoundingClientRect();
+        const width = box.width / this.zoom;
+        const height = box.height / this.zoom;
+        const stageHeight = this.$refs.stage.getBoundingClientRect().height;
+        const zoom = Math.min(
+          MAX_ZOOM,
+          Math.max(1, (stageHeight * SOCK_FOCUS.fill) / (height * SOCK_FOCUS.span))
+        );
+
+        if (!this.viewBeforeSockText) {
+          this.viewBeforeSockText = {
+            zoom: this.zoom,
+            panX: this.panX,
+            panY: this.panY,
+            width,
+            height
+          };
+        }
+
+        this.setZoom(zoom, true);
+
+        // A pan offset moves the kit under a fixed stage, so bringing a point
+        // to the middle means moving it the other way by its own distance
+        // from the middle, scaled.
+        const panX = -(SOCK_FOCUS.x - 0.5) * width * zoom;
+        const panY = -(SOCK_FOCUS.y - 0.5) * height * zoom;
+        const zoomed = { width: width * zoom, height: height * zoom };
+
+        // Deferred so it lands after the clamp setZoom queues for itself, and
+        // handed the size the kit is on its way to rather than the one it is
+        // still showing. Measured instead: the clamp decided the kit was
+        // smaller than the stage, which means no overhang to pan into, and
+        // put the socks straight back in the middle of the view.
+        this.$nextTick(() => this.setPan(panX, panY, zoomed));
+      },
+      /** Put the view back, unless focus only moved within the control. */
+      releaseSocksOnLeave(event) {
+        if (event.currentTarget.contains(event.relatedTarget)) return;
+
+        const view = this.viewBeforeSockText;
+
+        this.viewBeforeSockText = null;
+
+        if (!view) return;
+
+        this.setZoom(view.zoom, true);
+        this.$nextTick(() => this.setPan(
+          view.panX,
+          view.panY,
+          { width: view.width * view.zoom, height: view.height * view.zoom }
+        ));
       },
       // A field reports itself lit or unlit. It passes its own key back on the
       // way out so a stale "unlit" cannot wipe the field the pointer has
@@ -2256,6 +2421,86 @@
 
   .design-option:focus-visible,
   .segmented button:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 2px;
+  }
+
+  /* ---- Sock text ------------------------------------------------------- */
+
+  .sock-text {
+    display: grid;
+    gap: 7px;
+  }
+
+  .sock-text-input {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 11px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-sunken);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: .8rem;
+    font-weight: 600;
+    /* The kit letters in capitals whatever is typed, so the field says so
+       before the socks do. */
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .sock-text-input::placeholder {
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--text-faint);
+    font-weight: 400;
+  }
+
+  .sock-text-input:focus {
+    border-color: var(--verde);
+    outline: none;
+  }
+
+  .sock-text-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-sunken);
+  }
+
+  .sock-text-preset {
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-size: .72rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .18s ease, color .18s ease;
+  }
+
+  .sock-text-preset:hover:not(:disabled) {
+    color: var(--text);
+  }
+
+  .sock-text-preset.active {
+    background-color: var(--verde);
+    color: var(--verde-ink);
+    font-weight: 700;
+    animation: segmentPick .3s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .sock-text-preset:disabled {
+    color: var(--text-faint);
+    cursor: default;
+  }
+
+  .sock-text-preset:focus-visible {
     outline: 2px solid var(--verde-bright);
     outline-offset: 2px;
   }

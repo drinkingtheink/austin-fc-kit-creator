@@ -89,6 +89,42 @@
         <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
       </g>
+
+      <!-- Sock lettering, down at the ankle: the bottom hoop ends at 1260.9
+           and the sock at 1316.5, so a baseline of 1299 centres the type in
+           that band whether or not the hoops are on. x is the midline of each
+           sock at that height, which is not the midline of its bounding box,
+           because a sock tapers -- it is 229.8 down here against 225.8 at the
+           calf, and the band is 96 units wide against 145.
+
+           The font is a generic family, set as attributes rather than in CSS,
+           and both halves of that matter. An SVG serialized into a data URL
+           renders with no access to the page's webfonts, so a kit lettered in
+           Bungee would come back from the exporter in whatever the fallback
+           happened to be; a generic family resolves to the same local font on
+           both sides of the export. And PAINT_PROPS carries no font property
+           at all, so a scoped class would be dropped on the way out, where an
+           attribute rides along on the clone. -->
+      <g v-if="socksText" data-part="socksText" :class="partClass('socksText')" id="socks-text">
+        <text
+          x="229.8"
+          y="1299"
+          text-anchor="middle"
+          font-family="Arial, Helvetica, sans-serif"
+          font-weight="700"
+          :font-size="socksTextSize"
+          :style="{ fill: socksTextFill }"
+        >{{ socksText }}</text>
+        <text
+          x="498.3"
+          y="1299"
+          text-anchor="middle"
+          font-family="Arial, Helvetica, sans-serif"
+          font-weight="700"
+          :font-size="socksTextSize"
+          :style="{ fill: socksTextFill }"
+        >{{ socksText }}</text>
+      </g>
     </g>
     
     <g id="shorts" transform="translate(0,-40)">
@@ -869,6 +905,9 @@
       'socksCuffsFill',
       'socksHoops',
       'socksHoopsFill',
+      // Up to five characters printed on each sock, and their color.
+      'socksText',
+      'socksTextFill',
       'numberFill',
       'logoFill',
       // The sponsor's optional outline, and what it is drawn in.
@@ -900,6 +939,20 @@
       // A turning reel blurs; one that has just landed clunks. Built here
       // rather than in the template because the class names are derived from
       // the reel keys, which are the ids of the groups they move.
+      /**
+       * Type sized to the number of characters rather than fixed.
+       *
+       * Five characters at a size that suits three would run off the sock.
+       * 88 units is what the ankle has room for once a margin is left either
+       * side, and dividing by the character count assumes a full em each: the
+       * widest cap in this family measures 0.94em, so even WWWWW stays inside,
+       * with enough left over that a chunkier default sans on another
+       * platform still fits. The cap of 30 is what keeps one or two
+       * characters from swelling to fill the whole sock.
+       */
+      socksTextSize() {
+        return Math.min(30, 88 / Math.max(1, (this.socksText || '').length));
+      },
       reelClasses() {
         const turning = this.spinReels || [];
         const landed = this.landedReels || [];

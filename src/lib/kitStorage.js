@@ -4,6 +4,8 @@
 // to be spread back in. A hand-edited or half-written entry should leave the
 // app on its defaults rather than render a kit with missing parts.
 
+import { normalizeSockText } from './sockText.js';
+
 const STORAGE_KEY = 'austinFcKitCreator:kit';
 
 // Bump when the shape below changes; entries written by an older version are
@@ -28,12 +30,25 @@ const COLOR_FIELDS = [
   'socksFill',
   'socksCuffsFill',
   'socksHoopsFill',
+  'socksTextFill',
   'numberFill'
 ];
 
 const FLAG_FIELDS = ['showButtonCollar', 'socksHoops', 'logoStroke'];
 
 const MAX_PALETTE = 64;
+
+// Every field a saved kit carries, and the only list of them. Both halves of
+// persistence read it: the component watches these for changes, and writeKit
+// below copies exactly these out.
+export const PERSISTED_FIELDS = [
+  ...COLOR_FIELDS,
+  ...FLAG_FIELDS,
+  'activeShirtOption',
+  'socksText',
+  'setting',
+  'colors'
+];
 
 // Hex, with or without alpha, or a CSS named color. Matches what the palette
 // editor tells people they may enter.
@@ -77,6 +92,12 @@ export function sanitizeKit(raw, shirtOptions, stageNames) {
     if (typeof raw[field] === 'boolean') kit[field] = raw[field];
   });
 
+  // The one free-text field. Normalized rather than trusted: what is on
+  // disk was last written by this app, but nothing says it still is.
+  if (typeof raw.socksText === 'string') {
+    kit.socksText = normalizeSockText(raw.socksText);
+  }
+
   // null is a real value here: it means the solid shirt.
   if (raw.activeShirtOption === null || shirtOptions.includes(raw.activeShirtOption)) {
     kit.activeShirtOption = raw.activeShirtOption;
@@ -118,7 +139,12 @@ export function writeKit(state) {
 
   const kit = { v: VERSION };
 
-  [...COLOR_FIELDS, ...FLAG_FIELDS, 'activeShirtOption', 'setting', 'colors'].forEach(field => {
+  // PERSISTED_FIELDS, not a second copy of the same list. There used to be
+  // one here, and the two drifted the first time a field was added: the new
+  // one reached the watcher that decides when to save and never reached the
+  // thing that saves it, so it was written nowhere and came back as its
+  // default on every reload.
+  PERSISTED_FIELDS.forEach(field => {
     kit[field] = state[field];
   });
 
@@ -142,4 +168,3 @@ export function clearKit() {
   }
 }
 
-export const PERSISTED_FIELDS = [...COLOR_FIELDS, ...FLAG_FIELDS, 'activeShirtOption', 'setting', 'colors'];
