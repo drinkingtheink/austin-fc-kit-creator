@@ -294,16 +294,16 @@
            past the hem line rather than scooping 16 into it: a leg's back
            panel falls below its front, and bulged inward it reads as a curve
            cut out of the front instead. The inside of the leg then rises 10
-           above the line in #neckBack, the same grey as the collar's back,
-           and the two together turn the hem from a straight cut into an
-           opening. Both pinch out at the hem's ends, where the near and far
+           above the line, and the two together turn the hem from a straight
+           cut into an opening. Both take #neckBack: either way you are
+           looking at the inside of the garment. Both pinch out at the hem's ends, where the near and far
            walls meet.
 
            Constant-width bands were the first attempt and read as another
            stripe across the leg. -->
-      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
+      <path fill="url(#neckBack)" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
       <path fill="url(#neckBack)" d="M134.4 869.4 L320.3 926.2 C262.2 894.5 200.3 875.6 134.4 869.4 Z" />
-      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
+      <path fill="url(#neckBack)" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
       <path fill="url(#neckBack)" d="M587.8 869.4 L401.9 926.2 C460.0 894.5 521.9 875.6 587.8 869.4 Z" />
       <!-- Down a tenth. Scaled about its own centre rather than the origin,
            so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
@@ -1176,10 +1176,15 @@
            a shirt falls past the front, so what shows is the back's own hem
            dropping 20 below the front's and pinching back to nothing at each
            side seam, where the two panels meet. Bulged upward instead it
-           reads as a curve cut into the front. Placed here, after every shirt design, because the stripes
+           reads as a curve cut into the front.
+
+           #neckBack, not the cloth's colour. What shows below a front hem is
+           the inside of the back panel, not its outside, so it belongs to
+           the same shadow as the collar's back and the hem's inside rather
+           than to the kit's palette. Placed here, after every shirt design, because the stripes
            and hoops run the full height of the garment and would otherwise
            paint straight over it. -->
-      <path :style="{ fill: farSide(shirtFill) }" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
+      <path fill="url(#neckBack)" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
       <!-- And the inside of the shirt, just within the front hem, curving the
            other way. The two together make the hem an opening rather than a
            straight cut: the back drops 20 below the line, the inside rises 12
@@ -1528,19 +1533,30 @@
       /**
        * The same cloth, seen on the far side of the garment.
        *
-       * Darker than the near side, except where the near side is already too
-       * dark to go further. A flat black wash was the first attempt and it
-       * did nothing at all on black shorts, which is why the sock openings
-       * read while the waistband did not. Below a lightness of .22 this
-       * lifts instead of dropping, so an opening always has an edge whatever
-       * the kit is wearing.
+       * The step has to scale with how light the cloth is. A flat subtraction
+       * was the first try and it left white garments looking unshaded: taking
+       * .16 off white lands on #D6D6D6, which beside white cloth is white,
+       * and the shirt hem and the leg openings came out as blank panels on a
+       * white kit. Scaling it instead -- .34 of the cloth's own lightness,
+       * never less than .20 -- puts white at #A3A3A3 and leaves the mid and
+       * deep colours, which were already reading, roughly where they were.
+       *
+       * Plain multiplication was the other candidate and it is worse: it
+       * fixes white by weakening everything dark, dropping verde from 2.77
+       * to 1.98 against its own far side.
+       *
+       * Below .22 there is nowhere darker to go, so it lifts instead. Black
+       * comes out #333 rather than #212121, which is the difference between
+       * an edge you can see and one you cannot.
        */
       farSide(hex) {
         if (!hex) return hex;
 
         const [h, s, l] = toHsl(hex);
 
-        return fromHsl(h, s, l > 0.22 ? l - 0.16 : l + 0.13);
+        return l > 0.22
+          ? fromHsl(h, s, l - Math.max(0.2, l * 0.34))
+          : fromHsl(h, s, l + 0.24);
       },
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
