@@ -1011,10 +1011,22 @@
           <path d="M178 224 C214 252 250 288 282 332 C256 300 218 266 184 238 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
           <path d="M178 232 C206 272 232 316 252 362 C234 322 206 276 180 244 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
         </g>
+        <!-- The light and shadow are stacked the other way round on this side,
+             and that is not a copy-paste slip. kitRound lights the kit from the
+             upper left, so a ridge running down and right turns its lit face
+             upward while the mirrored ridge running down and left turns its lit
+             face down. Mirroring the geometry and leaving this order alone lit
+             both fans from opposite directions at once, which is what made the
+             two armpits look like they were drawn by different people.
+
+             The highlight is also listed first here rather than last. These
+             three overlap, so swapping the fills alone put the light band on
+             top of the shadows and rubbed them out; it has to stay underneath
+             on both sides, whichever edge of the ridge it sits on. -->
         <g mask="url(#maskArmpitLeft)">
-          <path d="M543 216 C509 240 473 270 439 308 C469 282 505 252 539 230 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSofter)" />
+          <path d="M543 232 C515 272 489 316 469 362 C487 322 515 276 541 244 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSofter)" />
+          <path d="M543 216 C509 240 473 270 439 308 C469 282 505 252 539 230 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
           <path d="M543 224 C507 252 471 288 439 332 C465 300 503 266 537 238 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
-          <path d="M543 232 C515 272 489 316 469 362 C487 322 515 276 541 244 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
         </g>
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
