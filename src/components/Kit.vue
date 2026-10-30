@@ -487,22 +487,23 @@
            does the cutting, so the cut follows the sleeve's real outline
            rather than a line guessed here.
 
-           How far it runs off is limited by the artwork, not by taste. The
+           Turning it a quarter is what lets it run off properly. The
            lettering and the stars live in the top quarter of this mark, so
-           centring it on the fold -- a true half -- removes everything that
-           makes it readable and leaves a bare arc. It is set to lose its top
-           corner instead: enough to read as wrapped, little enough to still
-           be the badge.
+           while it stood upright anything cut at the fold took the mark with
+           it and left a bare arc. Rotated, that quarter faces left instead,
+           the fold takes the plain right edge of the shield, and about a
+           third can go round the back with the badge still readable.
 
-           Rotated to the sleeve's own rake: the top edge drops 39.7 over
-           145.9, which is 15.2 degrees. A patch sitting square on a sloping
-           sleeve reads as a sticker.
+           Hence rotate(-74.8) rather than a round number: a quarter turn
+           counter-clockwise off the 15.2 degrees of the sleeve's own rake,
+           which is the 39.7 its top edge drops over 145.9. A patch sitting
+           square on a sloping sleeve reads as a sticker.
 
            It sits above the cloth but below the shading, so the folds pass
            over it the way they pass over the sponsor. -->
       <g clip-path="url(#clipLeftSleeve)">
         <g :style="{ fill: sleevePatchFill }"
-           transform="translate(608 88) rotate(15.2) scale(0.2) translate(-135 -144)">
+           transform="translate(608 64) rotate(-74.8) scale(0.2) translate(-135 -144)">
         <path d="M0,124V0h270v123c-2.29,20.46-6.82,40.89-15.72,60.26-5.94,12.93-13.29,24.22-20.8,36.17-11.86,18.89-27.44,33.25-46.73,44.42-16.33,9.45-32.27,18.33-49.75,24.15h-4c-33-10.52-62.88-29.2-86.35-56.07l-34.61,34.6-8.52-8.53,35.33-35.37C16.24,193.5,3.53,159.32,0,124ZM47.56,213.93L249.31,12.22H12.07s-.01,98.79-.01,98.79c.71,37.62,12.84,73.49,35.51,102.92ZM135.18,275.4c71.27-22.68,119.83-86.64,122.54-160.48l-.19-93.85L55.26,223.29c21.07,24.52,48.71,42.46,79.92,52.1Z"/>
         <path d="M63.06,77.08l-.25-30.48-10.06,22.6c-1.93.74-5.82.89-7.86.25l-9.95-22.13-.54,29.7-10.14.08V24.48s10.75-.14,10.75-.14l13.93,30.94,13.63-30.79,10.73-.11v52.6s-10.24.12-10.24.12Z"/>
         <path d="M149.27,76.85c-10.59,2.65-20.7.74-29.54-6.44l7.15-8.26c6.15,4.81,12.17,7.39,19.28,4.94,1.78-.61,3.82-3.86,3.75-5.53-.08-1.8-2.5-4.56-4.31-4.89l-10.33-1.88c-7.74-1.41-12.86-7.15-13.12-14.36s3.94-13.81,11.45-15.82c8.78-2.35,17.76-.83,25.73,4.72l-5.51,8.6c-4.68-3.01-9.23-4.81-14.88-4.29-3.02.28-5.2,3.03-5.14,5.88.15,6.7,11.4,4.26,20.03,8.54,6.42,3.18,8.32,9.56,7.33,16.26-.82,5.53-5.02,10.8-11.9,12.52Z"/>
