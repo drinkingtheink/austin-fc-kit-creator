@@ -287,10 +287,16 @@
         l-7.9-26.3l186.8-56.4L587.8,869.4z"/>
 
       <!-- The far side of each leg, through the hem. Hung off the trims' own
-           bottom edges -- (134.4,869.4) to (320.3,926.2) and its mirror --
-           and drawn after them so they sit inside the opening. -->
-      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M134.4 869.4 L320.3 926.2 L324.1 913.8 C277 902 185 877 138.2 857 Z" />
-      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M587.8 869.4 L401.9 926.2 L398.1 913.8 C445 902 537 877 584 857 Z" />
+           bottom edges, (134.4,869.4) to (320.3,926.2) and its mirror, and
+           drawn after them so they sit inside the opening.
+
+           Lens-shaped, not a band. The far wall of a cylinder meets the near
+           wall at both silhouette edges and is widest halfway between, so
+           these pinch to nothing at each end of the hem and bulge 16 in the
+           middle. Drawn at a constant width they read as another stripe
+           across the leg, which is what they were. -->
+      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M134.4 869.4 L320.3 926.2 C264.6 886.9 202.6 867.9 134.4 869.4 Z" />
+      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M587.8 869.4 L401.9 926.2 C457.6 886.9 519.6 867.9 587.8 869.4 Z" />
       <!-- Down a tenth. Scaled about its own centre rather than the origin,
            so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
            from 438.4,763.4, which centres them on 497,811.4. A bare
