@@ -28,6 +28,18 @@
         <stop offset="1" stop-color="#000" stop-opacity=".33" />
       </linearGradient>
 
+      <!-- The back of the collar. Dark grey whatever the kit is wearing: it
+           is the inside of the neck, which is in its own shadow rather than
+           in the shirt's colour, and a neck that changed colour with the
+           shirt read as a second collar. The gradient is what keeps it from
+           looking like a flat grey sticker -- lit along the top edge where
+           it turns over, darker at the foot where it meets the front. -->
+      <linearGradient id="neckBack" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#535956" />
+        <stop offset=".55" stop-color="#343A37" />
+        <stop offset="1" stop-color="#1E2220" />
+      </linearGradient>
+
       <!-- Vertical falloff: cloth catches light at the shoulder and gathers
            shadow where it hangs. -->
       <linearGradient id="kitDepth" x1="0" y1="0" x2="0" y2="1">
@@ -218,10 +230,8 @@
       <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="left-sock-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
 
       <!-- The inside back of each sock, through the opening. -->
-      <path :style="{ fill: socksCuffsFill }" d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" />
-      <path d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" fill="#000" fill-opacity=".42" />
-      <path :style="{ fill: socksCuffsFill }" d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" />
-      <path d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" fill="#000" fill-opacity=".42" />
+      <path :style="{ fill: farSide(socksCuffsFill) }" d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" />
+      <path :style="{ fill: farSide(socksCuffsFill) }" d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" />
       <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="left-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
@@ -270,12 +280,17 @@
         />
 
       <!-- The inside back of the waistband, through the opening. -->
-      <path :style="{ fill: shortsFill }" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
-      <path d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" fill="#000" fill-opacity=".42" />
+      <path :style="{ fill: farSide(shortsFill) }" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="right-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M134.4,869.4l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l7.9-26.3
         l-186.8-56.4L134.4,869.4z"/>
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
         l-7.9-26.3l186.8-56.4L587.8,869.4z"/>
+
+      <!-- The far side of each leg, through the hem. Hung off the trims' own
+           bottom edges -- (134.4,869.4) to (320.3,926.2) and its mirror --
+           and drawn after them so they sit inside the opening. -->
+      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M134.4 869.4 L320.3 926.2 L324.1 913.8 C277 902 185 877 138.2 857 Z" />
+      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M587.8 869.4 L401.9 926.2 L398.1 913.8 C445 902 537 877 584 857 Z" />
       <!-- Down a tenth. Scaled about its own centre rather than the origin,
            so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
            from 438.4,763.4, which centres them on 497,811.4. A bare
@@ -550,10 +565,8 @@
            tracks whatever the kit is wearing and still sits back from the
            near side. The shading groups come later and pass over them, the
            same as they do the sponsor. -->
-      <path :style="{ fill: shirtCuffFill }" d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" />
-      <path d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" fill="#000" fill-opacity=".42" />
-      <path :style="{ fill: shirtCuffFill }" d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" />
-      <path d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" fill="#000" fill-opacity=".42" />
+      <path :style="{ fill: farSide(shirtCuffFill) }" d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" />
+      <path :style="{ fill: farSide(shirtCuffFill) }" d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" />
 
       <!-- Sleeve patch, worn on the left sleeve only, as it is on the shirt.
 
@@ -1036,10 +1049,10 @@
             c0.4,0,0.5,0.1,0.5,0.5c0,0.7,0,1.5,0,2.2C451.6,131.8,451.6,131.9,451.6,132z"/>
         </g>
       </g>
-      <!-- The back of the collar, standing above the front one. Drawn
-           before both collars so either covers it where they meet. -->
-      <path :style="{ fill: collarFill }" d="M300 34.5 C318 21 402 21 420 34.5 L420 41.5 C402 29.5 318 29.5 300 41.5 Z" />
-      <path d="M300 34.5 C318 21 402 21 420 34.5 L420 41.5 C402 29.5 318 29.5 300 41.5 Z" fill="#000" fill-opacity=".42" />
+      <!-- The back of the collar, standing above the front one. Drawn before
+           both collars so whichever is on covers it where they meet. Its
+           grey and its gradient are in defs under #neckBack. -->
+      <path fill="url(#neckBack)" d="M286 35 C308 13 412 13 434 35 L434 46 C412 26 308 26 286 46 Z" />
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
@@ -1355,7 +1368,7 @@
 <script>
   import AustinFCRoundel from './AustinFCRoundel.vue';
   import AustinFCLeaves from './AustinFCLeaves.vue';
-  import { readableInk } from '../lib/colorTools.js';
+  import { readableInk, toHsl, fromHsl } from '../lib/colorTools.js';
 
   export default {
     name: 'Kit',
@@ -1463,6 +1476,23 @@
       }
     },
     methods: {
+      /**
+       * The same cloth, seen on the far side of the garment.
+       *
+       * Darker than the near side, except where the near side is already too
+       * dark to go further. A flat black wash was the first attempt and it
+       * did nothing at all on black shorts, which is why the sock openings
+       * read while the waistband did not. Below a lightness of .22 this
+       * lifts instead of dropping, so an opening always has an edge whatever
+       * the kit is wearing.
+       */
+      farSide(hex) {
+        if (!hex) return hex;
+
+        const [h, s, l] = toHsl(hex);
+
+        return fromHsl(h, s, l > 0.22 ? l - 0.16 : l + 0.13);
+      },
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
       },
