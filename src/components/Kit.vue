@@ -77,6 +77,21 @@
         <use href="#left-sleeve" />
         <use href="#left-sleeve-cuff" />
       </clipPath>
+      <!-- The front of the waistband, which is everything below the back of
+           it. The back is drawn in the garment at 612.6 and sags to 627.5;
+           the shading group sits 40 above that, so the same curve is 572.6
+           to 587.5 here. Taking the boundary from the back panel's own curve
+           rather than restating it means the gathers stop exactly where the
+           back starts, instead of near it.
+
+           The box around the curve is deliberately generous. clipShorts has
+           already cut the garment's outline by the time this applies, so
+           this only has to decide top from bottom. -->
+      <clipPath id="clipWaistFront">
+        <path d="M188.1 572.6 C215 582 281 587.5 360.5 587.5 C440 587.5 505 582 532.8 572.6
+                 L620 572.6 L620 900 L100 900 L100 572.6 Z" />
+      </clipPath>
+
       <clipPath id="clipShorts">
         <use href="#shorts-trunk" transform="translate(0,-40)" />
         <use href="#right-trim" transform="translate(0,-40)" />
@@ -1312,7 +1327,7 @@
         <!-- Gathers hanging off the waistband. The waist runs x 188 to 533 at
              y 573 in this space, which is 40 above where the shorts paths are
              drawn; the clip carries that translate. -->
-        <g mask="url(#maskWaistFolds)">
+        <g mask="url(#maskWaistFolds)" clip-path="url(#clipWaistFront)">
           <path d="M207 574 C203.6 592.4 200.2 608.4 198.8 629.2 L209.8 629.2 C211.2 608.4 214.6 592.4 218 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
           <path d="M218 574 C214.6 592.4 211.2 608.4 209.8 629.2 L222.8 629.2 C224.2 608.4 227.6 592.4 231 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
           <path d="M251 574 C248.6 592.4 246.3 608.4 245.4 629.2 L256.4 629.2 C257.3 608.4 259.6 592.4 262 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
@@ -1363,9 +1378,16 @@
              droop is heavier left of middle than right.
 
              Wider than the waist at both ends so the clip trims them rather
-             than leaving them to stop inside the cloth. -->
-        <path d="M178 594 C268 604 372 607 543 598 L543 605 C372 614 268 611 178 601 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
-        <path d="M178 601 C268 611 372 614 543 605 L543 617 C372 626 268 623 178 613 Z" fill="#000" fill-opacity=".19" filter="url(#foldSoft)" />
+             than leaving them to stop inside the cloth.
+
+             Held to the front by clipWaistFront, along with the gathers
+             above. Both used to run from the waist's straight top edge,
+             which carried them across the back of the band and lit a
+             surface that is facing away. -->
+        <g clip-path="url(#clipWaistFront)">
+          <path d="M178 594 C268 604 372 607 543 598 L543 605 C372 614 268 611 178 601 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
+          <path d="M178 601 C268 611 372 614 543 605 L543 617 C372 626 268 623 178 613 Z" fill="#000" fill-opacity=".19" filter="url(#foldSoft)" />
+        </g>
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
