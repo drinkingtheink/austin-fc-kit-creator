@@ -122,6 +122,14 @@
         <feGaussianBlur stdDeviation="6.5" />
       </filter>
 
+      <!-- Seams are tighter than folds. A seam is a crease a few units wide
+           where two pieces of cloth are stitched together, and blurring it
+           like a fold turns it into a general murk along the edge, which is
+           what kitRound is already doing there. -->
+      <filter id="seamSoft" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3.5" />
+      </filter>
+
       <!-- Absent at the shoulder, full strength at the hem. Cloth is pulled
            tight across the chest and gathers where it hangs, and masking for
            that is what stopped the shirt reading as a decorated tube. -->
@@ -513,6 +521,10 @@
         <polygon points="98.6 112.53 90 118.14 92.85 108.42 84.72 102.44 94.98 102.12 98.43 92.61 101.45 102.07 111.74 102.54 103.81 108.41 106.71 118.37 98.6 112.53"/>
         <path d="M52.61,193.33l1.45,4.21-6.35-6.78,6.48.8-1.01-2.6c-.27-.68.22-1.74,1.15-3.2l5.26,6.13-4.43-2.38,1.83,4.74-4.37-.9Z"/>
         </g>
+        <!-- The other side of the shoulder seam, and the cuff seam. Both run
+             past their edge so the clip cuts them square at the join. -->
+        <rect x="530" y="28" width="20" height="210" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
+        <rect x="647" y="56" width="16" height="188" fill="#000" fill-opacity=".22" filter="url(#seamSoft)" />
       </g>
       <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
@@ -1065,6 +1077,21 @@
           <path d="M543 216 C509 240 473 270 439 308 C469 282 505 252 539 230 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
           <path d="M543 224 C507 252 471 288 439 332 C465 300 503 266 537 238 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
         </g>
+
+        <!-- Occlusion at the shoulder seams. The trunk and the sleeves are
+             drawn as separate shapes that meet at x 175.6 and 545.4, and
+             without a crease along the join they read as two flats butted up
+             against each other rather than one shirt. Each band starts
+             outside the trunk so the clip gives it a hard edge at the seam
+             and the blur takes it inward only; a band soft on both sides
+             just repeats what kitRound already does to the edge. -->
+        <rect x="158" y="28" width="22" height="218" fill="#000" fill-opacity=".30" filter="url(#seamSoft)" />
+        <rect x="541" y="28" width="22" height="218" fill="#000" fill-opacity=".30" filter="url(#seamSoft)" />
+
+        <!-- Under the neckline. Drawn to the V rather than to either collar,
+             because both collars fill the same V and only differ inside it,
+             so one shadow sits correctly under whichever is showing. -->
+        <path d="M261.4 33.3 L360.6 132.5 L459.9 33.3 L459.9 47 L360.6 146 L261.4 47 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
            cuffs hang off the ends of the sleeves by six units on one side and
@@ -1079,6 +1106,10 @@
         <path d="M160 58 C106 104 92 122 52 150 L65 156 C105 128 119 110 173 64 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSoft)" />
         <path d="M160 72 C106 118 92 136 52 164 L67 170 C107 142 121 124 175 78 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
         <path d="M163 112 C109 156 95 174 55 198 L68 204 C108 180 122 162 176 118 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
+        <!-- The other side of the shoulder seam, and the cuff seam. Both run
+             past their edge so the clip cuts them square at the join. -->
+        <rect x="157" y="28" width="20" height="210" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
+        <rect x="46" y="56" width="16" height="188" fill="#000" fill-opacity=".22" filter="url(#seamSoft)" />
       </g>
       <g clip-path="url(#clipLeftSleeve)">
         <rect x="540" y="34" width="148" height="197" fill="url(#kitRound)" />
