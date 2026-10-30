@@ -1079,21 +1079,31 @@
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
-        <path d="M176 975 C172 1080 178 1180 174 1280 L186 1280 C190 1180 184 1080 188 975 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSofter)" />
-        <path d="M188 975 C184 1080 190 1180 186 1280 L202 1280 C206 1180 200 1080 204 975 Z" fill="#000" fill-opacity=".24" filter="url(#foldSofter)" />
-        <path d="M230 975 C226 1080 232 1180 228 1280 L238 1280 C242 1180 236 1080 240 975 Z" fill="#fff" fill-opacity=".14" filter="url(#foldSofter)" />
-        <path d="M242 975 C238 1080 244 1180 240 1280 L251 1280 C255 1180 249 1080 253 975 Z" fill="#000" fill-opacity=".20" filter="url(#foldSofter)" />
-        <!-- Cloth bunching where the sock meets the boot. -->
-        <path d="M156 1232 C202 1248 246 1248 292 1232 L292 1290 L156 1290 Z" fill="#000" fill-opacity=".22" filter="url(#foldSofter)" />
+        <!-- Horizontal gathers below the cuff, and nothing else. Sock
+             elastic bunches the cloth crossways; it does not drape, so the
+             vertical folds the other garments use read as printed stripes
+             here however they are drawn. They fade going down, the way
+             gathering does once it is past the band. -->
+        <path d="M138.7 1002 C190.5 1008 259.5 1008 311.3 1002 L311.3 1009 C259.5 1015 190.5 1015 138.7 1009 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
+        <path d="M139.6 1009 C190.9 1015 259.3 1015 310.7 1009 L310.7 1020 C259.3 1026 190.9 1026 139.6 1020 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
+        <path d="M143.5 1038 C192.8 1043 258.5 1043 307.8 1038 L307.8 1044 C258.5 1049 192.8 1049 143.5 1044 Z" fill="#fff" fill-opacity=".17" filter="url(#foldSoft)" />
+        <path d="M144.4 1044 C193.2 1049 258.4 1049 307.2 1044 L307.2 1054 C258.4 1059 193.2 1059 144.4 1054 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
+        <path d="M148.2 1072 C195 1076 257.6 1076 304.5 1072 L304.5 1077 C257.6 1081 195 1081 148.2 1077 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
+        <path d="M148.8 1077 C195.4 1081 257.4 1081 304 1077 L304 1086 C257.4 1090 195.4 1090 148.8 1086 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
       </g>
       <g clip-path="url(#clipLeftSock)">
         <rect x="410" y="971" width="165" height="306" fill="url(#kitRound)" />
-        <path d="M445 975 C441 1080 447 1180 443 1280 L455 1280 C459 1180 453 1080 457 975 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSofter)" />
-        <path d="M457 975 C453 1080 459 1180 455 1280 L471 1280 C475 1180 469 1080 473 975 Z" fill="#000" fill-opacity=".24" filter="url(#foldSofter)" />
-        <path d="M499 975 C495 1080 501 1180 497 1280 L507 1280 C511 1180 505 1080 509 975 Z" fill="#fff" fill-opacity=".14" filter="url(#foldSofter)" />
-        <path d="M511 975 C507 1080 513 1180 509 1280 L520 1280 C524 1180 518 1080 522 975 Z" fill="#000" fill-opacity=".20" filter="url(#foldSofter)" />
-        <!-- Cloth bunching where the sock meets the boot. -->
-        <path d="M425 1232 C471 1248 515 1248 561 1232 L561 1290 L425 1290 Z" fill="#000" fill-opacity=".22" filter="url(#foldSofter)" />
+        <!-- Horizontal gathers below the cuff, and nothing else. Sock
+             elastic bunches the cloth crossways; it does not drape, so the
+             vertical folds the other garments use read as printed stripes
+             here however they are drawn. They fade going down, the way
+             gathering does once it is past the band. -->
+        <path d="M407.7 1002 C459.5 1008 528.5 1008 580.3 1002 L580.3 1009 C528.5 1015 459.5 1015 407.7 1009 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
+        <path d="M408.6 1009 C459.9 1015 528.3 1015 579.7 1009 L579.7 1020 C528.3 1026 459.9 1026 408.6 1020 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
+        <path d="M412.5 1038 C461.8 1043 527.5 1043 576.8 1038 L576.8 1044 C527.5 1049 461.8 1049 412.5 1044 Z" fill="#fff" fill-opacity=".17" filter="url(#foldSoft)" />
+        <path d="M413.4 1044 C462.2 1049 527.4 1049 576.2 1044 L576.2 1054 C527.4 1059 462.2 1059 413.4 1054 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
+        <path d="M417.2 1072 C464 1076 526.6 1076 573.5 1072 L573.5 1077 C526.6 1081 464 1081 417.2 1077 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
+        <path d="M417.8 1077 C464.4 1081 526.4 1081 573 1077 L573 1086 C526.4 1090 464.4 1090 417.8 1086 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
       </g>
       <rect
         clip-path="url(#clipKitAll)"
