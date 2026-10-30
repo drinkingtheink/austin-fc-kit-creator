@@ -586,41 +586,52 @@
      deliberately slow and small: enough that the stage stops reading as a
      still photograph, never enough to pull focus off the shirt. */
 
-  /* Six clouds on six clocks. The durations are deliberately unrelated, so
-     the sky never resynchronises into a single visible pulse. */
+  /* Six clouds at four depths, all on one clock.
+     
+     The clocks used to be deliberately unrelated so the sky never
+     resynchronised into a single visible pulse. That is the right instinct
+     for independent drift and the wrong one for parallax, which is not six
+     clouds wandering but one viewpoint moving past layers at different
+     distances: they have to share a period and differ only in how far they
+     go. Unrelated periods had one cloud sliding left while its neighbour
+     slid right, which reads as weather rather than depth -- and two of the
+     three throws pointed opposite ways, so it could not have read as depth
+     whatever the clocks did.
+     
+     How far each one goes is taken from the opacity it already carries,
+     since that is the depth cue the artwork itself states: .st11 at 0.6 is
+     nearest and travels furthest, .st8 at 0.2 is furthest and barely moves.
+     Three of the six were assigned against that before -- the nearest cloud
+     had the shortest throw of all.
+     
+     Distances are viewBox units on a 2834-wide stage drawn about half size,
+     so even the nearest cloud moves around 50 screen pixels across a whole
+     sweep, at under a pixel a second. The backdrop sits at 34% behind the
+     kit; this is meant to be noticed only if you look for it. */
   #cloud1,
   #cloud3,
   #cloud4,
   #cloud4_1_,
   #cloud5,
   #cloud5_1_ {
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    animation: drift 88s ease-in-out infinite alternate;
   }
 
-  #cloud1     { animation-name: driftFar;  animation-duration: 59s; }
-  #cloud3     { animation-name: driftNear; animation-duration: 71s; }
-  #cloud4     { animation-name: driftMid;  animation-duration: 83s; }
-  #cloud4_1_  { animation-name: driftFar;  animation-duration: 97s; }
-  #cloud5     { animation-name: driftNear; animation-duration: 67s; }
-  #cloud5_1_  { animation-name: driftMid;  animation-duration: 79s; }
+  #cloud1 { --drift: 104px; }      /* .st11, opacity .6: the nearest */
+  #cloud3 { --drift: 72px; }       /* .st10, opacity .4 */
 
-  /* Distances are in viewBox units on a 2834-wide stage drawn about half
-     size, so even the nearest cloud only travels ~30 screen pixels. */
-  @keyframes driftNear {
-    from { transform: translateX(0); }
-    to { transform: translateX(72px); }
-  }
+  #cloud5,
+  #cloud5_1_ { --drift: 48px; }    /* .st0, opacity .3 */
 
-  @keyframes driftMid {
-    from { transform: translateX(0); }
-    to { transform: translateX(-54px); }
-  }
+  #cloud4,
+  #cloud4_1_ { --drift: 26px; }    /* .st8, opacity .2: the furthest */
 
-  @keyframes driftFar {
+  /* One keyframe for all four depths. The distance is a property of the
+     cloud rather than of the animation, which is what lets a single shared
+     clock drive the whole sky. */
+  @keyframes drift {
     from { transform: translateX(0); }
-    to { transform: translateX(38px); }
+    to { transform: translateX(var(--drift)); }
   }
 
   /* Ninety-six bulbs across two banks.
