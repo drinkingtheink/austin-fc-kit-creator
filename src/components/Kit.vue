@@ -266,7 +266,12 @@
         l-186.8-56.4L134.4,869.4z"/>
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
         l-7.9-26.3l186.8-56.4L587.8,869.4z"/>
-      <g data-part="number" :class="partClass('number')" id="number">
+      <!-- Down a tenth. Scaled about its own centre rather than the origin,
+           so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
+           from 438.4,763.4, which centres them on 497,811.4. A bare
+           scale(0.9) would have pulled the number up the leg toward 0,0. -->
+      <g data-part="number" :class="partClass('number')" id="number"
+         transform="translate(497,811.4) scale(0.9) translate(-497,-811.4)">
         <path :style="{ fill: numberFill }" class="st1" d="M468.1,837.9c0.7-2.7,1.9-5.8,3.5-9l5.9-11.6c3.4-6.7,5.5-11.8,6.3-15.7c0.8-4,0.7-7.7-0.4-11
           c-1-3-2.7-5.6-5.2-7.7c-2.5-2.2-5.7-3.4-9.4-3.6c-3.5-0.2-7,0.3-10.7,1.5c-2.4,0.8-5.3,2.1-8.8,4c-3.5,1.9-6.8,4.3-9.9,7.3l-1,1
           l3.8,11.6l2.6-2.4c2.7-2.5,4.8-4.3,6-5.2c1.2-0.9,2.7-1.9,4.5-2.8c1.7-0.9,3.3-1.7,4.8-2.1c2.4-0.8,4.6-0.8,6.9-0.2
