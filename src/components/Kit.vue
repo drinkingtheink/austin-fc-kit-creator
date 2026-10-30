@@ -1073,14 +1073,29 @@
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
         <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
-        <!-- Three ridges, each a lit edge against a shadowed one. Slivers at
-             the shoulder, opening out as they fall. -->
+        <!-- Cloth on a shirt hanging in moving air. Every fold leans the
+             same way, which is what makes it read as wind rather than as
+             creasing, but none of them leans by the same amount: the drifts
+             run 19 to 38 across the seven, because cloth near a seam is held
+             and cloth in the middle is free. Equal leans looked like the kit
+             had been sheared.
+
+             Each is a lazy S rather than a ruled diagonal -- the bow at a
+             third of the drop goes one way and the bow at two thirds the
+             other -- and they alternate which way they bow so the shirt does
+             not develop a single curve of its own.
+
+             Hung from the shoulder and blown toward the hem, which is what
+             maskShirtFolds already does: absent at the top, full at the
+             bottom. The wind and the drape want the same mask. -->
         <g mask="url(#maskShirtFolds)">
-          <path d="M250 60 C242 220 252 400 238 553 L256 553 C270 400 258 220 262 60 Z" fill="#fff" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M262 60 C258 220 270 400 256 553 L284 553 C298 400 282 220 272 60 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
-          <path d="M412 70 C420 220 404 410 414 553 L428 553 C418 410 434 220 424 70 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
-          <path d="M424 70 C434 220 418 410 428 553 L452 553 C442 410 458 220 436 70 Z" fill="#000" fill-opacity=".28" filter="url(#foldSoft)" />
-          <path d="M196 90 C192 230 200 400 194 553 L212 553 C220 400 208 230 208 90 Z" fill="#000" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M246 58 C246 221.3 276.5 404.5 274 553 L288 553 C290.5 404.5 258 221.3 258 58 Z" fill="#fff" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M258 58 C258 221.3 288.5 404.5 286 553 L314 553 C316.5 404.5 282 221.3 282 58 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
+          <path d="M404 68 C414.1 228.1 426.6 407.5 438 553 L451 553 C439.6 407.5 425.1 228.1 415 68 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
+          <path d="M415 68 C425.1 228.1 437.6 407.5 449 553 L475 553 C463.6 407.5 447.1 228.1 437 68 Z" fill="#000" fill-opacity=".28" filter="url(#foldSoft)" />
+          <path d="M192 86 C192.4 240.1 212 412.9 211 553 L227 553 C228 412.9 206.4 240.1 206 86 Z" fill="#000" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M486 96 C498.8 246.8 509.9 415.9 524 553 L539 553 C524.9 415.9 511.8 246.8 499 96 Z" fill="#000" fill-opacity=".17" filter="url(#foldSoft)" />
+          <path d="M330 112 C330.3 257.5 355.2 420.7 354 553 L366 553 C367.2 420.7 340.3 257.5 340 112 Z" fill="#fff" fill-opacity=".13" filter="url(#foldSoft)" />
         </g>
         <!-- Tension fanning out of each armpit, down and in across the chest. -->
         <g mask="url(#maskArmpitRight)">
