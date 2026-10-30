@@ -95,6 +95,64 @@
       <filter id="reelBlur" x="-15%" y="-15%" width="130%" height="130%">
         <feGaussianBlur stdDeviation="0.6 7" />
       </filter>
+
+      <!-- Folds.
+
+           kitRound is one horizontal gradient with a single highlight, which
+           is the shading of a cylinder, and it is why the kit reads as a tube
+           with a shirt printed on it. These put cloth back.
+
+           Three things decide whether a fold reads. It is a highlight paired
+           with a shadow, not a stripe: one band of a single colour is ribbing.
+           It has to taper and curve, because a straight full-height band is
+           still a cylinder, just a fluted one. And it has to be blurred, or it
+           looks painted on.
+
+           Note what is doing the blurring. These carry filter as a *presentation
+           attribute*, and that does reach the PNG. The rule that filter never
+           exports is about CSS filters -- inlinePaint in kitToPng.js overwrites
+           the style attribute and leaves attributes alone, so filter="url(...)"
+           and mask="url(...)" both survive serialization. The randomize flash
+           and the spotlight halo stay off the export because they are set in
+           CSS, not because the property is unreachable. -->
+      <filter id="foldSoft" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="5" />
+      </filter>
+      <filter id="foldSofter" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6.5" />
+      </filter>
+
+      <!-- Absent at the shoulder, full strength at the hem. Cloth is pulled
+           tight across the chest and gathers where it hangs, and masking for
+           that is what stopped the shirt reading as a decorated tube. -->
+      <linearGradient id="foldHangFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0" />
+        <stop offset=".3" stop-color="#fff" stop-opacity=".55" />
+        <stop offset="1" stop-color="#fff" stop-opacity="1" />
+      </linearGradient>
+      <mask id="maskShirtFolds">
+        <rect x="170" y="33" width="381" height="518" fill="url(#foldHangFade)" />
+      </mask>
+
+      <!-- The other way round on the shorts: the elastic bunches the cloth, so
+           the gathers are hard at the band and gone well before the hem. -->
+      <linearGradient id="foldWaistFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="1" />
+        <stop offset="1" stop-color="#fff" stop-opacity="0" />
+      </linearGradient>
+      <mask id="maskWaistFolds">
+        <rect x="134" y="572" width="455" height="150" fill="url(#foldWaistFade)" />
+      </mask>
+
+      <!-- Tension out of the crotch dies away with distance, so this one is
+           radial rather than vertical. -->
+      <radialGradient id="foldCrotchFade" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#fff" stop-opacity="1" />
+        <stop offset="1" stop-color="#fff" stop-opacity="0" />
+      </radialGradient>
+      <mask id="maskCrotchFolds">
+        <rect x="190" y="600" width="341" height="270" fill="url(#foldCrotchFade)" />
+      </mask>
     </defs>
 
     <!-- Shorts and socks ride up together, closing the gap under the
@@ -924,6 +982,15 @@
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
         <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
+        <!-- Three ridges, each a lit edge against a shadowed one. Slivers at
+             the shoulder, opening out as they fall. -->
+        <g mask="url(#maskShirtFolds)">
+          <path d="M250 60 C242 220 252 400 238 553 L256 553 C270 400 258 220 262 60 Z" fill="#fff" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M262 60 C258 220 270 400 256 553 L284 553 C298 400 282 220 272 60 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
+          <path d="M412 70 C420 220 404 410 414 553 L428 553 C418 410 434 220 424 70 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
+          <path d="M424 70 C434 220 418 410 428 553 L452 553 C442 410 458 220 436 70 Z" fill="#000" fill-opacity=".28" filter="url(#foldSoft)" />
+          <path d="M196 90 C192 230 200 400 194 553 L212 553 C220 400 208 230 208 90 Z" fill="#000" fill-opacity=".20" filter="url(#foldSoft)" />
+        </g>
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
            cuffs hang off the ends of the sleeves by six units on one side and
@@ -941,6 +1008,39 @@
       <g clip-path="url(#clipShorts)">
         <rect x="134" y="572" width="455" height="318" fill="url(#kitRound)" />
         <rect x="134" y="572" width="455" height="318" fill="url(#kitDepth)" />
+        <!-- Gathers hanging off the waistband. The waist runs x 188 to 533 at
+             y 573 in this space, which is 40 above where the shorts paths are
+             drawn; the clip carries that translate. -->
+        <g mask="url(#maskWaistFolds)">
+          <path d="M207 574 C198.5 620 190 660 186.6 712 L197.6 712 C201 660 209.5 620 218 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M218 574 C209.5 620 201 660 197.6 712 L210.6 712 C214 660 222.5 620 231 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M251 574 C245.1 620 239.2 660 236.9 712 L247.9 712 C250.2 660 256.1 620 262 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M262 574 C256.1 620 250.2 660 247.9 712 L260.9 712 C263.2 660 269.1 620 275 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M295 574 C291.8 620 288.5 660 287.2 712 L298.2 712 C299.5 660 302.8 620 306 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M306 574 C302.8 620 299.5 660 298.2 712 L311.2 712 C312.5 660 315.8 620 319 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M407 574 C410.5 620 414 660 415.4 712 L426.4 712 C425 660 421.5 620 418 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M418 574 C421.5 620 425 660 426.4 712 L439.4 712 C438 660 434.5 620 431 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M451 574 C457.1 620 463.2 660 465.7 712 L476.7 712 C474.2 660 468.1 620 462 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M462 574 C468.1 620 474.2 660 476.7 712 L489.7 712 C487.2 660 481.1 620 475 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M495 574 C503.8 620 512.5 660 516 712 L527 712 C523.5 660 514.8 620 506 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M506 574 C514.8 620 523.5 660 527 712 L540 712 C536.5 660 527.8 620 519 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+        </g>
+        <!-- Tension sweeping up and out of the crotch toward each hip. These
+             were straight wedges first and looked like light rays; cloth under
+             tension curves, so these do. -->
+        <g mask="url(#maskCrotchFolds)">
+          <path d="M352 750 C326 712 296 678 264 646 C280 668 312 704 342 748 Z" fill="#fff" fill-opacity=".11" filter="url(#foldSofter)" />
+          <path d="M356 756 C330 718 300 684 268 652 C286 678 318 712 346 754 Z" fill="#000" fill-opacity=".20" filter="url(#foldSofter)" />
+          <path d="M356 758 C336 726 304 700 262 678 C284 700 320 726 348 756 Z" fill="#000" fill-opacity=".15" filter="url(#foldSofter)" />
+          <path d="M368 750 C394 712 424 678 456 646 C440 668 408 704 378 748 Z" fill="#fff" fill-opacity=".11" filter="url(#foldSofter)" />
+          <path d="M364 756 C390 718 420 684 452 652 C434 678 402 712 374 754 Z" fill="#000" fill-opacity=".20" filter="url(#foldSofter)" />
+          <path d="M364 758 C384 726 416 700 458 678 C436 700 400 726 372 756 Z" fill="#000" fill-opacity=".15" filter="url(#foldSofter)" />
+        </g>
+        <!-- The crotch itself. Cloth meeting cloth is the darkest point on the
+             garment, and leaving it out is what makes shorts read as one flat
+             sheet with a notch cut in it. Unmasked: this one is local. -->
+        <path d="M360 744 C344 792 336 830 332 862 L390 862 C386 830 378 792 360 744 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
+        <path d="M360 752 C350 790 346 820 344 858 L377 858 C375 820 371 790 360 752 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
