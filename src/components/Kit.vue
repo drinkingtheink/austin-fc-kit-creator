@@ -1143,10 +1143,22 @@
         <rect x="158" y="28" width="22" height="218" fill="#000" fill-opacity=".30" filter="url(#seamSoft)" />
         <rect x="541" y="28" width="22" height="218" fill="#000" fill-opacity=".30" filter="url(#seamSoft)" />
 
-        <!-- Under the neckline. Drawn to the V rather than to either collar,
-             because both collars fill the same V and only differ inside it,
-             so one shadow sits correctly under whichever is showing. -->
-        <path d="M261.4 33.3 L360.6 132.5 L459.9 33.3 L459.9 47 L360.6 146 L261.4 47 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
+        <!-- Under the neckline, one shadow per collar.
+
+             This was a single V band serving both, on the reasoning that the
+             collars fill the same V and differ only inside it. They do not.
+             The V-neck's lower edge is the V, but the button collar's is a
+             zigzag: out to its lapel point at 338.4,92.7, in and down to the
+             notch at 342.6,132.9, out again to 382.8,92.7, then down to
+             419.4,132.1. Read straight off collar-w-fold's path data. A V
+             band under that sits inside the collar for most of its length
+             and hangs below it at the sides.
+
+             They carry the same fade-part toggle the collars do, so each
+             shadow crossfades with the collar it belongs to rather than
+             switching under it. -->
+        <path :class="['fade-part', { on: !showButtonCollar }]" d="M261.4 33.3 L360.6 132.5 L459.9 33.3 L459.9 47 L360.6 146 L261.4 47 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
+        <path :class="['fade-part', { on: showButtonCollar }]" d="M301.7 132.2 L338.4 92.7 L355.1 109.4 L342.6 132.9 L382.8 92.7 L419.4 132.1 L419.4 145.1 L382.8 105.7 L342.6 145.9 L355.1 122.4 L338.4 105.7 L301.7 145.2 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
            cuffs hang off the ends of the sleeves by six units on one side and
