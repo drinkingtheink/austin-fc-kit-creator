@@ -10,57 +10,50 @@
 // stands rather than behind the shirt. The scrim in App.vue darkens the lowest
 // third again on top of this.
 //
-// An earlier pass flattened all four to three dark stops, which was legible but
-// drab. These go back to the vivid skies the first version of the app had, with
-// enough stops to actually graduate.
+// Three game days, and all three deliberately stay off green. The stadium
+// composites at 34%, so most of what fills the screen is this gradient: a
+// green sky made the whole frame green, and a kit is mostly shown off by what
+// it is not. Azure, then magenta burning to gold, then indigo -- each a long
+// way round the wheel from verde, so a verde kit reads against any of them and
+// a red or a white one does too.
+//
+// There were six before, including a green one called `verde` that was the
+// house mood and the reason the app looked tinted.
 
 export const STAGE_BACKDROPS = {
-  // Deep violet night burning down into Texas orange.
+  // Kick-off under a hard noon sky: azure overhead, bleaching toward the
+  // horizon the way a bright day does. The lightest of the three, and the one
+  // that tests whether the kit is still the brightest thing on screen -- the
+  // pale band is kept low, behind the stands, for that reason.
+  midday: {
+    angle: 168,
+    stops: [
+      ['#0C58AE', 0], ['#2E8AD8', 22], ['#62AEE8', 45],
+      ['#9ED3F2', 68], ['#D6EDFA', 90], ['#C3E2F3', 100]
+    ]
+  },
+  // Violet into magenta into Texas gold. Magenta sits opposite green, which
+  // is what makes a verde kit sing against it.
   sunset: {
     angle: 168,
     stops: [
-      ['#190B2F', 0], ['#3E1A63', 22], ['#8E2F63', 46],
-      ['#C9522F', 68], ['#E88C3E', 88], ['#D9833C', 100]
+      ['#2B0B4E', 0], ['#631571', 20], ['#B02A6D', 42],
+      ['#E64A33', 64], ['#FF8E2A', 86], ['#F07A1C', 100]
     ]
   },
-  // Still, warm, a long way after dark.
-  summerNight: {
+  // Spring, not deep summer: light still in it rather than a flat black, and
+  // violet rather than blue. Blue would be the obvious night sky and the
+  // wrong one here -- the midday above is already azure, and two skies that
+  // are both blue are two skies nobody can tell apart from across the room.
+  // Violet also leaves the pitch, which the stadium lays over all three in
+  // green at 34%, reading as something other than teal. The only one with
+  // stars.
+  springNight: {
     angle: 172,
+    stars: true,
     stops: [
-      ['#070B22', 0], ['#17204F', 26], ['#3A2A63', 50],
-      ['#6B3A6B', 74], ['#9E566A', 93], ['#8E4D62', 100]
-    ]
-  },
-  // First light: cool overhead, peach along the rim.
-  dawn: {
-    angle: 160,
-    stops: [
-      ['#101E36', 0], ['#2C4770', 24], ['#64749F', 48],
-      ['#B383A3', 72], ['#DFA38C', 91], ['#CE9480', 100]
-    ]
-  },
-  // The house mood, and the only one that is really green.
-  verde: {
-    angle: 165,
-    stops: [
-      ['#04150B', 0], ['#0A3A1F', 28], ['#116B35', 56],
-      ['#1C9348', 80], ['#3FC06C', 100]
-    ]
-  },
-  // Hot: the sky the old .two gradient was reaching for.
-  ember: {
-    angle: 170,
-    stops: [
-      ['#1E0608', 0], ['#56121A', 26], ['#9E2A22', 52],
-      ['#D15C20', 76], ['#E89B32', 94], ['#D88C2E', 100]
-    ]
-  },
-  // Cold blue falling into rose, the dusk end of the day.
-  twilight: {
-    angle: 158,
-    stops: [
-      ['#041726', 0], ['#0C3A5E', 26], ['#2A5B8F', 50],
-      ['#63559B', 74], ['#9E5A8B', 94], ['#8E5080', 100]
+      ['#0A0A2E', 0], ['#1A1559', 22], ['#341E8C', 46],
+      ['#5A2E9E', 68], ['#7B3FA8', 90], ['#6A3598', 100]
     ]
   }
 };
@@ -68,7 +61,7 @@ export const STAGE_BACKDROPS = {
 export const STAGE_NAMES = Object.keys(STAGE_BACKDROPS);
 
 export function getBackdrop(name) {
-  return STAGE_BACKDROPS[name] || STAGE_BACKDROPS.verde;
+  return STAGE_BACKDROPS[name] || STAGE_BACKDROPS.midday;
 }
 
 export function toCssGradient(backdrop) {

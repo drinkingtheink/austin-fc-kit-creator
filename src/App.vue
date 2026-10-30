@@ -13,7 +13,7 @@
 
     <!-- Only this sky is dark enough overhead to hold them. -->
     <transition name="stage" :duration="800">
-      <Stars v-if="setting === 'summerNight'" class="stage-stars" />
+      <Stars v-if="stageHasStars" class="stage-stars" />
     </transition>
 
     <Stadium
@@ -1042,6 +1042,11 @@
       stageGradient() {
         return toCssGradient(getBackdrop(this.setting));
       },
+      // The backdrop says whether it has stars; the screen and the exporter
+      // both ask it rather than each naming the one sky that does.
+      stageHasStars() {
+        return !!getBackdrop(this.setting).stars;
+      },
       // null is the solid shirt, so it rides along with the patterns and the
       // grid needs only one loop.
       designOptions() {
@@ -1855,7 +1860,7 @@
             this.$refs.kit.$el,
             getBackdrop(this.setting),
             this.$refs.stadium.$el,
-            this.setting === 'summerNight'
+            this.stageHasStars
           );
 
           downloadBlob(blob, filename);
