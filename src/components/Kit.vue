@@ -130,6 +130,33 @@
         <feGaussianBlur stdDeviation="3.5" />
       </filter>
 
+      <!-- The shorts trim seam, which cannot be done the way the shoulder
+           seams are. Those get their hard edge from a clip, but the shorts
+           body and both trims share one clip, so there is no edge there to
+           cut against -- and the seam runs at 16.8 degrees, so a rect would
+           not sit on it anyway.
+
+           A gradient laid across the seam instead. It peaks on the seam
+           itself and falls off both ways, wider into the body above than
+           into the trim below, which is the shape a stitched crease has.
+           userSpaceOnUse because these are positioned on a specific line
+           rather than inside a box. The 0.417 stop is where the seam falls
+           along that line: 20 units of trim against 28 of body. -->
+      <linearGradient id="seamTrimRight" gradientUnits="userSpaceOnUse" x1="229.8" y1="850.5" x2="243.7" y2="804.6">
+        <stop offset="0" stop-color="#000" stop-opacity="0" />
+        <stop offset=".30" stop-color="#000" stop-opacity=".07" />
+        <stop offset=".417" stop-color="#000" stop-opacity=".34" />
+        <stop offset=".54" stop-color="#000" stop-opacity=".13" />
+        <stop offset="1" stop-color="#000" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="seamTrimLeft" gradientUnits="userSpaceOnUse" x1="492.4" y1="850.5" x2="478.5" y2="804.6">
+        <stop offset="0" stop-color="#000" stop-opacity="0" />
+        <stop offset=".30" stop-color="#000" stop-opacity=".07" />
+        <stop offset=".417" stop-color="#000" stop-opacity=".34" />
+        <stop offset=".54" stop-color="#000" stop-opacity=".13" />
+        <stop offset="1" stop-color="#000" stop-opacity="0" />
+      </linearGradient>
+
       <!-- Absent at the shoulder, full strength at the hem. Cloth is pulled
            tight across the chest and gathers where it hangs, and masking for
            that is what stopped the shirt reading as a decorated tube. -->
@@ -1162,6 +1189,13 @@
              sheet with a notch cut in it. Unmasked: this one is local. -->
         <path d="M360 744 C344 792 336 830 332 862 L390 862 C386 830 378 792 360 744 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
         <path d="M360 752 C350 790 346 820 344 858 L377 858 C375 820 371 790 360 752 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
+        <!-- Where each trim is stitched to the leg. No blur on these: the
+             falloff is in the gradient, so the crease stays put on the seam
+             instead of being smeared off it. They overrun both ends of the
+             seam so the clip cuts them rather than leaving them to stop in
+             mid-cloth. -->
+        <polygon points="124.9,818.9 334.7,882.2 348.6,836.3 138.8,772.9" fill="url(#seamTrimRight)" />
+        <polygon points="597.3,818.9 387.5,882.2 373.6,836.3 583.4,772.9" fill="url(#seamTrimLeft)" />
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
