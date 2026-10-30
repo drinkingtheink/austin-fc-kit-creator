@@ -119,7 +119,28 @@ function pickTone(random) {
 const DECKS = [
   { id: 'far',  x: 137, y: 554, width: 1441, height: 224, step: 9.7,  size: 3.6, rake: 0.070 },
   { id: 'mid',  x: 20,  y: 813, width: 1630, height: 200, step: 12.2, size: 4.5, rake: -0.044 },
-  { id: 'near', x: 1842, y: 690, width: 993, height: 198, step: 15.7, size: 5.8, rake: 0 }
+  { id: 'near', x: 1842, y: 690, width: 993, height: 198, step: 15.7, size: 5.8, rake: 0 },
+
+  // The near corners: the dark wedges either side of the pitch, in front of
+  // both touchlines, which had nobody in them at all.
+  //
+  // Closest to the camera, so the largest figures and the widest spacing.
+  // size over step is the same 0.36 the other decks run at, which is what
+  // keeps this reading as one crowd seen at a fourth distance rather than a
+  // different crowd pasted along the bottom.
+  //
+  // One loose box across the whole bottom band, and most of it lands on the
+  // pitch. That part is painted over rather than clipped away: the group is
+  // drawn between #field-bg and #field_2_ in Stadium.vue, so the pitch
+  // covers the middle and what survives is the two wedges. Appended last on
+  // purpose -- the stream is shared, so a deck added anywhere but the end
+  // would reshuffle every deck after it.
+  //
+  // No flashes here, and that is not an oversight. A flash is drawn late,
+  // over everything, clipped only to its deck -- which for this one is the
+  // whole surround, pitch included. A photo taken from these seats would go
+  // off in the middle of the field.
+  { id: 'front', x: 0, y: 950, width: 2835, height: 670, step: 28, size: 10, rake: 0, flashes: false }
 ];
 
 function build() {
@@ -161,7 +182,7 @@ function build() {
       }
     }
 
-    return { id: deck.id, people };
+    return { id: deck.id, people, flashes: deck.flashes !== false };
   });
 }
 
@@ -171,10 +192,11 @@ export const CROWD_DECKS = build();
 //
 // The dose is the whole design here. A flash is built to catch the eye, and
 // the backdrop's job is to stop the stage reading as a still photograph
-// without pulling focus off the shirt, so this is eighteen people in six and
-// a half thousand, each firing once per twelve seconds: about one and a half
-// flashes a second across the entire bowl. Raise FLASH_COUNT and it stops
-// being a stadium and starts being a lightning storm.
+// without pulling focus off the shirt, so this is eighteen people in the six
+// and a half thousand who sit in a stand, each firing once per twelve
+// seconds: about one and a half flashes a second across the entire bowl.
+// Raise FLASH_COUNT and it stops being a stadium and starts being a
+// lightning storm.
 //
 // It is animated with filter and nothing else, which is what keeps it out of
 // the PNG. filter is deliberately absent from PAINT_PROPS in kitToPng.js, and
@@ -190,8 +212,11 @@ function pickFlashes() {
   const random = mulberry32(0x1CE11A);
   const flashes = [];
 
+  // Only the decks that can carry one; see the front deck in DECKS.
+  const lit = CROWD_DECKS.filter(deck => deck.flashes);
+
   for (let i = 0; i < FLASH_COUNT; i += 1) {
-    const deck = CROWD_DECKS[Math.floor(random() * CROWD_DECKS.length)];
+    const deck = lit[Math.floor(random() * lit.length)];
     const person = deck.people[Math.floor(random() * deck.people.length)];
 
     flashes.push({

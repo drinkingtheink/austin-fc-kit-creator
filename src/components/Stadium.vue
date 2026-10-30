@@ -22,6 +22,13 @@
     <use xlink:href="#right-stand-2"/>
     <use xlink:href="#right-stand-3"/>
   </clipPath>
+
+  <!-- The near corners are not a stand with its own polygon; they are what
+       is left of the surround once the pitch is laid over it. So the clip is
+       the surround, and the pitch does the rest by being painted after. -->
+  <clipPath id="crowd-front-deck">
+    <use xlink:href="#field-bg"/>
+  </clipPath>
 </defs>
 <path id="cloud5_1_" class="st0" d="M395.2,352.9c-47.2,40-95.4,78.8-143.6,117.5c-36.8,29.6-73.6,59.2-110.5,88.9
   c-5.1,4.1-10.6,8.4-17.1,9.1c12-19.5,34.3-30.8,46.5-50.2c8.3-13.1,14.1-31.3,29.4-33.7c2.6-0.4,5.4-0.3,7.5-1.9
@@ -69,6 +76,15 @@
   1588,810.3 1654.9,798.7 1826.4,884.6 20.4,1033.1 "/>
 <polyline id="far-stand-bg_2_" class="st2" points="1588,810.3 1654.9,736.4 1826.4,884.6 "/>
 <polygon id="field-bg" class="st2" points="20.4,1033.1 0,1302.8 -0.9,1618.5 2833,1618.5 2834.4,937.5 1784.3,848.2 "/>
+<!-- Deliberately between the surround and the pitch. Everyone this group
+     puts on the grass is covered by #field_2_ on the next line, which is
+     cheaper to write and to read than subtracting one polygon from another:
+     a clip path unions its children and cannot take one away. What is left
+     over is the two dark wedges at the bottom corners. -->
+<g class="crowd" clip-path="url(#crowd-front-deck)">
+  <circle v-for="(person, i) in deckPeople('front')" :key="i"
+          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+</g>
 <polygon id="field_2_" class="st4" points="320.2,998.8 1133.5,1618.5 2851,941.7 1826.4,882.5 1249.7,935.3 "/>
 <g id="far-bottom-stand">
   <polygon id="far-bottom-stand-1" class="seating" points="20.4,820.2 172.6,820.2 243,975.9 20.4,1011.9   "/>
