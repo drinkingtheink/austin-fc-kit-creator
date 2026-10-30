@@ -1134,31 +1134,41 @@
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
-        <!-- Horizontal gathers below the cuff, and nothing else. Sock
+        <!-- Horizontal gathers high on the sock, and nothing else. Sock
              elastic bunches the cloth crossways; it does not drape, so the
              vertical folds the other garments use read as printed stripes
-             here however they are drawn. They fade going down, the way
-             gathering does once it is past the band. -->
-        <path d="M138.7 1002 C190.5 1008 259.5 1008 311.3 1002 L311.3 1009 C259.5 1015 190.5 1015 138.7 1009 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
-        <path d="M139.6 1009 C190.9 1015 259.3 1015 310.7 1009 L310.7 1020 C259.3 1026 190.9 1026 139.6 1020 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
-        <path d="M143.5 1038 C192.8 1043 258.5 1043 307.8 1038 L307.8 1044 C258.5 1049 192.8 1049 143.5 1044 Z" fill="#fff" fill-opacity=".17" filter="url(#foldSoft)" />
-        <path d="M144.4 1044 C193.2 1049 258.4 1049 307.2 1044 L307.2 1054 C258.4 1059 193.2 1059 144.4 1054 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
-        <path d="M148.2 1072 C195 1076 257.6 1076 304.5 1072 L304.5 1077 C257.6 1081 195 1081 148.2 1077 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
-        <path d="M148.8 1077 C195.4 1081 257.4 1081 304 1077 L304 1086 C257.4 1090 195.4 1090 148.8 1086 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
+             here however they are drawn. They sit across the cuff and just
+             under it, which is where the elastic actually is, and fade
+             going down the way gathering does once it is past the band.
+
+             The two socks are deliberately out of step with each other, by
+             a few units of height and a little sag. Gathered identically
+             they read as one sock drawn twice. -->
+        <path d="M137.4 993 C189.9 999 259.8 999 312.2 993 L312.2 1000 C259.8 1006 189.9 1006 137.4 1000 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
+        <path d="M138.4 1000 C190.3 1006 259.6 1006 311.5 1000 L311.5 1011 C259.6 1017 190.3 1017 138.4 1011 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
+        <path d="M140.8 1018 C191.5 1023 259.1 1023 309.8 1018 L309.8 1024 C259.1 1029 191.5 1029 140.8 1024 Z" fill="#fff" fill-opacity=".17" filter="url(#foldSoft)" />
+        <path d="M141.6 1024 C191.9 1029 258.9 1029 309.2 1024 L309.2 1034 C258.9 1039 191.9 1039 141.6 1034 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
+        <path d="M144.1 1042 C193.1 1046 258.4 1046 307.4 1042 L307.4 1047 C258.4 1051 193.1 1051 144.1 1047 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
+        <path d="M144.8 1047 C193.4 1051 258.3 1051 306.9 1047 L306.9 1056 C258.3 1060 193.4 1060 144.8 1056 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
       </g>
       <g clip-path="url(#clipLeftSock)">
         <rect x="410" y="971" width="165" height="306" fill="url(#kitRound)" />
-        <!-- Horizontal gathers below the cuff, and nothing else. Sock
+        <!-- Horizontal gathers high on the sock, and nothing else. Sock
              elastic bunches the cloth crossways; it does not drape, so the
              vertical folds the other garments use read as printed stripes
-             here however they are drawn. They fade going down, the way
-             gathering does once it is past the band. -->
-        <path d="M407.7 1002 C459.5 1008 528.5 1008 580.3 1002 L580.3 1009 C528.5 1015 459.5 1015 407.7 1009 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
-        <path d="M408.6 1009 C459.9 1015 528.3 1015 579.7 1009 L579.7 1020 C528.3 1026 459.9 1026 408.6 1020 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
-        <path d="M412.5 1038 C461.8 1043 527.5 1043 576.8 1038 L576.8 1044 C527.5 1049 461.8 1049 412.5 1044 Z" fill="#fff" fill-opacity=".17" filter="url(#foldSoft)" />
-        <path d="M413.4 1044 C462.2 1049 527.4 1049 576.2 1044 L576.2 1054 C527.4 1059 462.2 1059 413.4 1054 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
-        <path d="M417.2 1072 C464 1076 526.6 1076 573.5 1072 L573.5 1077 C526.6 1081 464 1081 417.2 1077 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
-        <path d="M417.8 1077 C464.4 1081 526.4 1081 573 1077 L573 1086 C526.4 1090 464.4 1090 417.8 1086 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
+             here however they are drawn. They sit across the cuff and just
+             under it, which is where the elastic actually is, and fade
+             going down the way gathering does once it is past the band.
+
+             The two socks are deliberately out of step with each other, by
+             a few units of height and a little sag. Gathered identically
+             they read as one sock drawn twice. -->
+        <path d="M407 997 C459.1 1002 528.7 1002 580.8 997 L580.8 1004 C528.7 1009 459.1 1009 407 1004 Z" fill="#fff" fill-opacity=".21" filter="url(#foldSoft)" />
+        <path d="M407.9 1004 C459.6 1009 528.5 1009 580.1 1004 L580.1 1015 C528.5 1020 459.6 1020 407.9 1015 Z" fill="#000" fill-opacity=".29" filter="url(#foldSoft)" />
+        <path d="M410.2 1021 C460.7 1027 528 1027 578.5 1021 L578.5 1027 C528 1033 460.7 1033 410.2 1027 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSoft)" />
+        <path d="M411.1 1027 C461.1 1033 527.8 1033 577.9 1027 L577.9 1037 C527.8 1043 461.1 1043 411.1 1037 Z" fill="#000" fill-opacity=".25" filter="url(#foldSoft)" />
+        <path d="M413.2 1043 C462.1 1046 527.4 1046 576.3 1043 L576.3 1048 C527.4 1051 462.1 1051 413.2 1048 Z" fill="#fff" fill-opacity=".12" filter="url(#foldSoft)" />
+        <path d="M413.9 1048 C462.5 1051 527.2 1051 575.8 1048 L575.8 1057 C527.2 1060 462.5 1060 413.9 1057 Z" fill="#000" fill-opacity=".17" filter="url(#foldSoft)" />
       </g>
       <rect
         clip-path="url(#clipKitAll)"
