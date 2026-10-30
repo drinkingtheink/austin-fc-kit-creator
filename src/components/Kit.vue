@@ -155,6 +155,18 @@
       <mask id="maskCrotchFolds">
         <rect x="190" y="600" width="341" height="270" fill="url(#foldCrotchFade)" />
       </mask>
+
+      <!-- The armpit is the shirt's crotch: the point the cloth is pulled
+           from, and the darkest seam on the garment. Same radial falloff,
+           centred on the armpit itself rather than on the box -- the first
+           attempt centred it on the box and put the folds in their own mask's
+           faded edge, where nothing read at all. -->
+      <mask id="maskArmpitRight">
+        <rect x="58" y="105" width="240" height="240" fill="url(#foldCrotchFade)" />
+      </mask>
+      <mask id="maskArmpitLeft">
+        <rect x="423" y="105" width="240" height="240" fill="url(#foldCrotchFade)" />
+      </mask>
     </defs>
 
     <!-- Shorts and socks ride up together, closing the gap under the
@@ -993,6 +1005,17 @@
           <path d="M424 70 C434 220 418 410 428 553 L452 553 C442 410 458 220 436 70 Z" fill="#000" fill-opacity=".28" filter="url(#foldSoft)" />
           <path d="M196 90 C192 230 200 400 194 553 L212 553 C220 400 208 230 208 90 Z" fill="#000" fill-opacity=".20" filter="url(#foldSoft)" />
         </g>
+        <!-- Tension fanning out of each armpit, down and in across the chest. -->
+        <g mask="url(#maskArmpitRight)">
+          <path d="M178 216 C212 240 248 270 282 308 C252 282 216 252 182 230 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSofter)" />
+          <path d="M178 224 C214 252 250 288 282 332 C256 300 218 266 184 238 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
+          <path d="M178 232 C206 272 232 316 252 362 C234 322 206 276 180 244 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
+        </g>
+        <g mask="url(#maskArmpitLeft)">
+          <path d="M543 216 C509 240 473 270 439 308 C469 282 505 252 539 230 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSofter)" />
+          <path d="M543 224 C507 252 471 288 439 332 C465 300 503 266 537 238 Z" fill="#000" fill-opacity=".34" filter="url(#foldSofter)" />
+          <path d="M543 232 C515 272 489 316 469 362 C487 322 515 276 541 244 Z" fill="#000" fill-opacity=".26" filter="url(#foldSofter)" />
+        </g>
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
            cuffs hang off the ends of the sleeves by six units on one side and
@@ -1002,10 +1025,20 @@
       <g clip-path="url(#clipRightSleeve)">
         <rect x="21" y="34" width="154" height="197" fill="url(#kitRound)" />
         <rect x="21" y="34" width="154" height="197" fill="url(#kitDepth)" />
+        <!-- Along the sleeve's own axis, shoulder to cuff, not vertically:
+             a sleeve is a tube pointing down and out, and folds run with it. -->
+        <path d="M160 58 C106 104 92 122 52 150 L65 156 C105 128 119 110 173 64 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSoft)" />
+        <path d="M160 72 C106 118 92 136 52 164 L67 170 C107 142 121 124 175 78 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
+        <path d="M163 112 C109 156 95 174 55 198 L68 204 C108 180 122 162 176 118 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
       </g>
       <g clip-path="url(#clipLeftSleeve)">
         <rect x="540" y="34" width="148" height="197" fill="url(#kitRound)" />
         <rect x="540" y="34" width="148" height="197" fill="url(#kitDepth)" />
+        <!-- Along the sleeve's own axis, shoulder to cuff, not vertically:
+             a sleeve is a tube pointing down and out, and folds run with it. -->
+        <path d="M549 58 C603 104 617 122 657 150 L644 156 C604 128 590 110 536 64 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSoft)" />
+        <path d="M549 72 C603 118 617 136 657 164 L642 170 C602 142 588 124 534 78 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
+        <path d="M546 112 C600 156 614 174 654 198 L641 204 C601 180 587 162 533 118 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
       </g>
       <g clip-path="url(#clipShorts)">
         <rect x="134" y="572" width="455" height="318" fill="url(#kitRound)" />
@@ -1046,9 +1079,21 @@
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
+        <path d="M176 975 C172 1080 178 1180 174 1280 L186 1280 C190 1180 184 1080 188 975 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSofter)" />
+        <path d="M188 975 C184 1080 190 1180 186 1280 L202 1280 C206 1180 200 1080 204 975 Z" fill="#000" fill-opacity=".24" filter="url(#foldSofter)" />
+        <path d="M230 975 C226 1080 232 1180 228 1280 L238 1280 C242 1180 236 1080 240 975 Z" fill="#fff" fill-opacity=".14" filter="url(#foldSofter)" />
+        <path d="M242 975 C238 1080 244 1180 240 1280 L251 1280 C255 1180 249 1080 253 975 Z" fill="#000" fill-opacity=".20" filter="url(#foldSofter)" />
+        <!-- Cloth bunching where the sock meets the boot. -->
+        <path d="M156 1232 C202 1248 246 1248 292 1232 L292 1290 L156 1290 Z" fill="#000" fill-opacity=".22" filter="url(#foldSofter)" />
       </g>
       <g clip-path="url(#clipLeftSock)">
         <rect x="410" y="971" width="165" height="306" fill="url(#kitRound)" />
+        <path d="M445 975 C441 1080 447 1180 443 1280 L455 1280 C459 1180 453 1080 457 975 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSofter)" />
+        <path d="M457 975 C453 1080 459 1180 455 1280 L471 1280 C475 1180 469 1080 473 975 Z" fill="#000" fill-opacity=".24" filter="url(#foldSofter)" />
+        <path d="M499 975 C495 1080 501 1180 497 1280 L507 1280 C511 1180 505 1080 509 975 Z" fill="#fff" fill-opacity=".14" filter="url(#foldSofter)" />
+        <path d="M511 975 C507 1080 513 1180 509 1280 L520 1280 C524 1180 518 1080 522 975 Z" fill="#000" fill-opacity=".20" filter="url(#foldSofter)" />
+        <!-- Cloth bunching where the sock meets the boot. -->
+        <path d="M425 1232 C471 1248 515 1248 561 1232 L561 1290 L425 1290 Z" fill="#000" fill-opacity=".22" filter="url(#foldSofter)" />
       </g>
       <rect
         clip-path="url(#clipKitAll)"
