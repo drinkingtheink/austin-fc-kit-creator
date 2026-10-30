@@ -1180,20 +1180,18 @@
 
            #neckBack, not the cloth's colour. What shows below a front hem is
            the inside of the back panel, not its outside, so it belongs to
-           the same shadow as the collar's back and the hem's inside rather
-           than to the kit's palette. Placed here, after every shirt design, because the stripes
+           the same shadow as the collar's back rather than to the kit's
+           palette.
+
+           The front hem stays straight. A matching lens bowing up into the
+           shirt was tried and taken out again: on a hem this wide it reads
+           as a scoop cut out of the front rather than as the near wall of a
+           tube, and the back dropping below the line carries the depth on
+           its own. The legs keep theirs, where the hem is short enough for
+           it to work. Placed here, after every shirt design, because the stripes
            and hoops run the full height of the garment and would otherwise
            paint straight over it. -->
       <path fill="url(#neckBack)" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
-      <!-- And the inside of the shirt, just within the front hem, curving the
-           other way. The two together make the hem an opening rather than a
-           straight cut: the back drops 20 below the line, the inside rises 12
-           above it, and both pinch out at the side seams.
-
-           It takes #neckBack, the same grey and gradient as the back of the
-           collar, because it is the same thing -- the inside of the garment,
-           in its own shadow rather than in the shirt's colour. -->
-      <path fill="url(#neckBack)" d="M174.0 549.5 L545.5 549.5 C421.7 533.5 297.8 533.5 174.0 549.5 Z" />
 
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
