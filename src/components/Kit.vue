@@ -477,6 +477,42 @@
         c0-1.5-0.2-3-0.5-4.5h0.5L545.4,35.7z"/>
       <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="right-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
       <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="left-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
+
+      <!-- Sleeve patch, worn on the left sleeve only, as it is on the shirt.
+
+           It runs off the fold rather than sitting wholly on the sleeve. The
+           sleeve is a flat parallelogram standing in for a tube, and its top
+           edge is where the cloth turns over the arm, so anything crossing
+           that edge has the rest of itself around the back. clipLeftSleeve
+           does the cutting, so the cut follows the sleeve's real outline
+           rather than a line guessed here.
+
+           How far it runs off is limited by the artwork, not by taste. The
+           lettering and the stars live in the top quarter of this mark, so
+           centring it on the fold -- a true half -- removes everything that
+           makes it readable and leaves a bare arc. It is set to lose its top
+           corner instead: enough to read as wrapped, little enough to still
+           be the badge.
+
+           Rotated to the sleeve's own rake: the top edge drops 39.7 over
+           145.9, which is 15.2 degrees. A patch sitting square on a sloping
+           sleeve reads as a sticker.
+
+           It sits above the cloth but below the shading, so the folds pass
+           over it the way they pass over the sponsor. -->
+      <g clip-path="url(#clipLeftSleeve)">
+        <g :style="{ fill: sleevePatchFill }"
+           transform="translate(608 88) rotate(15.2) scale(0.2) translate(-135 -144)">
+        <path d="M0,124V0h270v123c-2.29,20.46-6.82,40.89-15.72,60.26-5.94,12.93-13.29,24.22-20.8,36.17-11.86,18.89-27.44,33.25-46.73,44.42-16.33,9.45-32.27,18.33-49.75,24.15h-4c-33-10.52-62.88-29.2-86.35-56.07l-34.61,34.6-8.52-8.53,35.33-35.37C16.24,193.5,3.53,159.32,0,124ZM47.56,213.93L249.31,12.22H12.07s-.01,98.79-.01,98.79c.71,37.62,12.84,73.49,35.51,102.92ZM135.18,275.4c71.27-22.68,119.83-86.64,122.54-160.48l-.19-93.85L55.26,223.29c21.07,24.52,48.71,42.46,79.92,52.1Z"/>
+        <path d="M63.06,77.08l-.25-30.48-10.06,22.6c-1.93.74-5.82.89-7.86.25l-9.95-22.13-.54,29.7-10.14.08V24.48s10.75-.14,10.75-.14l13.93,30.94,13.63-30.79,10.73-.11v52.6s-10.24.12-10.24.12Z"/>
+        <path d="M149.27,76.85c-10.59,2.65-20.7.74-29.54-6.44l7.15-8.26c6.15,4.81,12.17,7.39,19.28,4.94,1.78-.61,3.82-3.86,3.75-5.53-.08-1.8-2.5-4.56-4.31-4.89l-10.33-1.88c-7.74-1.41-12.86-7.15-13.12-14.36s3.94-13.81,11.45-15.82c8.78-2.35,17.76-.83,25.73,4.72l-5.51,8.6c-4.68-3.01-9.23-4.81-14.88-4.29-3.02.28-5.2,3.03-5.14,5.88.15,6.7,11.4,4.26,20.03,8.54,6.42,3.18,8.32,9.56,7.33,16.26-.82,5.53-5.02,10.8-11.9,12.52Z"/>
+        <polygon points="116.15 66.95 116.13 77.05 80.35 77.08 80.34 24.46 91.71 24.43 91.75 66.98 116.15 66.95"/>
+        <polygon points="48.94 112.55 40.71 117.95 43.15 108.34 35.23 102.5 45.36 102.24 48.72 92.62 52.04 102.13 62.24 102.41 54.15 108.68 57.08 118.3 48.94 112.55"/>
+        <polygon points="73.68 145.52 65.22 151.26 68.1 141.44 59.85 135.39 70.08 135.2 73.51 125.63 76.94 135.18 87.17 135.39 79.04 141.35 81.49 150.94 73.68 145.52"/>
+        <polygon points="98.6 112.53 90 118.14 92.85 108.42 84.72 102.44 94.98 102.12 98.43 92.61 101.45 102.07 111.74 102.54 103.81 108.41 106.71 118.37 98.6 112.53"/>
+        <path d="M52.61,193.33l1.45,4.21-6.35-6.78,6.48.8-1.01-2.6c-.27-.68.22-1.74,1.15-3.2l5.26,6.13-4.43-2.38,1.83,4.74-4.37-.9Z"/>
+        </g>
+      </g>
       <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="389.7,549.5 440.5,549.5 440.5,34.5 429.9,34.5 389.7,74.7     "/>
@@ -1137,6 +1173,7 @@
 
 <script>
   import AustinFCRoundel from './AustinFCRoundel.vue';
+  import { readableInk } from '../lib/colorTools.js';
 
   export default {
     name: 'Kit',
@@ -1195,6 +1232,19 @@
     ],
     emits: ['paint', 'hover'],
     computed: {
+      /**
+       * The patch is fixed artwork, not a palette entry, so it cannot be
+       * recoloured into legibility the way the parts in LEGIBILITY are. It
+       * picks its own ink instead: whichever of black or white reads better
+       * on the sleeve under it, by the same WCAG contrast the guards use.
+       *
+       * Judged against shirtSleeveFill alone, and that is enough because of
+       * where it sits -- x 581 to 635, where the cuff does not start until
+       * 655. Move it outward and this would have to clear shirtCuffFill too.
+       */
+      sleevePatchFill() {
+        return readableInk(this.shirtSleeveFill);
+      },
       // A turning reel blurs; one that has just landed clunks. Built here
       // rather than in the template because the class names are derived from
       // the reel keys, which are the ids of the groups they move.
