@@ -140,7 +140,33 @@ const DECKS = [
   // over everything, clipped only to its deck -- which for this one is the
   // whole surround, pitch included. A photo taken from these seats would go
   // off in the middle of the field.
-  { id: 'front', x: 0, y: 950, width: 2835, height: 670, step: 28, size: 10, rake: 0, flashes: false }
+  { id: 'front', x: 0, y: 950, width: 2835, height: 670, step: 28, size: 10, rake: 0, flashes: false },
+
+  // The two touchlines, from in front.
+  //
+  // The front deck above is cut off dead along the edge of the pitch, which
+  // is the one thing in this scene that is backwards: those seats are nearer
+  // the camera than the grass is, so heads should break the line rather than
+  // stop at it. These two put a couple of rows across it.
+  //
+  // They cannot be the front deck drawn higher in the stack, because that
+  // deck covers the whole bottom band and most of it stands on the grass. A
+  // band that follows the edge is what rake is for: these run parallel to
+  // the touchlines, two rows deep, and the pitch clips them so they cannot
+  // wander further in.
+  //
+  // The slopes are the touchlines' own. The left runs 619 down over 813
+  // across, the right 676 up over 1718, which is the same arithmetic the far
+  // deck's 0.07 came from. They are approximations of an edge rather than a
+  // second copy of it: a few units out and the band simply sits a few units
+  // further on or off the grass.
+  //
+  // Both start above their touchline, not below it: the grass is on the
+  // upper side of each, so a band laid under the line is a band the pitch
+  // clips away entirely. The left one was, and arrived with three people on
+  // the field out of ninety-six.
+  { id: 'spillLeft',  x: 320,  y: 945,  width: 920,  height: 56, step: 28, size: 10, rake: 0.761, flashes: false },
+  { id: 'spillRight', x: 1133, y: 1570, width: 1718, height: 56, step: 28, size: 10, rake: -0.393, flashes: false }
 ];
 
 function build() {

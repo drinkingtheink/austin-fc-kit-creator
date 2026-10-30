@@ -29,6 +29,12 @@
   <clipPath id="crowd-front-deck">
     <use xlink:href="#field-bg"/>
   </clipPath>
+
+  <!-- The spill rows are the other way round: they are meant to be on the
+       grass, so the pitch is what holds them rather than what hides them. -->
+  <clipPath id="crowd-spill">
+    <use xlink:href="#field_2_"/>
+  </clipPath>
 </defs>
 <path id="cloud5_1_" class="st0" d="M395.2,352.9c-47.2,40-95.4,78.8-143.6,117.5c-36.8,29.6-73.6,59.2-110.5,88.9
   c-5.1,4.1-10.6,8.4-17.1,9.1c12-19.5,34.3-30.8,46.5-50.2c8.3-13.1,14.1-31.3,29.4-33.7c2.6-0.4,5.4-0.3,7.5-1.9
@@ -106,6 +112,16 @@
   L1887,983.4z M1654.9,954.3c25.8-1.9,54.9-2.9,85.2-2.9c46.7,0,90.5,2.3,123.5,6.6c47.6,6.1,50,13.2,50,14.6c0,0.9-1.2,4.7-18.1,8.9
   L1654.9,954.3z M2438.2,1043l-535.4-60.6c9.1-2.9,13.6-6.2,13.6-9.8c0-15.6-90.8-24-176.3-24c-36.2,0-70.7,1.4-99.8,4l-263.8-29.9
   l449.8-38.1l135.8,9.3l-117.7,14.5l0,1.4l550.7,40.9l0.1,0l83.2-21.5l263.9,18.1L2438.2,1043z"/>
+<!-- In front of the pitch, its markings and its goals, because that is where
+     these seats are: nearer the camera than any of it. Two rows along each
+     touchline, so the near corners break the line instead of stopping dead
+     at it. -->
+<g class="crowd" clip-path="url(#crowd-spill)">
+  <circle v-for="(person, i) in deckPeople('spillLeft')" :key="`l${i}`"
+          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+  <circle v-for="(person, i) in deckPeople('spillRight')" :key="`r${i}`"
+          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+</g>
 <g id="goals">
   <g id="left-goal">
     <path class="st5" d="M604.3,1124.9l-67.6-34.6v-86.7l67.6,31.5V1124.9z M543.8,1085.9l53.5,27.4v-73.8l-53.5-24.9V1085.9z"/>
