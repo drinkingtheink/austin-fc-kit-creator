@@ -43,14 +43,33 @@
         <path d="M0 4.5h6" stroke="#000" stroke-opacity=".055" stroke-width="1.5" />
       </pattern>
 
-      <!-- Each garment is its own cylinder, so each gets its own clip. The
-           cuffs and trims are left flat: they are narrow accent bands, usually
-           in a contrasting color, and read fine without rounding. Their ids are
-           unique now, so clipping them is a matter of adding the shapes here. -->
+      <!-- Each garment is its own cylinder, so each gets its own clip.
+           
+           The sleeve cuffs and the shorts trims are in with the garment they
+           belong to rather than clipped on their own, so the gradient runs
+           across them unbroken: a cuff is the same tube as the sleeve, dyed
+           differently, and lighting it as its own little tube would put a
+           highlight on it that lines up with nothing.
+           
+           Measured before doing it: 20% of each sleeve cuff fell outside the
+           sleeve shape and so went unlit while the other 80% was lit, which
+           is a seam down the middle of the cuff; the shorts trims fell
+           outside entirely and were flat. The sock cuffs are already inside
+           the sock shape and were right all along. -->
       <clipPath id="clipShirtTrunk"><use href="#shirt-trunk" /></clipPath>
-      <clipPath id="clipRightSleeve"><use href="#right-sleeve" /></clipPath>
-      <clipPath id="clipLeftSleeve"><use href="#left-sleeve" /></clipPath>
-      <clipPath id="clipShorts"><use href="#shorts-trunk" transform="translate(0,-40)" /></clipPath>
+      <clipPath id="clipRightSleeve">
+        <use href="#right-sleeve" />
+        <use href="#right-sleeve-cuff" />
+      </clipPath>
+      <clipPath id="clipLeftSleeve">
+        <use href="#left-sleeve" />
+        <use href="#left-sleeve-cuff" />
+      </clipPath>
+      <clipPath id="clipShorts">
+        <use href="#shorts-trunk" transform="translate(0,-40)" />
+        <use href="#right-trim" transform="translate(0,-40)" />
+        <use href="#left-trim" transform="translate(0,-40)" />
+      </clipPath>
       <clipPath id="clipRightSock"><use href="#right-sock" transform="translate(0,-40)" /></clipPath>
       <clipPath id="clipLeftSock"><use href="#left-sock" transform="translate(0,-40)" /></clipPath>
 
@@ -58,8 +77,12 @@
       <clipPath id="clipKitAll">
         <use href="#shirt-trunk" />
         <use href="#right-sleeve" />
+        <use href="#right-sleeve-cuff" />
         <use href="#left-sleeve" />
+        <use href="#left-sleeve-cuff" />
         <use href="#shorts-trunk" transform="translate(0,-40)" />
+        <use href="#right-trim" transform="translate(0,-40)" />
+        <use href="#left-trim" transform="translate(0,-40)" />
         <use href="#right-sock" transform="translate(0,-40)" />
         <use href="#left-sock" transform="translate(0,-40)" />
       </clipPath>
@@ -902,13 +925,18 @@
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
         <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
       </g>
+      <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
+           cuffs hang off the ends of the sleeves by six units on one side and
+           one on the other, and a gradient is measured from the box it is
+           given. Widening it moves the highlight along the sleeve by about
+           4%, which is the price of the cuff being lit at all. -->
       <g clip-path="url(#clipRightSleeve)">
-        <rect x="28" y="34" width="147" height="197" fill="url(#kitRound)" />
-        <rect x="28" y="34" width="147" height="197" fill="url(#kitDepth)" />
+        <rect x="21" y="34" width="154" height="197" fill="url(#kitRound)" />
+        <rect x="21" y="34" width="154" height="197" fill="url(#kitDepth)" />
       </g>
       <g clip-path="url(#clipLeftSleeve)">
-        <rect x="540" y="34" width="147" height="197" fill="url(#kitRound)" />
-        <rect x="540" y="34" width="147" height="197" fill="url(#kitDepth)" />
+        <rect x="540" y="34" width="148" height="197" fill="url(#kitRound)" />
+        <rect x="540" y="34" width="148" height="197" fill="url(#kitDepth)" />
       </g>
       <g clip-path="url(#clipShorts)">
         <rect x="134" y="572" width="455" height="318" fill="url(#kitRound)" />
