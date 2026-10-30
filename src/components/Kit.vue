@@ -216,6 +216,12 @@
       </g>
       <polygon data-part="socks" :class="partClass('socks')" id="left-sock" :style="{ fill: socksFill }" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
       <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="left-sock-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
+
+      <!-- The inside back of each sock, through the opening. -->
+      <path :style="{ fill: socksCuffsFill }" d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" />
+      <path d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" fill="#000" fill-opacity=".42" />
+      <path :style="{ fill: socksCuffsFill }" d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" />
+      <path d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" fill="#000" fill-opacity=".42" />
       <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="left-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
@@ -262,6 +268,10 @@
       <path data-part="shorts" :class="partClass('shorts')" id="shorts-trunk" :style="{ fill: shortsFill }" class="st0" d="M579.1,842.6l-46.3-153.2v-76.8H188.1v77.8l-46,152.2l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56
         c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l31.7-105l31.7,105l0.5-0.2c0.1,0.2,0.2,0.3,0.3,0.5l185.5-56c0-0.2,0-0.4-0.1-0.6L579.1,842.6z"
         />
+
+      <!-- The inside back of the waistband, through the opening. -->
+      <path :style="{ fill: shortsFill }" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
+      <path d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" fill="#000" fill-opacity=".42" />
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="right-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M134.4,869.4l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l7.9-26.3
         l-186.8-56.4L134.4,869.4z"/>
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
@@ -534,6 +544,16 @@
         c0-1.5-0.2-3-0.5-4.5h0.5L545.4,35.7z"/>
       <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="right-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="54.4,66.8 21.9,75.7 21.9,231.7 54.4,222.8  "/>
       <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="left-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
+
+      <!-- A hint of the far side of the garment, seen through its opening.
+           Each is the cloth's own colour with a flat shade over it, so it
+           tracks whatever the kit is wearing and still sits back from the
+           near side. The shading groups come later and pass over them, the
+           same as they do the sponsor. -->
+      <path :style="{ fill: shirtCuffFill }" d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" />
+      <path d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" fill="#000" fill-opacity=".42" />
+      <path :style="{ fill: shirtCuffFill }" d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" />
+      <path d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" fill="#000" fill-opacity=".42" />
 
       <!-- Sleeve patch, worn on the left sleeve only, as it is on the shirt.
 
@@ -1016,6 +1036,10 @@
             c0.4,0,0.5,0.1,0.5,0.5c0,0.7,0,1.5,0,2.2C451.6,131.8,451.6,131.9,451.6,132z"/>
         </g>
       </g>
+      <!-- The back of the collar, standing above the front one. Drawn
+           before both collars so either covers it where they meet. -->
+      <path :style="{ fill: collarFill }" d="M300 34.5 C318 21 402 21 420 34.5 L420 41.5 C402 29.5 318 29.5 300 41.5 Z" />
+      <path d="M300 34.5 C318 21 402 21 420 34.5 L420 41.5 C402 29.5 318 29.5 300 41.5 Z" fill="#000" fill-opacity=".42" />
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
