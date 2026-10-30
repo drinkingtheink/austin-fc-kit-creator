@@ -165,8 +165,16 @@ const DECKS = [
   // upper side of each, so a band laid under the line is a band the pitch
   // clips away entirely. The left one was, and arrived with three people on
   // the field out of ninety-six.
-  { id: 'spillLeft',  x: 320,  y: 945,  width: 920,  height: 56, step: 28, size: 10, rake: 0.761, flashes: false },
-  { id: 'spillRight', x: 1133, y: 1570, width: 1718, height: 56, step: 28, size: 10, rake: -0.393, flashes: false }
+  //
+  // Two rows, and tight ones. The first pass ran three rows at the front
+  // deck's own spacing, which put people 54 units onto the grass at 28
+  // apart, and that far in at that spread reads as a scatter on an empty
+  // field rather than as the front of a crowd. These sit within 26 units of
+  // the line at 22 apart: closer together than anything else in the bowl, on
+  // purpose, because the front row of a stand is people pressed against a
+  // rail rather than people in seats.
+  { id: 'spillLeft',  x: 320,  y: 973,  width: 920,  height: 22, step: 22, size: 10, rake: 0.761, flashes: false },
+  { id: 'spillRight', x: 1133, y: 1592, width: 1718, height: 22, step: 22, size: 10, rake: -0.393, flashes: false }
 ];
 
 function build() {

@@ -35,6 +35,22 @@
   <clipPath id="crowd-spill">
     <use xlink:href="#field_2_"/>
   </clipPath>
+
+  <!-- Depth of field for the two nearest decks. The camera is focused on the
+       kit, and these seats are closer to it than anything else in the bowl.
+       
+       An SVG filter carried as an attribute, not a CSS one: `filter` is
+       deliberately absent from PAINT_PROPS in kitToPng.js, so a CSS blur
+       would soften these on screen and leave them sharp in the PNG. An
+       attribute rides along on the clone, and <defs> survives serialization
+       whole.
+       
+       2.5 units against a stadium drawn at about 0.9 screen pixels per unit,
+       so a little over two pixels of softening -- enough to sit them in front
+       of the focal plane, not enough to turn them into fog. -->
+  <filter id="front-blur" x="-4%" y="-4%" width="108%" height="108%">
+    <feGaussianBlur stdDeviation="2.5"/>
+  </filter>
 </defs>
 <path id="cloud5_1_" class="st0" d="M395.2,352.9c-47.2,40-95.4,78.8-143.6,117.5c-36.8,29.6-73.6,59.2-110.5,88.9
   c-5.1,4.1-10.6,8.4-17.1,9.1c12-19.5,34.3-30.8,46.5-50.2c8.3-13.1,14.1-31.3,29.4-33.7c2.6-0.4,5.4-0.3,7.5-1.9
@@ -87,9 +103,11 @@
      cheaper to write and to read than subtracting one polygon from another:
      a clip path unions its children and cannot take one away. What is left
      over is the two dark wedges at the bottom corners. -->
-<g class="crowd" clip-path="url(#crowd-front-deck)">
-  <circle v-for="(person, i) in deckPeople('front')" :key="i"
-          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+<g filter="url(#front-blur)">
+  <g class="crowd" clip-path="url(#crowd-front-deck)">
+    <circle v-for="(person, i) in deckPeople('front')" :key="i"
+            :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+  </g>
 </g>
 <polygon id="field_2_" class="st4" points="320.2,998.8 1133.5,1618.5 2851,941.7 1826.4,882.5 1249.7,935.3 "/>
 <g id="far-bottom-stand">
@@ -116,11 +134,18 @@
      these seats are: nearer the camera than any of it. Two rows along each
      touchline, so the near corners break the line instead of stopping dead
      at it. -->
-<g class="crowd" clip-path="url(#crowd-spill)">
-  <circle v-for="(person, i) in deckPeople('spillLeft')" :key="`l${i}`"
-          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
-  <circle v-for="(person, i) in deckPeople('spillRight')" :key="`r${i}`"
-          :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+<!-- The filter sits outside the clip on purpose. Rendering order is filter
+     then clip, so a filter on the clipped group would blur the people and
+     then cut the blur off square along the touchline -- a hard line again,
+     which is the thing these rows exist to break. Outside it, the clip
+     happens first and the blur softens the edge it leaves. -->
+<g filter="url(#front-blur)">
+  <g class="crowd" clip-path="url(#crowd-spill)">
+    <circle v-for="(person, i) in deckPeople('spillLeft')" :key="`l${i}`"
+            :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+    <circle v-for="(person, i) in deckPeople('spillRight')" :key="`r${i}`"
+            :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
+  </g>
 </g>
 <g id="goals">
   <g id="left-goal">
