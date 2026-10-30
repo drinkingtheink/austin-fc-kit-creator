@@ -1008,7 +1008,14 @@
         </g>
       </g>
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
-      <g data-part="collar" :class="[partClass('collar'), 'fade-part', { on: showButtonCollar }]" id="button-collar">
+      <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
+           sit on the shoulder line rather than just under it. The V-neck does
+           not need it and has not moved.
+
+           Its neckline shadow in the shading section below carries the same
+           translate. The two have to move together or the shadow separates
+           from the collar it belongs to. -->
+      <g data-part="collar" :class="[partClass('collar'), 'fade-part', { on: showButtonCollar }]" id="button-collar" transform="translate(0,-4)">
         <path id="collar-w-fold" :style="{ fill: collarFill }" class="st0" d="M440.9,34.7l0.2-0.2h-11.1l-69.3,69.3l-69.2-69.3h-11.1c-11.3,40.8,21.3,97.7,21.3,97.7
           l36.7-39.5l16.7,16.7l-12.5,23.5l40.2-40.2l36.6,39.4C419.5,132.2,452.1,75.5,440.9,34.7z"/>
         <circle id="button" :style="{ fill: collarFill }" class="st0" cx="366.8" cy="127.7" r="8"/>
@@ -1160,7 +1167,7 @@
              shadow crossfades with the collar it belongs to rather than
              switching under it. -->
         <path :class="['fade-part', { on: !showButtonCollar }]" d="M261.4 33.3 L360.6 132.5 L459.9 33.3 L459.9 47 L360.6 146 L261.4 47 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
-        <path :class="['fade-part', { on: showButtonCollar }]" d="M301.7 132.2 L338.4 92.7 L355.1 109.4 L342.6 132.9 L382.8 92.7 L419.4 132.1 L419.4 145.1 L382.8 105.7 L342.6 145.9 L355.1 122.4 L338.4 105.7 L301.7 145.2 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
+        <path :class="['fade-part', { on: showButtonCollar }]" transform="translate(0,-4)" d="M301.7 132.2 L338.4 92.7 L355.1 109.4 L342.6 132.9 L382.8 92.7 L419.4 132.1 L419.4 145.1 L382.8 105.7 L342.6 145.9 L355.1 122.4 L338.4 105.7 L301.7 145.2 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
            cuffs hang off the ends of the sleeves by six units on one side and
