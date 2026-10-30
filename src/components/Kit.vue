@@ -298,10 +298,14 @@
         id="shorts-roundel"
         transform="translate(214.6,816.1) rotate(15.6) scale(0.1484375) translate(-256,-256)"
       >
+        <!-- No disc down here, whatever showBadgeDisc says: only the shirt
+             roundel takes a ground. The tree is printed straight onto the
+             shorts, so the lettering goes in the tree's own colour, which is
+             what the roundel does whenever it has nothing behind it. -->
         <AustinFCRoundel
-          :groundFill="showBadgeDisc ? shortsBadgeBGFill : null"
+          :groundFill="null"
           :treeFill="shortsBadgeFill"
-          :letterFill="showBadgeDisc ? shortsBadgeTextFill : shortsBadgeFill"
+          :letterFill="shortsBadgeFill"
         />
       </g>
 

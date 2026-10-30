@@ -348,7 +348,7 @@
 
             <transition name="field-pop">
               <ToolField
-                v-if="!showRoundelBadge || showBadgeDisc"
+                v-if="!showRoundelBadge"
                 label="Text color"
                 part="shortsBadge"
               >
@@ -358,7 +358,7 @@
 
             <transition name="field-pop">
               <ToolField
-                v-if="!showRoundelBadge || showBadgeDisc"
+                v-if="!showRoundelBadge"
                 label="Background"
                 part="shortsBadge"
               >
@@ -791,7 +791,10 @@
     { on: 'badgeTextFill', over: ['badgeBGFill'], min: READ },
 
     { on: 'shortsBadgeBGFill', over: ['shortsFill'], min: READ },
-    { on: 'shortsBadgeFill', over: badgeGround('shortsBadgeBGFill', ['shortsFill']) },
+    // Not badgeGround: the shorts roundel never takes a disc, so when the
+    // roundel is the badge its tree sits on bare cloth whatever showBadgeDisc
+    // says. Only the crest has a ground down here.
+    { on: 'shortsBadgeFill', over: kit => kit.showRoundelBadge ? ['shortsFill'] : ['shortsBadgeBGFill'] },
     { on: 'shortsBadgeTextFill', over: ['shortsBadgeBGFill'], min: READ }
   ];
 
