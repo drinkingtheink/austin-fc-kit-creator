@@ -16,6 +16,20 @@ const FIT_HEIGHT = 0.86;
 const STADIUM_OPACITY = 0.34;
 const STADIUM_FILTER = 'saturate(0.7)';
 
+// The caption along the foot of the download.
+//
+// 'Bungee Inline' is --font-display in App.vue, the face the wordmark and the
+// modal title are set in. The stack behind it matches that variable, so a
+// browser without the web font falls back the same way the page does.
+//
+// The kit lands 112px clear of the bottom edge (FIT_HEIGHT against the
+// canvas), which is the room this has to sit in.
+const CAPTION_TEXT = 'AUSTIN FC KIT CREATOR';
+const CAPTION_STACK = "'Bungee Inline', system-ui, sans-serif";
+const CAPTION_SIZE = 42;
+const CAPTION_BASELINE_GAP = 54;
+const CAPTION_MAX_WIDTH = 0.8;
+
 // Everything that decides how a shape is painted. Most of the kit sets `fill`
 // inline, but ~124 elements take theirs from Kit.vue's *scoped* classes, which
 // do not survive serialization — the shapes would come out unpainted.
@@ -246,6 +260,7 @@ export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null, withStar
 
   paintVignette(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT);
   await paintKit(ctx, kitSvg);
+  await paintCaption(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => {
@@ -309,6 +324,57 @@ async function paintKit(ctx, kitSvg) {
     width,
     height
   );
+  ctx.restore();
+}
+
+/**
+ * Writes the app's name across the foot of the image.
+ *
+ * The font has to be asked for before it can be drawn. A canvas given a web
+ * font it has not loaded does not fail: fillText quietly paints the fallback
+ * and the PNG comes out in the wrong face, with nothing anywhere to say so.
+ * document.fonts.load settles that, and the check afterwards is there because
+ * the only other way to find out is to look at the file.
+ */
+async function paintCaption(ctx, width, height) {
+  const face = `${CAPTION_SIZE}px 'Bungee Inline'`;
+
+  try {
+    await document.fonts.load(face, CAPTION_TEXT);
+  } catch {
+    // Not fatal. The fallback stack still puts the words on the image.
+  }
+
+  if (!document.fonts.check(face, CAPTION_TEXT)) {
+    console.warn('[kit-export] Bungee Inline unavailable; caption fell back');
+  }
+
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  // Chrome and recent Safari only; elsewhere it is ignored and the caption
+  // simply sits tighter. measureText below accounts for it where it applies.
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '0.06em';
+
+  // Shrink to fit rather than run off the edge. Bungee Inline is wide, the
+  // fallback faces are not, and a caption that overflows on one machine and
+  // not another is worse than one a point smaller everywhere.
+  let size = CAPTION_SIZE;
+
+  ctx.font = `${size}px ${CAPTION_STACK}`;
+
+  while (size > 12 && ctx.measureText(CAPTION_TEXT).width > width * CAPTION_MAX_WIDTH) {
+    size -= 1;
+    ctx.font = `${size}px ${CAPTION_STACK}`;
+  }
+
+  // The vignette already darkens this edge, but the sky behind it is a
+  // different colour in each of the six settings, so the caption carries its
+  // own shadow rather than trusting any one of them.
+  ctx.shadowColor = 'rgba(4, 6, 5, 0.55)';
+  ctx.shadowBlur = 12;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+  ctx.fillText(CAPTION_TEXT, width / 2, height - CAPTION_BASELINE_GAP);
   ctx.restore();
 }
 
