@@ -135,13 +135,15 @@
       </mask>
 
       <!-- The other way round on the shorts: the elastic bunches the cloth, so
-           the gathers are hard at the band and gone well before the hem. -->
+           the gathers are hard at the band and gone well before the hem. The
+           height here tracks how far the gathers themselves run; a fade that
+           outlasts them just thins their ends instead of ending them. -->
       <linearGradient id="foldWaistFade" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#fff" stop-opacity="1" />
         <stop offset="1" stop-color="#fff" stop-opacity="0" />
       </linearGradient>
       <mask id="maskWaistFolds">
-        <rect x="134" y="572" width="455" height="150" fill="url(#foldWaistFade)" />
+        <rect x="134" y="572" width="455" height="60" fill="url(#foldWaistFade)" />
       </mask>
 
       <!-- Tension out of the crotch dies away with distance, so this one is
@@ -1012,18 +1014,18 @@
              y 573 in this space, which is 40 above where the shorts paths are
              drawn; the clip carries that translate. -->
         <g mask="url(#maskWaistFolds)">
-          <path d="M207 574 C198.5 620 190 660 186.6 712 L197.6 712 C201 660 209.5 620 218 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M218 574 C209.5 620 201 660 197.6 712 L210.6 712 C214 660 222.5 620 231 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M251 574 C245.1 620 239.2 660 236.9 712 L247.9 712 C250.2 660 256.1 620 262 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M262 574 C256.1 620 250.2 660 247.9 712 L260.9 712 C263.2 660 269.1 620 275 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M295 574 C291.8 620 288.5 660 287.2 712 L298.2 712 C299.5 660 302.8 620 306 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M306 574 C302.8 620 299.5 660 298.2 712 L311.2 712 C312.5 660 315.8 620 319 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M407 574 C410.5 620 414 660 415.4 712 L426.4 712 C425 660 421.5 620 418 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M418 574 C421.5 620 425 660 426.4 712 L439.4 712 C438 660 434.5 620 431 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M451 574 C457.1 620 463.2 660 465.7 712 L476.7 712 C474.2 660 468.1 620 462 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M462 574 C468.1 620 474.2 660 476.7 712 L489.7 712 C487.2 660 481.1 620 475 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M495 574 C503.8 620 512.5 660 516 712 L527 712 C523.5 660 514.8 620 506 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M506 574 C514.8 620 523.5 660 527 712 L540 712 C536.5 660 527.8 620 519 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M207 574 C203.6 592.4 200.2 608.4 198.8 629.2 L209.8 629.2 C211.2 608.4 214.6 592.4 218 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M218 574 C214.6 592.4 211.2 608.4 209.8 629.2 L222.8 629.2 C224.2 608.4 227.6 592.4 231 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M251 574 C248.6 592.4 246.3 608.4 245.4 629.2 L256.4 629.2 C257.3 608.4 259.6 592.4 262 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M262 574 C259.6 592.4 257.3 608.4 256.4 629.2 L269.4 629.2 C270.3 608.4 272.6 592.4 275 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M295 574 C293.7 592.4 292.4 608.4 291.9 629.2 L302.9 629.2 C303.4 608.4 304.7 592.4 306 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M306 574 C304.7 592.4 303.4 608.4 302.9 629.2 L315.9 629.2 C316.4 608.4 317.7 592.4 319 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M407 574 C408.4 592.4 409.8 608.4 410.3 629.2 L421.3 629.2 C420.8 608.4 419.4 592.4 418 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M418 574 C419.4 592.4 420.8 608.4 421.3 629.2 L434.3 629.2 C433.8 608.4 432.4 592.4 431 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M451 574 C453.4 592.4 455.9 608.4 456.9 629.2 L467.9 629.2 C466.9 608.4 464.4 592.4 462 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M462 574 C464.4 592.4 466.9 608.4 467.9 629.2 L480.9 629.2 C479.9 608.4 477.4 592.4 475 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M495 574 C498.5 592.4 502 608.4 503.4 629.2 L514.4 629.2 C513 608.4 509.5 592.4 506 574 Z" fill="#fff" fill-opacity=".20" filter="url(#foldSoft)" />
+          <path d="M506 574 C509.5 592.4 513 608.4 514.4 629.2 L527.4 629.2 C526 608.4 522.5 592.4 519 574 Z" fill="#000" fill-opacity=".26" filter="url(#foldSoft)" />
         </g>
         <!-- Tension sweeping up and out of the crotch toward each hip. These
              were straight wedges first and looked like light rays; cloth under
