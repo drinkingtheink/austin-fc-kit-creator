@@ -1085,29 +1085,31 @@
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
         <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
-        <!-- Cloth on a shirt hanging in moving air. Every fold leans the
-             same way, which is what makes it read as wind rather than as
-             creasing, but none of them leans by the same amount: the drifts
-             run 19 to 38 across the seven, because cloth near a seam is held
-             and cloth in the middle is free. Equal leans looked like the kit
-             had been sheared.
+        <!-- The same three ridges as before, with their feet moved across.
 
-             Each is a lazy S rather than a ruled diagonal -- the bow at a
-             third of the drop goes one way and the bow at two thirds the
-             other -- and they alternate which way they bow so the shirt does
-             not develop a single curve of its own.
+             Nothing is added to get the wind: the tops, the widths and the
+             opacities are the folds that were already here, and only where
+             each one lands at the hem has changed. Held at the shoulder,
+             pushed at the hem, which is what air does to a hanging shirt.
 
-             Hung from the shoulder and blown toward the hem, which is what
-             maskShirtFolds already does: absent at the top, full at the
-             bottom. The wind and the drape want the same mask. -->
+             They lean together but not equally -- 9 degrees at the right
+             pair, 11 and 12 further left -- because equal leans look like
+             the kit has been sheared rather than blown.
+
+             The angle is the thing to keep hold of, not the offset. The
+             first attempt set these in units, 19 to 38, which over a
+             480-unit drop is 2 to 5 degrees and reads as nothing. The trunk
+             measures a near-constant 374 wide, so a foot can travel a
+             quarter of the shirt before the clip takes it.
+
+             maskShirtFolds needed no change: absent at the shoulder, full at
+             the hem. The wind and the drape want the same mask. -->
         <g mask="url(#maskShirtFolds)">
-          <path d="M246 58 C246 221.3 276.5 404.5 274 553 L288 553 C290.5 404.5 258 221.3 258 58 Z" fill="#fff" fill-opacity=".26" filter="url(#foldSoft)" />
-          <path d="M258 58 C258 221.3 288.5 404.5 286 553 L314 553 C316.5 404.5 282 221.3 282 58 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
-          <path d="M404 68 C414.1 228.1 426.6 407.5 438 553 L451 553 C439.6 407.5 425.1 228.1 415 68 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
-          <path d="M415 68 C425.1 228.1 437.6 407.5 449 553 L475 553 C463.6 407.5 447.1 228.1 437 68 Z" fill="#000" fill-opacity=".28" filter="url(#foldSoft)" />
-          <path d="M192 86 C192.4 240.1 212 412.9 211 553 L227 553 C228 412.9 206.4 240.1 206 86 Z" fill="#000" fill-opacity=".20" filter="url(#foldSoft)" />
-          <path d="M486 96 C498.8 246.8 509.9 415.9 524 553 L539 553 C524.9 415.9 511.8 246.8 499 96 Z" fill="#000" fill-opacity=".17" filter="url(#foldSoft)" />
-          <path d="M330 112 C330.3 257.5 355.2 420.7 354 553 L366 553 C367.2 420.7 340.3 257.5 340 112 Z" fill="#fff" fill-opacity=".13" filter="url(#foldSoft)" />
+          <path d="M250 60 C265.8 222.7 347.4 405.1 358 553 L376 553 C365.4 405.1 277.8 222.7 262 60 Z" fill="#fff" fill-opacity=".26" filter="url(#foldSoft)" />
+          <path d="M262 60 C277.8 222.7 359.4 405.1 370 553 L398 553 C387.4 405.1 299.8 222.7 284 60 Z" fill="#000" fill-opacity=".30" filter="url(#foldSoft)" />
+          <path d="M412 70 C435.6 229.4 468 408.1 492 553 L506 553 C482 408.1 451.6 229.4 428 70 Z" fill="#fff" fill-opacity=".22" filter="url(#foldSoft)" />
+          <path d="M424 70 C447.6 229.4 480 408.1 504 553 L528 553 C504 408.1 475.6 229.4 452 70 Z" fill="#000" fill-opacity=".28" filter="url(#foldSoft)" />
+          <path d="M196 90 C210.2 242.8 277.6 414.1 288 553 L306 553 C295.6 414.1 226.2 242.8 212 90 Z" fill="#000" fill-opacity=".20" filter="url(#foldSoft)" />
         </g>
         <!-- Tension fanning out of each armpit, down and in across the chest. -->
         <g mask="url(#maskArmpitRight)">
