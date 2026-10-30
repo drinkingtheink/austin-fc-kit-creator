@@ -290,13 +290,21 @@
            bottom edges, (134.4,869.4) to (320.3,926.2) and its mirror, and
            drawn after them so they sit inside the opening.
 
-           Lens-shaped, not a band. The far wall of a cylinder meets the near
-           wall at both silhouette edges and is widest halfway between, so
-           these pinch to nothing at each end of the hem and bulge 16 in the
-           middle. Drawn at a constant width they read as another stripe
-           across the leg, which is what they were. -->
-      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M134.4 869.4 L320.3 926.2 C264.6 886.9 202.6 867.9 134.4 869.4 Z" />
-      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M587.8 869.4 L401.9 926.2 C457.6 886.9 519.6 867.9 587.8 869.4 Z" />
+           Built the same way as the shirt hem. The back of the leg drops 16
+           past the hem line rather than scooping 16 into it: a leg's back
+           panel falls below its front, and bulged inward it reads as a curve
+           cut out of the front instead. The inside of the leg then rises 10
+           above the line in #neckBack, the same grey as the collar's back,
+           and the two together turn the hem from a straight cut into an
+           opening. Both pinch out at the hem's ends, where the near and far
+           walls meet.
+
+           Constant-width bands were the first attempt and read as another
+           stripe across the leg. -->
+      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
+      <path fill="url(#neckBack)" d="M134.4 869.4 L320.3 926.2 C262.2 894.5 200.3 875.6 134.4 869.4 Z" />
+      <path :style="{ fill: farSide(shortsCuffsFill) }" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
+      <path fill="url(#neckBack)" d="M587.8 869.4 L401.9 926.2 C460.0 894.5 521.9 875.6 587.8 869.4 Z" />
       <!-- Down a tenth. Scaled about its own centre rather than the origin,
            so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
            from 438.4,763.4, which centres them on 497,811.4. A bare
@@ -1160,6 +1168,28 @@
          a real shirt's sponsor and number are lit with the cloth. Purely
          luminance, so it works with any color or pattern underneath. -->
     <g id="kit-shading" aria-hidden="true" pointer-events="none">
+      <!-- The far side of the shirt, through the hem. The hem is flat at
+           549.5 across 174 to 545.5, measured off shirt-trunk rather than
+           read off the shading box, which is a looser 170 to 551.
+
+           It hangs below the hem rather than scooping into it. The back of
+           a shirt falls past the front, so what shows is the back's own hem
+           dropping 20 below the front's and pinching back to nothing at each
+           side seam, where the two panels meet. Bulged upward instead it
+           reads as a curve cut into the front. Placed here, after every shirt design, because the stripes
+           and hoops run the full height of the garment and would otherwise
+           paint straight over it. -->
+      <path :style="{ fill: farSide(shirtFill) }" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
+      <!-- And the inside of the shirt, just within the front hem, curving the
+           other way. The two together make the hem an opening rather than a
+           straight cut: the back drops 20 below the line, the inside rises 12
+           above it, and both pinch out at the side seams.
+
+           It takes #neckBack, the same grey and gradient as the back of the
+           collar, because it is the same thing -- the inside of the garment,
+           in its own shadow rather than in the shirt's colour. -->
+      <path fill="url(#neckBack)" d="M174.0 549.5 L545.5 549.5 C421.7 533.5 297.8 533.5 174.0 549.5 Z" />
+
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
         <rect x="170" y="33" width="381" height="518" fill="url(#kitDepth)" />
