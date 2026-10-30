@@ -278,13 +278,25 @@
       <!-- The badge is worn twice, so it changes twice. Same flag, same
            reasoning as the shirt's below; only the box differs. The crest on
            the shorts is 69.5 x 81.7 centred on 214.6,816.1, and the disc that
-           stands in for it is 76 units across the same centre. -->
+           stands in for it is 76 units across the same centre.
+
+           The roundel is turned 15.6 degrees to sit with the leg, the way
+           the crest it stands in for already does. That tilt is not a choice
+           made here: the crest artwork carries it baked into its path data,
+           where its top edge runs (26.5, 7.4) against the shirt crest's
+           (27.5, 0), and atan2 of those is 15.6. The roundel arrived as a
+           plain translate and scale, so it sat square while the crest beside
+           it leaned.
+
+           It turns about its own centre rather than its corner, so it turns
+           without moving: a 512-unit square scaled by 0.1484375 centres on
+           the 214.6,816.1 above, which is where the old transform had it. -->
       <g
         v-if="showRoundelBadge"
         data-part="shortsBadge"
         :class="partClass('shortsBadge')"
         id="shorts-roundel"
-        transform="translate(176.6,778.1) scale(0.1484375)"
+        transform="translate(214.6,816.1) rotate(15.6) scale(0.1484375) translate(-256,-256)"
       >
         <AustinFCRoundel
           :groundFill="showBadgeDisc ? shortsBadgeBGFill : null"
