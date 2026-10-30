@@ -1024,10 +1024,16 @@
           l36.7-39.5l16.7,16.7l-12.5,23.5l40.2-40.2l36.6,39.4C419.5,132.2,452.1,75.5,440.9,34.7z"/>
         <circle id="button" :style="{ fill: collarFill }" class="st0" cx="366.8" cy="127.7" r="8"/>
       </g>
+      <!-- Either brand mark, in the same hole in the shirt: the bars stand
+           33.7 by 25.4 from 225.3,135.4, and the leaf mark is scaled to that
+           same footprint. Only one is ever in the DOM. -->
       <g data-part="maker" :class="partClass('maker')" id="shirt-maker">
-        <rect :style="{ fill: shirtMakerFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
-        <rect :style="{ fill: shirtMakerFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
-        <rect :style="{ fill: shirtMakerFill }" x="225.3" y="148" width="8.4" height="12.5"/>
+        <AustinFCLeaves v-if="showLeafMaker" :fill="shirtMakerFill" />
+        <template v-else>
+          <rect :style="{ fill: shirtMakerFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
+          <rect :style="{ fill: shirtMakerFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
+          <rect :style="{ fill: shirtMakerFill }" x="225.3" y="148" width="8.4" height="12.5"/>
+        </template>
       </g>
     </g>
     <!-- The outline is drawn behind the letters. Stroked the ordinary way, a
@@ -1319,11 +1325,12 @@
 
 <script>
   import AustinFCRoundel from './AustinFCRoundel.vue';
+  import AustinFCLeaves from './AustinFCLeaves.vue';
   import { readableInk } from '../lib/colorTools.js';
 
   export default {
     name: 'Kit',
-    components: { AustinFCRoundel },
+    components: { AustinFCRoundel, AustinFCLeaves },
     props: [ 
       'activeShirtOption',
       'shirtFill',
@@ -1332,6 +1339,8 @@
       'shirtCuffFill',
       'shirtSleeveFill',
       'shirtMakerFill',
+      // Which brand mark the chest wears: the three bars, or the leaf mark.
+      'showLeafMaker',
       'shortsFill',
       'shortsCuffsFill',
       'socksFill',

@@ -68,6 +68,7 @@
           :socksText="socksText"
           :socksTextFill="socksTextFill"
           :shirtMakerFill="shirtMakerFill"
+          :showLeafMaker="showLeafMaker"
           :highlight="highlight"
           :flash="flash"
           :revealing="revealing"
@@ -261,6 +262,23 @@
 
             <ToolField label="Cuff color" part="shirtCuff">
               <ColorSwatches label="Cuff color" :colors="colors" v-model="shirtCuffFill" />
+            </ToolField>
+
+            <ToolField label="Brand mark" part="maker">
+              <div class="segmented" role="group" aria-label="Brand mark">
+                <button
+                  type="button"
+                  :class="{ active: !showLeafMaker }"
+                  :aria-pressed="String(!showLeafMaker)"
+                  v-on:click="setLeafMaker(false)"
+                >Bars</button>
+                <button
+                  type="button"
+                  :class="{ active: showLeafMaker }"
+                  :aria-pressed="String(showLeafMaker)"
+                  v-on:click="setLeafMaker(true)"
+                >Leaves</button>
+              </div>
             </ToolField>
 
             <ToolField label="Brand mark color" part="maker">
@@ -840,7 +858,7 @@
         'logoStrokeFill',
         'collarFill'
       ],
-      toggles: ['showButtonCollar', 'logoStroke', 'showRoundelBadge']
+      toggles: ['showButtonCollar', 'logoStroke', 'showRoundelBadge', 'showLeafMaker']
     },
     {
       key: 'shorts',
@@ -988,6 +1006,9 @@
         shirtSecondaryFill: black,
         shirtCuffFill: black,
         shirtMakerFill: black,
+        // The three bars unless asked otherwise: that is what the shirt the
+        // app opens on wears.
+        showLeafMaker: false,
         shirtSleeveFill: green,
         logoFill: black,
         // The current shirt carries no outline on its sponsor, so neither does
@@ -1357,6 +1378,9 @@
       },
       setShirtMakerFill(fill) {
         this.shirtMakerFill = fill;
+      },
+      setLeafMaker(pref) {
+        this.showLeafMaker = pref;
       },
       setCollarButton(pref) {
         this.showButtonCollar = pref;

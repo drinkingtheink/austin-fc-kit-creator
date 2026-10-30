@@ -42,7 +42,8 @@ const FLAG_FIELDS = [
   'socksHoops',
   'logoStroke',
   'showRoundelBadge',
-  'showBadgeDisc'
+  'showBadgeDisc',
+  'showLeafMaker'
 ];
 
 const MAX_PALETTE = 64;
