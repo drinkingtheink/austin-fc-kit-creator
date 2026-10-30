@@ -1047,9 +1047,15 @@
         <rect x="540" y="34" width="148" height="197" fill="url(#kitRound)" />
         <rect x="540" y="34" width="148" height="197" fill="url(#kitDepth)" />
         <!-- Along the sleeve's own axis, shoulder to cuff, not vertically:
-             a sleeve is a tube pointing down and out, and folds run with it. -->
-        <path d="M549 58 C603 104 617 122 657 150 L644 156 C604 128 590 110 536 64 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSoft)" />
-        <path d="M549 72 C603 118 617 136 657 164 L642 170 C602 142 588 124 534 78 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
+             a sleeve is a tube pointing down and out, and folds run with it.
+
+             Lit the other way round from the right sleeve, for the reason the
+             armpit fans are: this sleeve's ridges run down and left, so they
+             turn their lit face down where the mirrored ones turn theirs up.
+             The highlight stays first in the list on both sides so the shadows
+             paint over it rather than the other way about. -->
+        <path d="M549 72 C603 118 617 136 657 164 L642 170 C602 142 588 124 534 78 Z" fill="#fff" fill-opacity=".18" filter="url(#foldSoft)" />
+        <path d="M549 58 C603 104 617 122 657 150 L644 156 C604 128 590 110 536 64 Z" fill="#000" fill-opacity=".24" filter="url(#foldSoft)" />
         <path d="M546 112 C600 156 614 174 654 198 L641 204 C601 180 587 162 533 118 Z" fill="#000" fill-opacity=".18" filter="url(#foldSoft)" />
       </g>
       <g clip-path="url(#clipShorts)">
