@@ -1091,10 +1091,14 @@
            360.6,102.6 and up the two arms, then arched over the top so it
            also stands proud of the shoulder the way a back collar does.
 
+           The arch rises 5.9 above the collar's top edge, down from 11.5.
+           Higher than that and it stops reading as a collar standing up and
+           starts reading as a hump behind the neck.
+
            Both collars cut the same V, so one shape serves either. A
            crescent sat above the opening instead of in it, which closed
            nothing. -->
-      <path fill="url(#neckBack)" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 C410 18 310 18 291.4 33.3 Z" />
+      <path fill="url(#neckBack)" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 C410 25.5 310 25.5 291.4 33.3 Z" />
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
