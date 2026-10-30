@@ -144,16 +144,39 @@
            along that line: 20 units of trim against 28 of body. -->
       <linearGradient id="seamTrimRight" gradientUnits="userSpaceOnUse" x1="229.8" y1="850.5" x2="243.7" y2="804.6">
         <stop offset="0" stop-color="#000" stop-opacity="0" />
-        <stop offset=".30" stop-color="#000" stop-opacity=".07" />
-        <stop offset=".417" stop-color="#000" stop-opacity=".34" />
-        <stop offset=".54" stop-color="#000" stop-opacity=".13" />
+        <stop offset=".30" stop-color="#000" stop-opacity=".04" />
+        <stop offset=".417" stop-color="#000" stop-opacity=".21" />
+        <stop offset=".54" stop-color="#000" stop-opacity=".08" />
         <stop offset="1" stop-color="#000" stop-opacity="0" />
       </linearGradient>
       <linearGradient id="seamTrimLeft" gradientUnits="userSpaceOnUse" x1="492.4" y1="850.5" x2="478.5" y2="804.6">
         <stop offset="0" stop-color="#000" stop-opacity="0" />
-        <stop offset=".30" stop-color="#000" stop-opacity=".07" />
-        <stop offset=".417" stop-color="#000" stop-opacity=".34" />
-        <stop offset=".54" stop-color="#000" stop-opacity=".13" />
+        <stop offset=".30" stop-color="#000" stop-opacity=".04" />
+        <stop offset=".417" stop-color="#000" stop-opacity=".21" />
+        <stop offset=".54" stop-color="#000" stop-opacity=".08" />
+        <stop offset="1" stop-color="#000" stop-opacity="0" />
+      </linearGradient>
+
+      <!-- The waistband seam, sitting just under the gathers rather than
+           through them. Those run from 574 and die out by 629, so the stitch
+           line goes at 628, right at their base: the elastic bunches the
+           cloth above it and the seam closes the band off below, which is the
+           order the two actually happen in. Putting it at a waistband's own
+           depth, 595, had it crossing the gathers instead.
+
+           Same gradient-across-the-line as the trim seams, and for the same
+           reason: one clip covers the whole garment, so there is no edge here
+           to cut a blurred band against.
+
+           It carries a highlight as well as a shadow. The band above the
+           stitch line is a doubled strip of cloth standing slightly proud, so
+           it catches light where the body below falls away, and a seam with
+           only the dark half reads as a line drawn on rather than a join. -->
+      <linearGradient id="seamWaist" gradientUnits="userSpaceOnUse" x1="0" y1="611" x2="0" y2="653">
+        <stop offset="0" stop-color="#fff" stop-opacity="0" />
+        <stop offset=".30" stop-color="#fff" stop-opacity=".09" />
+        <stop offset=".405" stop-color="#000" stop-opacity=".21" />
+        <stop offset=".55" stop-color="#000" stop-opacity=".08" />
         <stop offset="1" stop-color="#000" stop-opacity="0" />
       </linearGradient>
 
@@ -1196,6 +1219,9 @@
              mid-cloth. -->
         <polygon points="124.9,818.9 334.7,882.2 348.6,836.3 138.8,772.9" fill="url(#seamTrimRight)" />
         <polygon points="597.3,818.9 387.5,882.2 373.6,836.3 583.4,772.9" fill="url(#seamTrimLeft)" />
+        <!-- The waistband, running wider than the waist so the clip trims its
+             ends rather than leaving them inside the cloth. -->
+        <rect x="178" y="611" width="365" height="42" fill="url(#seamWaist)" />
       </g>
       <g clip-path="url(#clipRightSock)">
         <rect x="142" y="971" width="165" height="306" fill="url(#kitRound)" />
