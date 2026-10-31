@@ -1787,9 +1787,22 @@
        * was the first try and it left white garments looking unshaded: taking
        * .16 off white lands on #D6D6D6, which beside white cloth is white,
        * and the shirt hem and the leg openings came out as blank panels on a
-       * white kit. Scaling it instead -- .34 of the cloth's own lightness,
-       * never less than .20 -- puts white at #A3A3A3 and leaves the mid and
-       * deep colours, which were already reading, roughly where they were.
+       * white kit. Scaling it instead -- .62 of the cloth's own lightness,
+       * never less than .20 -- puts white at #616161.
+       *
+       * That .62 was .34 while this was the whole fill, and .34 was always
+       * a compromise: one flat colour had to be dark enough to read as the
+       * inside of a garment and light enough not to be a hole punched in
+       * the kit, and it landed nearer the second. White came out #A8A8A8, a
+       * light grey where a collar interior should be in shadow, and it
+       * looked washed out on every pale kit in the catalogue.
+       *
+       * farSideRamp is what buys the depth now, so this no longer has to
+       * split the difference -- it is only the lit stop, at the top edge
+       * where the opening turns over, and the ramp falls away from it. The
+       * floor of .20 is doing nothing above .32 lightness; it only keeps a
+       * mid-dark cloth like verde stepping far enough to be seen, which is
+       * why verde is unmoved by this and white is not.
        *
        * Plain multiplication was the other candidate and it is worse: it
        * fixes white by weakening everything dark, dropping verde from 2.77
@@ -1805,7 +1818,7 @@
         const [h, s, l] = toHsl(hex);
 
         return l > 0.22
-          ? fromHsl(h, s, l - Math.max(0.2, l * 0.34))
+          ? fromHsl(h, s, l - Math.max(0.2, l * 0.62))
           : fromHsl(h, s, l + 0.24);
       },
       /**
