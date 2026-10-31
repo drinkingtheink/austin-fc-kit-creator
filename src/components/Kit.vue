@@ -28,18 +28,6 @@
         <stop offset="1" stop-color="#000" stop-opacity=".33" />
       </linearGradient>
 
-      <!-- The back of the collar. Dark grey whatever the kit is wearing: it
-           is the inside of the neck, which is in its own shadow rather than
-           in the shirt's colour, and a neck that changed colour with the
-           shirt read as a second collar. The gradient is what keeps it from
-           looking like a flat grey sticker -- lit along the top edge where
-           it turns over, darker at the foot where it meets the front. -->
-      <linearGradient id="neckBack" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#535956" />
-        <stop offset=".55" stop-color="#343A37" />
-        <stop offset="1" stop-color="#1E2220" />
-      </linearGradient>
-
       <!-- Vertical falloff: cloth catches light at the shoulder and gathers
            shadow where it hangs. -->
       <linearGradient id="kitDepth" x1="0" y1="0" x2="0" y2="1">
@@ -358,16 +346,16 @@
            panel falls below its front, and bulged inward it reads as a curve
            cut out of the front instead. The inside of the leg then rises 10
            above the line, and the two together turn the hem from a straight
-           cut into an opening. Both take #neckBack: either way you are
-           looking at the inside of the garment. Both pinch out at the hem's ends, where the near and far
+           cut into an opening. Both take farSide(shortsFill): either way you
+           are looking at the inside of the garment. Both pinch out at the hem's ends, where the near and far
            walls meet.
 
            Constant-width bands were the first attempt and read as another
            stripe across the leg. -->
-      <path fill="url(#neckBack)" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
-      <path fill="url(#neckBack)" d="M134.4 869.4 L320.3 926.2 C262.2 894.5 200.3 875.6 134.4 869.4 Z" />
-      <path fill="url(#neckBack)" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
-      <path fill="url(#neckBack)" d="M587.8 869.4 L401.9 926.2 C460.0 894.5 521.9 875.6 587.8 869.4 Z" />
+      <path :style="{ fill: farSide(shortsFill) }" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
+      <path :style="{ fill: farSide(shortsFill) }" d="M134.4 869.4 L320.3 926.2 C262.2 894.5 200.3 875.6 134.4 869.4 Z" />
+      <path :style="{ fill: farSide(shortsFill) }" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
+      <path :style="{ fill: farSide(shortsFill) }" d="M587.8 869.4 L401.9 926.2 C460.0 894.5 521.9 875.6 587.8 869.4 Z" />
       <!-- Down a tenth. Scaled about its own centre rather than the origin,
            so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
            from 438.4,763.4, which centres them on 497,811.4. A bare
@@ -1168,9 +1156,14 @@
             c0.4,0,0.5,0.1,0.5,0.5c0,0.7,0,1.5,0,2.2C451.6,131.8,451.6,131.9,451.6,132z"/>
         </g>
       </g>
-      <!-- The back of the collar, standing above the front one. Drawn before
-           both collars so whichever is on covers it where they meet. Its
-           grey and its gradient are in defs under #neckBack.
+      <!-- The back of the collar, behind the front one. Drawn before both
+           collars so whichever is on covers it where they meet.
+
+           farSide(shirtFill), because what shows through the neck is the
+           inside of the shirt's own back panel. It used to be a fixed grey
+           gradient, which is where the kit's nine garment backs stopped
+           agreeing with each other: three took the cloth's colour and six
+           took that grey. They all take the cloth now.
 
            It fills the neck opening, which is a real hole and not a gap to
            be papered over. shirt-trunk cuts a V into itself, running
@@ -1181,14 +1174,18 @@
            360.6,102.6 and up the two arms, then arched over the top so it
            also stands proud of the shoulder the way a back collar does.
 
-           The arch rises 5.9 above the collar's top edge, down from 11.5.
-           Higher than that and it stops reading as a collar standing up and
-           starts reading as a hump behind the neck.
+           It is flat across the shoulder line, where it used to arch 5.9
+           above it. Every other inside-back on this kit sits within its
+           opening -- the sock mouths and the waistband curve down into
+           theirs, the hems drop below the cloth in front -- and this was the
+           one that stood proud of its own. At any height the arch read as a
+           hump behind the neck rather than as cloth seen through a hole,
+           which is what it is.
 
            Both collars cut the same V, so one shape serves either. A
            crescent sat above the opening instead of in it, which closed
            nothing. -->
-      <path fill="url(#neckBack)" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 C410 25.5 310 25.5 291.4 33.3 Z" />
+      <path :style="{ fill: farSide(shirtFill) }" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 Z" />
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
@@ -1319,10 +1316,12 @@
            side seam, where the two panels meet. Bulged upward instead it
            reads as a curve cut into the front.
 
-           #neckBack, not the cloth's colour. What shows below a front hem is
-           the inside of the back panel, not its outside, so it belongs to
-           the same shadow as the collar's back rather than to the kit's
-           palette.
+           farSide(shirtFill), the same as every other back on the kit. What
+           shows below a front hem is the inside of the back panel, and
+           farSide is what that is: the cloth's own colour taken down by a
+           third of its lightness, lifted instead when there is nowhere
+           darker to go. A fixed grey was a slab of someone else's kit on a
+           white shirt and invisible on a black one.
 
            The front hem stays straight. A matching lens bowing up into the
            shirt was tried and taken out again: on a hem this wide it reads
@@ -1332,7 +1331,7 @@
            it to work. Placed here, after every shirt design, because the stripes
            and hoops run the full height of the garment and would otherwise
            paint straight over it. -->
-      <path fill="url(#neckBack)" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
+      <path :style="{ fill: farSide(shirtFill) }" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
 
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
