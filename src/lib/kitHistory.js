@@ -23,6 +23,8 @@ const JADE = '#2CA172';
 const JADE_LIGHT = '#43B98A';
 const BONE = '#F2EFE6';
 
+const MINT = '#8BD6A1';
+
 const VERDE = '#00B140';
 const VERDE_DEEP = '#008A4B';
 const BLACK = '#000000';
@@ -126,6 +128,54 @@ export const KIT_HISTORY = [
       socksTextFill: WHITE,
 
       colors: [BLACK, VERDE, VERDE_DEEP, WHITE, GREY]
+    }
+  },
+  {
+    id: 'rooted-2026-away',
+    name: 'The Rooted Kit',
+    seasons: '2026-27',
+    type: 'away',
+    note: 'White with mint stripes, black print throughout, mint at the collar and cuffs.',
+    kit: {
+      activeShirtOption: 'stripes',
+      shirtFill: WHITE,
+      shirtTypeFill: MINT,
+      shirtSecondaryFill: BLACK,
+      // The sleeves are white under their own black shoulder stripes, which
+      // this cannot draw: a shirt wears one pattern here, and the vertical
+      // stripes down the body are what the kit is. The sleeves stay white.
+      shirtSleeveFill: WHITE,
+      shirtCuffFill: MINT,
+      shirtMakerFill: BLACK,
+      showLeafMaker: false,
+      logoFill: BLACK,
+      logoStroke: false,
+      logoStrokeFill: WHITE,
+      collarFill: MINT,
+      showButtonCollar: false,
+
+      badgeFill: BLACK,
+      badgeTextFill: WHITE,
+      badgeBGFill: WHITE,
+      shortsBadgeFill: BLACK,
+      shortsBadgeTextFill: WHITE,
+      shortsBadgeBGFill: WHITE,
+      showRoundelBadge: true,
+      showBadgeDisc: false,
+
+      shortsFill: WHITE,
+      shortsCuffsFill: MINT,
+      numberFill: BLACK,
+
+      socksFill: WHITE,
+      socksCuffsFill: MINT,
+      socksHoops: false,
+      socksHoopsFill: MINT,
+      socksText: '512',
+      socksMaker: true,
+      socksTextFill: BLACK,
+
+      colors: [WHITE, MINT, BLACK]
     }
   }
 ];
