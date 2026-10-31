@@ -32,6 +32,7 @@ const BONE = '#F2EFE6';
 
 const MINT = '#8BD6A1';
 const SAGE = '#A6E2A2';
+const FOREST = '#12301E';
 
 const VERDE = '#00B140';
 const VERDE_DEEP = '#008A4B';
@@ -40,6 +41,56 @@ const WHITE = '#FFFFFF';
 const GREY = '#CCCCCC';
 
 export const KIT_HISTORY = [
+  {
+    id: 'inaugural-2021-home',
+    name: 'The Inaugural Kit',
+    seasons: '2021-22',
+    type: 'home',
+    note: 'Verde and forest in wide vertical bands, white print, black at the collar and cuffs.',
+    kit: {
+      // Wide bands alternating verde and a green so dark it reads black,
+      // which is what `stripes` draws: one gauge, edge to edge.
+      activeShirtOption: 'stripes',
+      shirtFill: VERDE,
+      shirtTypeFill: FOREST,
+      shirtSecondaryFill: BLACK,
+      // The bands run onto the sleeves on the shirt; a sleeve here takes one
+      // colour, and verde is the one that reads as the kit.
+      shirtSleeveFill: VERDE,
+      shirtCuffFill: BLACK,
+      shirtMakerFill: WHITE,
+      showLeafMaker: false,
+      logoFill: WHITE,
+      logoStroke: false,
+      logoStrokeFill: FOREST,
+      collarFill: BLACK,
+      showButtonCollar: false,
+
+      badgeFill: VERDE,
+      badgeTextFill: WHITE,
+      badgeBGFill: BLACK,
+      shortsBadgeFill: VERDE,
+      shortsBadgeTextFill: WHITE,
+      shortsBadgeBGFill: BLACK,
+      showRoundelBadge: false,
+      showBadgeDisc: false,
+
+      shortsFill: BLACK,
+      shortsCuffsFill: BLACK,
+      numberFill: WHITE,
+
+      socksFill: BLACK,
+      socksCuffsFill: BLACK,
+      socksHoops: false,
+      socksHoopsFill: VERDE,
+      socksText: '',
+      socksMaker: true,
+      // White on verde and white on black: one colour for both marks.
+      socksTextFill: WHITE,
+
+      colors: [VERDE, FOREST, BLACK, WHITE]
+    }
+  },
   {
     id: 'mckalla-2021-away',
     name: 'McKalla Kit',
