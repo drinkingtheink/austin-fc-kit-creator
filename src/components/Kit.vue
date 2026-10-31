@@ -292,7 +292,30 @@
            both sides of the export. And PAINT_PROPS carries no font property
            at all, so a scoped class would be dropped on the way out, where an
            attribute rides along on the clone. -->
-      <g v-if="socksText" data-part="socksText" :class="partClass('socksText')" id="socks-text">
+      <!-- The tree in the ankle slot, instead of the lettering. Same band,
+           same print colour, same part, so it hovers, paints and exports the
+           way the words do; the two share one place on the sock and only one
+           of them can have it.
+
+           46 units across the 96 the sock has down here, centred in the band
+           between the bottom hoop (1260.9) and the foot (1316.5). No disc:
+           like the roundel on a shirt with nothing behind it, this is printed
+           onto the cloth and takes one colour. -->
+      <g
+        v-if="socksRoundel"
+        data-part="socksText"
+        :class="partClass('socksText')"
+        id="socks-roundel"
+      >
+        <g transform="translate(206.8,1265.7) scale(0.0898)">
+          <AustinFCRoundel :treeFill="socksTextFill" :letterFill="socksTextFill" />
+        </g>
+        <g transform="translate(475.3,1265.7) scale(0.0898)">
+          <AustinFCRoundel :treeFill="socksTextFill" :letterFill="socksTextFill" />
+        </g>
+      </g>
+
+      <g v-else-if="socksText" data-part="socksText" :class="partClass('socksText')" id="socks-text">
         <text
           x="229.8"
           y="1299"
@@ -1544,6 +1567,8 @@
       // them, and the one colour both are printed in.
       'socksText',
       'socksMaker',
+      // The tree in the ankle slot, where the lettering would otherwise be.
+      'socksRoundel',
       'socksTextFill',
       'numberFill',
       'logoFill',

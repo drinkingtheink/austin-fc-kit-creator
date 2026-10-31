@@ -68,6 +68,7 @@
           :socksHoopsFill="socksHoopsFill"
           :socksText="socksText"
           :socksMaker="socksMaker"
+          :socksRoundel="socksRoundel"
           :socksTextFill="socksTextFill"
           :shirtMakerFill="shirtMakerFill"
           :showLeafMaker="showLeafMaker"
@@ -580,6 +581,26 @@
                     v-on:click="setSocksText('')"
                   >Clear</button>
                 </div>
+              </div>
+            </ToolField>
+
+            <!-- One slot at the ankle, two things that can sit in it. The
+                 field above keeps whatever was typed, so switching back to
+                 Text brings it with you. -->
+            <ToolField label="At the ankle" part="socksText">
+              <div class="segmented" role="group" aria-label="What sits at the ankle">
+                <button
+                  type="button"
+                  :class="{ active: !socksRoundel }"
+                  :aria-pressed="String(!socksRoundel)"
+                  v-on:click="setSocksRoundel(false)"
+                >Text</button>
+                <button
+                  type="button"
+                  :class="{ active: socksRoundel }"
+                  :aria-pressed="String(socksRoundel)"
+                  v-on:click="setSocksRoundel(true)"
+                >Tree</button>
               </div>
             </ToolField>
 
@@ -1175,6 +1196,12 @@
         // Up to five characters printed on each sock. Empty is the default,
         // and empty means the lettering is not drawn at all.
         socksText: '',
+        // The tree at the ankle instead of the lettering. The two share one
+        // place on the sock, and the reels leave this alone for the same
+        // reason they leave the lettering alone: both are things somebody
+        // put there on purpose, and a pull that swapped one for the other
+        // would be throwing away what was typed.
+        socksRoundel: false,
         // The brand mark on the calf. On by default: a sock carries the
         // maker's mark whether or not anybody has lettered it.
         socksMaker: true,
@@ -1590,6 +1617,9 @@
       },
       setSocksMaker(pref) {
         this.socksMaker = pref;
+      },
+      setSocksRoundel(pref) {
+        this.socksRoundel = pref;
       },
       setKitName(value) {
         this.kitName = normalizeKitName(value);

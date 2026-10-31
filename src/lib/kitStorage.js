@@ -46,6 +46,7 @@ const FLAG_FIELDS = [
   'showBadgeDisc',
   'showLeafMaker',
   'socksMaker',
+  'socksRoundel',
   'austinWordmark'
 ];
 
