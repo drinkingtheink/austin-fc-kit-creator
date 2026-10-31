@@ -2643,6 +2643,17 @@
     animation: floatABit 6s infinite ease-in-out;
   }
 
+  /* Holds still under the pointer, because an eight-pixel drift is the
+     difference between clicking a cuff and clicking the sleeve beside it.
+     
+     Paused rather than removed: `animation: none` would snap the kit back
+     to the top of the cycle, so the shirt would jump the instant the pointer
+     reached it. Paused leaves it exactly where it was and it resumes from
+     there when the pointer goes. */
+  .kit-display:hover {
+    animation-play-state: paused;
+  }
+
   @keyframes floatABit {
     0%, 100% { transform: translateY(-4px); }
     50% { transform: translateY(4px); }
