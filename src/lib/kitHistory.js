@@ -15,6 +15,13 @@
 // sky. `colors` is present, because the palette is what the swatches offer
 // and a 2021 kit should offer 2021's colours.
 //
+// The brand mark is worn twice, on the chest and down the sock, and the two
+// take their colour from different fields: shirtMakerFill and the sock's
+// print colour. Where one colour reads against both garments, both wear it,
+// so the same mark is not black in one place and white in the other. Where
+// no colour does -- a verde shirt over black socks leaves only white -- the
+// one that works wins over the one in the photograph.
+//
 // Adding a kit is adding an entry. Nothing else in the app knows how many
 // there are.
 
@@ -32,6 +39,63 @@ const WHITE = '#FFFFFF';
 const GREY = '#CCCCCC';
 
 export const KIT_HISTORY = [
+  {
+    id: 'las-voces-2023-home',
+    name: 'Las Voces Kit',
+    seasons: '2023-24',
+    type: 'home',
+    note: 'Verde under black bars of every width, white sponsor, the crest on the chest.',
+    kit: {
+      // `barcode` is the one pattern that varies its bar widths, which is
+      // what this shirt is: not stripes of one gauge but a run of them from
+      // hairline to block.
+      activeShirtOption: 'barcode',
+      shirtFill: VERDE,
+      shirtTypeFill: BLACK,
+      shirtSecondaryFill: BLACK,
+      // Green with black blocks on the real sleeve, and a sleeve here takes
+      // one colour. Green is the one there is more of.
+      shirtSleeveFill: VERDE,
+      shirtCuffFill: BLACK,
+      // White, where the shirt has it black: the socks are black, so black
+      // is the one colour the mark cannot be in both places. White reads on
+      // the verde here and on the black down there, and the sponsor above it
+      // is white already.
+      shirtMakerFill: WHITE,
+      showLeafMaker: false,
+      logoFill: WHITE,
+      logoStroke: false,
+      logoStrokeFill: BLACK,
+      collarFill: BLACK,
+      showButtonCollar: false,
+
+      // The shield, not the tree on its own: this shirt wears the full crest.
+      badgeFill: VERDE,
+      badgeTextFill: WHITE,
+      badgeBGFill: BLACK,
+      shortsBadgeFill: VERDE,
+      shortsBadgeTextFill: WHITE,
+      shortsBadgeBGFill: BLACK,
+      showRoundelBadge: false,
+      showBadgeDisc: false,
+
+      // Black shorts and black socks, trim included: a verde hem is the
+      // obvious alternative and would stop them reading as plain black.
+      shortsFill: BLACK,
+      shortsCuffsFill: BLACK,
+      numberFill: WHITE,
+
+      socksFill: BLACK,
+      socksCuffsFill: BLACK,
+      socksHoops: false,
+      socksHoopsFill: VERDE,
+      socksText: '',
+      socksMaker: true,
+      socksTextFill: WHITE,
+
+      colors: [VERDE, BLACK, WHITE]
+    }
+  },
   {
     id: 'armadillo-2024-away',
     name: 'The Armadillo Kit',
@@ -98,7 +162,9 @@ export const KIT_HISTORY = [
       shirtSecondaryFill: BLACK,
       shirtCuffFill: BLACK,
       shirtSleeveFill: VERDE,
-      shirtMakerFill: BLACK,
+      // White for the same reason as Las Voces above: verde shirt, black
+      // socks, and only white reads on both.
+      shirtMakerFill: WHITE,
       showLeafMaker: false,
       logoFill: BLACK,
       logoStroke: false,
