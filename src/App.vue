@@ -971,13 +971,12 @@
         'logoStrokeFill',
         'collarFill'
       ],
-      toggles: [
-        'showButtonCollar',
-        'logoStroke',
-        'showRoundelBadge',
-        'showLeafMaker',
-        'austinWordmark'
-      ]
+      // austinWordmark is deliberately absent. The reels turn over how a
+      // kit looks; which word is across its chest is a thing somebody
+      // chose, the same reason the sock lettering and the roundel's disc
+      // are left alone. A kit that came back from a pull saying AUSTIN
+      // would be the machine putting words in your mouth.
+      toggles: ['showButtonCollar', 'logoStroke', 'showRoundelBadge', 'showLeafMaker']
     },
     {
       key: 'shorts',
