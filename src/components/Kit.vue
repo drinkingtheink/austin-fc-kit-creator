@@ -36,6 +36,58 @@
         <stop offset="1" stop-color="#000" stop-opacity=".20" />
       </linearGradient>
 
+      <!-- The insides of the garment openings: the neck, the shirt hem, the
+           waistband, the four leg hems, the two sock mouths and the two
+           sleeve cuffs. Nine shapes, four gradients -- one per cloth that
+           can show through an opening.
+
+           Each runs from farSide() of that cloth to a step further away from
+           it, rather than from a fixed grey. That is the whole point: a grey
+           gradient is a slab of someone else's kit on a white shirt and
+           invisible on a black one, where these track whatever the kit is
+           wearing. Flat farSide() was the other extreme and read as paper --
+           the backs agreed with each other but had no inside to them.
+           farSideRamp has the reasoning for which end is which.
+
+           All four run top to bottom, the same direction as kitDepth above,
+           because the kit has one light and it is overhead. An opening is
+           lit where it turns over at the top and gathers shadow as it falls
+           away, which is what kitDepth says about the cloth in front of it.
+           Running the collar the other way -- dark at the point of the V, on
+           the theory that you are looking down into a hole -- was tried and
+           is wrong in company: it lights the one opening against the eight
+           others and against the garment around it.
+
+           Two stops, not three. The grey this replaces had a middle one, but
+           it sat where linear interpolation would have put it anyway.
+
+           Stops are objectBoundingBox, so each shape gets the full ramp
+           across its own height however tall it is -- the sleeve cuffs are
+           156 units and the sock mouths 12.
+
+           Stop colours are bound, and that survives the PNG: inlinePaint
+           never restyles the contents of defs, so the inline stop-color Vue
+           writes here is what the clone carries. The shapes themselves take
+           fill="url(#...)" as an attribute for the matching reason --
+           shouldSkip drops url() values from the inlined style and leaves
+           the attribute to do it. -->
+      <linearGradient id="backShirt" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :style="{ stopColor: garmentBacks.shirt.lit }" />
+        <stop offset="1" :style="{ stopColor: garmentBacks.shirt.deep }" />
+      </linearGradient>
+      <linearGradient id="backShorts" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :style="{ stopColor: garmentBacks.shorts.lit }" />
+        <stop offset="1" :style="{ stopColor: garmentBacks.shorts.deep }" />
+      </linearGradient>
+      <linearGradient id="backSocks" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :style="{ stopColor: garmentBacks.socks.lit }" />
+        <stop offset="1" :style="{ stopColor: garmentBacks.socks.deep }" />
+      </linearGradient>
+      <linearGradient id="backCuff" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :style="{ stopColor: garmentBacks.cuff.lit }" />
+        <stop offset="1" :style="{ stopColor: garmentBacks.cuff.deep }" />
+      </linearGradient>
+
       <!-- Knit weave. userSpaceOnUse so the tile stays a constant size across
            every garment instead of stretching to each one. -->
       <pattern id="kitKnit" width="6" height="6" patternUnits="userSpaceOnUse">
@@ -232,9 +284,11 @@
       <polygon data-part="socks" :class="partClass('socks')" id="left-sock" :style="{ fill: socksFill }" points="545.2,1316.5 452.3,1316.5 410.7,1011.7 574.8,1011.7   "/>
       <polygon data-part="socksCuff" :class="partClass('socksCuff')" id="left-sock-cuff" :style="{ fill: socksCuffsFill }" points="417,1057.8 570.3,1057.8 574.8,1011.7 410.7,1011.7  "/>
 
-      <!-- The inside back of each sock, through the opening. -->
-      <path :style="{ fill: farSide(socksCuffsFill) }" d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" />
-      <path :style="{ fill: farSide(socksCuffsFill) }" d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" />
+      <!-- The inside back of each sock, through the opening. backSocks takes
+           its ramp from the cuff rather than the sock body, because the cuff
+           is the cloth the mouth is actually cut into. -->
+      <path fill="url(#backSocks)" d="M142.2 1011.7 L306.4 1011.7 C295 1020 265 1024 224.3 1024 C183.5 1024 153 1020 142.2 1011.7 Z" />
+      <path fill="url(#backSocks)" d="M410.7 1011.7 L574.8 1011.7 C563.5 1020 533.5 1024 492.8 1024 C452 1024 421.5 1020 410.7 1011.7 Z" />
       <g data-part="socksHoops" :class="[partClass('socksHoops'), 'fade-part', { on: socksHoops }]" id="left-hoops">
         <polygon :style="{ fill: socksHoopsFill }" points="565.8,1109.8 424.5,1109.8 432.6,1169 560,1169    "/>
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
@@ -330,8 +384,9 @@
         c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l31.7-105l31.7,105l0.5-0.2c0.1,0.2,0.2,0.3,0.3,0.5l185.5-56c0-0.2,0-0.4-0.1-0.6L579.1,842.6z"
         />
 
-      <!-- The inside back of the waistband, through the opening. -->
-      <path :style="{ fill: farSide(shortsFill) }" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
+      <!-- The inside back of the waistband, through the opening. backShorts,
+           the same ramp the four leg hems below take. -->
+      <path fill="url(#backShorts)" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="right-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M134.4,869.4l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l7.9-26.3
         l-186.8-56.4L134.4,869.4z"/>
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
@@ -346,16 +401,16 @@
            panel falls below its front, and bulged inward it reads as a curve
            cut out of the front instead. The inside of the leg then rises 10
            above the line, and the two together turn the hem from a straight
-           cut into an opening. Both take farSide(shortsFill): either way you
-           are looking at the inside of the garment. Both pinch out at the hem's ends, where the near and far
+           cut into an opening. Both take backShorts: either way you are
+           looking at the inside of the garment. Both pinch out at the hem's ends, where the near and far
            walls meet.
 
            Constant-width bands were the first attempt and read as another
            stripe across the leg. -->
-      <path :style="{ fill: farSide(shortsFill) }" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
-      <path :style="{ fill: farSide(shortsFill) }" d="M134.4 869.4 L320.3 926.2 C262.2 894.5 200.3 875.6 134.4 869.4 Z" />
-      <path :style="{ fill: farSide(shortsFill) }" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
-      <path :style="{ fill: farSide(shortsFill) }" d="M587.8 869.4 L401.9 926.2 C460.0 894.5 521.9 875.6 587.8 869.4 Z" />
+      <path fill="url(#backShorts)" d="M134.4 869.4 L320.3 926.2 C252.1 927.7 190.1 908.7 134.4 869.4 Z" />
+      <path fill="url(#backShorts)" d="M134.4 869.4 L320.3 926.2 C262.2 894.5 200.3 875.6 134.4 869.4 Z" />
+      <path fill="url(#backShorts)" d="M587.8 869.4 L401.9 926.2 C470.1 927.7 532.1 908.7 587.8 869.4 Z" />
+      <path fill="url(#backShorts)" d="M587.8 869.4 L401.9 926.2 C460.0 894.5 521.9 875.6 587.8 869.4 Z" />
       <!-- Down a tenth. Scaled about its own centre rather than the origin,
            so it shrinks where it sits: the traced glyphs measure 117.2 x 95.9
            from 438.4,763.4, which centres them on 497,811.4. A bare
@@ -626,12 +681,19 @@
       <polygon data-part="shirtCuff" :class="partClass('shirtCuff')" id="left-sleeve-cuff" :style="{ fill: shirtCuffFill }" class="st0" points="655.1,65.6 687.6,74.5 687.6,230.4 655.1,221.6   "/>
 
       <!-- A hint of the far side of the garment, seen through its opening.
-           Each is the cloth's own colour with a flat shade over it, so it
-           tracks whatever the kit is wearing and still sits back from the
-           near side. The shading groups come later and pass over them, the
-           same as they do the sponsor. -->
-      <path :style="{ fill: farSide(shirtCuffFill) }" d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" />
-      <path :style="{ fill: farSide(shirtCuffFill) }" d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" />
+           Each is a ramp around the cuff's own colour, so it tracks whatever
+           the kit is wearing and still sits back from the near side. The
+           shading groups come later and pass over them, the same as they do
+           the sponsor.
+
+           These two are the one pair whose opening runs across rather than
+           down -- 10 units wide against 156 tall -- so the ramp reads as the
+           sleeve end catching light at the shoulder and losing it toward the
+           hand, which is the lighting the rest of the kit has, rather than
+           as depth into the hole. Close enough at 10 units wide that a
+           mirrored pair of horizontal gradients would buy nothing. -->
+      <path fill="url(#backCuff)" d="M21.9 75.7 L21.9 231.7 C32 200 32 108 21.9 75.7 Z" />
+      <path fill="url(#backCuff)" d="M687.6 74.5 L687.6 230.4 C677.5 200 677.5 107 687.6 74.5 Z" />
 
       <!-- Sleeve patch, worn on the left sleeve only, as it is on the shirt.
 
@@ -1159,11 +1221,12 @@
       <!-- The back of the collar, behind the front one. Drawn before both
            collars so whichever is on covers it where they meet.
 
-           farSide(shirtFill), because what shows through the neck is the
-           inside of the shirt's own back panel. It used to be a fixed grey
-           gradient, which is where the kit's nine garment backs stopped
-           agreeing with each other: three took the cloth's colour and six
-           took that grey. They all take the cloth now.
+           backShirt, because what shows through the neck is the inside of
+           the shirt's own back panel. It used to be a fixed grey gradient,
+           which is where the kit's nine garment backs stopped agreeing with
+           each other: three took the cloth's colour and six took that grey.
+           All nine take a ramp around their own cloth now -- see the
+           gradient defs for how.
 
            It fills the neck opening, which is a real hole and not a gap to
            be papered over. shirt-trunk cuts a V into itself, running
@@ -1185,7 +1248,7 @@
            Both collars cut the same V, so one shape serves either. A
            crescent sat above the opening instead of in it, which closed
            nothing. -->
-      <path :style="{ fill: farSide(shirtFill) }" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 Z" />
+      <path fill="url(#backShirt)" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 Z" />
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
@@ -1316,12 +1379,11 @@
            side seam, where the two panels meet. Bulged upward instead it
            reads as a curve cut into the front.
 
-           farSide(shirtFill), the same as every other back on the kit. What
-           shows below a front hem is the inside of the back panel, and
-           farSide is what that is: the cloth's own colour taken down by a
-           third of its lightness, lifted instead when there is nowhere
-           darker to go. A fixed grey was a slab of someone else's kit on a
-           white shirt and invisible on a black one.
+           backShirt, the same as every other back on the kit. What shows
+           below a front hem is the inside of the back panel, and farSide --
+           the middle of that ramp -- is what that is: the cloth's own colour
+           taken down by a third of its lightness, lifted instead when there
+           is nowhere darker to go.
 
            The front hem stays straight. A matching lens bowing up into the
            shirt was tried and taken out again: on a hem this wide it reads
@@ -1331,7 +1393,7 @@
            it to work. Placed here, after every shirt design, because the stripes
            and hoops run the full height of the garment and would otherwise
            paint straight over it. -->
-      <path :style="{ fill: farSide(shirtFill) }" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
+      <path fill="url(#backShirt)" d="M174.0 549.5 L545.5 549.5 C421.7 576.2 297.8 576.2 174.0 549.5 Z" />
 
       <g clip-path="url(#clipShirtTrunk)">
         <rect x="170" y="33" width="381" height="518" fill="url(#kitRound)" />
@@ -1676,6 +1738,22 @@
       socksTextSize() {
         return Math.min(30, 88 / Math.max(1, (this.socksText || '').length));
       },
+      /**
+       * The two stops for each of the four garment-back gradients.
+       *
+       * Computed once rather than called from each of the eight stops in the
+       * template, because farSideRamp runs three colour conversions a call
+       * and the four cloths it reads change on every swatch, every paint and
+       * every frame of a spinning reel.
+       */
+      garmentBacks() {
+        return {
+          shirt: this.farSideRamp(this.shirtFill),
+          shorts: this.farSideRamp(this.shortsFill),
+          socks: this.farSideRamp(this.socksCuffsFill),
+          cuff: this.farSideRamp(this.shirtCuffFill)
+        };
+      },
       reelClasses() {
         const turning = this.spinReels || [];
         const landed = this.landedReels || [];
@@ -1720,6 +1798,55 @@
         return l > 0.22
           ? fromHsl(h, s, l - Math.max(0.2, l * 0.34))
           : fromHsl(h, s, l + 0.24);
+      },
+      /**
+       * farSide, opened out into a two-stop ramp: the same cloth seen on the
+       * far side of the garment, lit where the opening turns over and
+       * shadowed where it falls away.
+       *
+       * farSide is one end of the ramp, never the middle. That is the whole
+       * design of this function. Centring the ramp on farSide was the first
+       * try and it put a stop .075 *toward* the cloth, which undoes the one
+       * thing farSide exists to guarantee: on the catalogue's mint, farSide
+       * separates from its cloth at 1.54 and that stop came out at 1.343 --
+       * under the 1.45 the app's own legibility guards call the bar for
+       * telling two colours apart. Keeping farSide at one end means every
+       * contrast already verified for the flat fills still holds exactly,
+       * and the ramp can only ever increase it.
+       *
+       * The far stop carries on the way farSide went rather than doubling
+       * back: darker when farSide darkened a light cloth, lighter when it
+       * lifted a dark one. Doubling back is the same mistake as centring.
+       *
+       * Then light on top, whichever end that is. One lighting direction for
+       * all nine openings, matching kitDepth.
+       *
+       * The step is .15 of lightness, or .6 of whatever room is left that
+       * way when there is less -- which is how it avoids the other failure
+       * of the centred version, where a cloth just above farSide's .22
+       * threshold (#3B3B3B lands its far side at .03) ran the far stop into
+       * black and clamped. Proportional, it cannot clamp. It does go nearly
+       * flat for those few near-black cloths, and that is the honest answer:
+       * there is no room below .03, and the stop that meets the cloth still
+       * carries its full separation.
+       *
+       * .15 because the fixed grey gradient this replaces spanned .146 end
+       * to end (#535956 to #1E2220). Wider reads as a second colour inside
+       * the hole; the flat fill that came between the two read as paper.
+       */
+      farSideRamp(hex) {
+        const near = this.farSide(hex);
+
+        if (!near) return { lit: near, deep: near };
+
+        const [, , cloth] = toHsl(hex);
+        const [h, s, l] = toHsl(near);
+
+        const away = l < cloth ? -1 : 1;
+        const room = away < 0 ? l : 1 - l;
+        const far = fromHsl(h, s, l + away * Math.min(0.15, room * 0.6));
+
+        return away < 0 ? { lit: near, deep: far } : { lit: far, deep: near };
       },
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
