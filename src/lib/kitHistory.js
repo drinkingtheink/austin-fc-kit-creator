@@ -31,6 +31,7 @@ const JADE_LIGHT = '#43B98A';
 const BONE = '#F2EFE6';
 
 const MINT = '#8BD6A1';
+const SAGE = '#A6E2A2';
 
 const VERDE = '#00B140';
 const VERDE_DEEP = '#008A4B';
@@ -39,6 +40,108 @@ const WHITE = '#FFFFFF';
 const GREY = '#CCCCCC';
 
 export const KIT_HISTORY = [
+  {
+    id: 'mckalla-2021-away',
+    name: 'McKalla Kit',
+    seasons: '2021-22',
+    type: 'away',
+    note: 'White throughout, verde over the shoulder and in every print on it.',
+    kit: {
+      // White shirt, verde stripes over the shoulder: the yoke takes the
+      // body's colour so the panel vanishes and the three stripes are all
+      // that shows.
+      activeShirtOption: 'shoulder-stripes',
+      shirtFill: WHITE,
+      shirtSecondaryFill: WHITE,
+      shirtTypeFill: VERDE,
+      shirtSleeveFill: WHITE,
+      shirtCuffFill: WHITE,
+      shirtMakerFill: VERDE,
+      showLeafMaker: false,
+      logoFill: VERDE,
+      logoStroke: false,
+      logoStrokeFill: WHITE,
+      // White on white, which is what the shirt does: the collar is there
+      // in the cut rather than in the colour.
+      collarFill: WHITE,
+      showButtonCollar: false,
+
+      badgeFill: VERDE,
+      badgeTextFill: WHITE,
+      badgeBGFill: BLACK,
+      shortsBadgeFill: VERDE,
+      shortsBadgeTextFill: WHITE,
+      shortsBadgeBGFill: BLACK,
+      showRoundelBadge: false,
+      showBadgeDisc: false,
+
+      shortsFill: WHITE,
+      shortsCuffsFill: WHITE,
+      numberFill: VERDE,
+
+      socksFill: WHITE,
+      socksCuffsFill: WHITE,
+      socksHoops: false,
+      socksHoopsFill: VERDE,
+      socksText: '',
+      socksMaker: true,
+      // Verde on white reads on both, so both marks are verde.
+      socksTextFill: VERDE,
+
+      colors: [WHITE, VERDE, BLACK]
+    }
+  },
+  {
+    id: 'sentimiento-2022-away',
+    name: 'The Sentimiento Kit',
+    seasons: '2022-23',
+    type: 'away',
+    note: 'Sage through and through, black at the collar, cuffs and shoulder.',
+    kit: {
+      // Plain but for the three black stripes over the shoulder, which is
+      // what `shoulder-stripes` draws when the yoke is left the colour of
+      // the body: the panel disappears into the shirt and only the stripes
+      // show. Solid is the alternative and loses them.
+      activeShirtOption: 'shoulder-stripes',
+      shirtFill: SAGE,
+      shirtSecondaryFill: SAGE,
+      shirtTypeFill: BLACK,
+      shirtSleeveFill: SAGE,
+      shirtCuffFill: BLACK,
+      shirtMakerFill: BLACK,
+      showLeafMaker: false,
+      logoFill: BLACK,
+      logoStroke: false,
+      logoStrokeFill: SAGE,
+      collarFill: BLACK,
+      showButtonCollar: false,
+
+      badgeFill: VERDE,
+      badgeTextFill: WHITE,
+      badgeBGFill: BLACK,
+      shortsBadgeFill: VERDE,
+      shortsBadgeTextFill: WHITE,
+      shortsBadgeBGFill: BLACK,
+      showRoundelBadge: false,
+      showBadgeDisc: false,
+
+      // Shorts and socks in the shirt's own colours, trim and all.
+      shortsFill: SAGE,
+      shortsCuffsFill: BLACK,
+      numberFill: BLACK,
+
+      socksFill: SAGE,
+      socksCuffsFill: BLACK,
+      socksHoops: false,
+      socksHoopsFill: BLACK,
+      socksText: '',
+      socksMaker: true,
+      // Black on sage reads on both garments, so both marks are black.
+      socksTextFill: BLACK,
+
+      colors: [SAGE, BLACK, VERDE, WHITE]
+    }
+  },
   {
     id: 'las-voces-2023-home',
     name: 'Las Voces Kit',
