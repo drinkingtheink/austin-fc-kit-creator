@@ -18,6 +18,11 @@
 // Adding a kit is adding an entry. Nothing else in the app knows how many
 // there are.
 
+// Sampled off the photographs, not taken from a brand guide.
+const JADE = '#2CA172';
+const JADE_LIGHT = '#43B98A';
+const BONE = '#F2EFE6';
+
 const VERDE = '#00B140';
 const VERDE_DEEP = '#008A4B';
 const BLACK = '#000000';
@@ -25,6 +30,59 @@ const WHITE = '#FFFFFF';
 const GREY = '#CCCCCC';
 
 export const KIT_HISTORY = [
+  {
+    id: 'armadillo-2024-away',
+    name: 'The Armadillo Kit',
+    seasons: '2024-25',
+    type: 'away',
+    note: 'Bone body, jade shoulders and sleeves, tree mark on the chest.',
+    kit: {
+      // `shoulder-stripes` paints the shoulders in the secondary colour and
+      // lays three bars of the type colour over them. Both are jade here, so
+      // the shoulder reads as one panel running into the sleeves rather than
+      // as stripes at all: the shirt's white stripes sit on a jade sleeve,
+      // and nothing in these fourteen patterns puts a stripe on a sleeve.
+      // The shape of the shirt is right; the stripes are the part that is
+      // left on the table.
+      activeShirtOption: 'shoulder-stripes',
+      shirtFill: BONE,
+      shirtSecondaryFill: JADE,
+      shirtTypeFill: JADE,
+      shirtSleeveFill: JADE,
+      shirtCuffFill: JADE_LIGHT,
+      shirtMakerFill: JADE,
+      showLeafMaker: false,
+      logoFill: JADE,
+      logoStroke: false,
+      logoStrokeFill: WHITE,
+      collarFill: JADE,
+      showButtonCollar: false,
+
+      // The tree on the chest, printed straight onto the cloth.
+      badgeFill: JADE,
+      badgeTextFill: WHITE,
+      badgeBGFill: BONE,
+      shortsBadgeFill: BONE,
+      shortsBadgeTextFill: JADE,
+      shortsBadgeBGFill: JADE,
+      showRoundelBadge: true,
+      showBadgeDisc: false,
+
+      shortsFill: JADE,
+      shortsCuffsFill: BONE,
+      numberFill: BONE,
+
+      socksFill: BONE,
+      socksCuffsFill: JADE,
+      socksHoops: false,
+      socksHoopsFill: WHITE,
+      socksText: '512',
+      socksMaker: true,
+      socksTextFill: JADE,
+
+      colors: [BONE, JADE, JADE_LIGHT, WHITE]
+    }
+  },
   {
     id: 'heartbeat-2025-home',
     name: 'The Heartbeat Kit',
@@ -64,6 +122,7 @@ export const KIT_HISTORY = [
       socksHoops: false,
       socksHoopsFill: WHITE,
       socksText: '',
+      socksMaker: true,
       socksTextFill: WHITE,
 
       colors: [BLACK, VERDE, VERDE_DEEP, WHITE, GREY]
