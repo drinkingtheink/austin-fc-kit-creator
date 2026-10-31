@@ -91,10 +91,61 @@
           >{{ Math.round(zoom * 100) }}%</button>
         </transition>
 
-        <p class="help">
+        <!-- The arrows mean something else while the history is open, so
+             the hint that says they randomize stands down. -->
+        <p class="help" v-if="!browsingHistory">
           <kbd>Enter</kbd> <kbd>Space</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd>
           <span>to randomize</span>
         </p>
+
+        <transition name="fade">
+          <div v-if="browsingHistory" class="history" aria-live="polite">
+            <!-- A label above the exhibit, which is also the one place with
+                 nothing else in it: the zoom badge sits left, the download
+                 button and the hint sit along the foot. -->
+            <div class="history-plate">
+              <p class="history-meta">
+                {{ historyKit.seasons }}
+                <span>&middot;</span>
+                {{ KIT_TYPE_LABELS[historyKit.type] || historyKit.type }}
+                <span>&middot;</span>
+                {{ historyIndex + 1 }} of {{ KIT_HISTORY.length }}
+              </p>
+              <h2 class="history-name">{{ historyKit.name }}</h2>
+              <p class="history-note" v-if="historyKit.note">{{ historyKit.note }}</p>
+              <p class="history-caveat">As close as this app's parameters get.</p>
+
+              <div class="history-actions">
+                <button class="btn btn-primary" type="button" v-on:click="exitHistory(true)">
+                  Design from this
+                </button>
+                <button class="btn btn-ghost" type="button" v-on:click="exitHistory(false)">
+                  Back to mine
+                </button>
+              </div>
+            </div>
+
+            <button
+              class="history-step prev"
+              type="button"
+              title="Previous kit"
+              aria-label="Previous kit"
+              v-on:click="stepHistory(-1)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+            </button>
+
+            <button
+              class="history-step next"
+              type="button"
+              title="Next kit"
+              aria-label="Next kit"
+              v-on:click="stepHistory(1)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+        </transition>
 
         <button
           class="download-kit"
@@ -157,6 +208,12 @@
             autocomplete="off"
             v-on:input="setKitName($event.target.value)"
           />
+
+          <button
+            class="btn btn-ghost btn-block"
+            type="button"
+            v-on:click="openHistory"
+          >Austin FC kits through the years</button>
         </div>
 
         <!-- The working palette, in reach without opening anything. Its
@@ -617,6 +674,7 @@
   import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
   import { MAX_SOCK_TEXT, SOCK_TEXT_PRESETS, normalizeSockText } from './lib/sockText.js';
   import { MAX_KIT_NAME, normalizeKitName, toKitSlug } from './lib/kitName.js';
+  import { KIT_HISTORY, KIT_TYPE_LABELS } from './lib/kitHistory.js';
 
   const green ='#00B140';
   // The home shirt's stripes are tonal rather than contrasting: a deeper verde
@@ -1062,6 +1120,12 @@
         socksText: '',
         socksTextFill: white,
 
+        // Which kit in the history is being looked at, or null for none. The
+        // kit the browsing started from is held alongside it, because leaving
+        // has to put back whatever was on the stage before.
+        historyIndex: null,
+        kitBeforeHistory: null,
+
         // What this kit is called. Empty until somebody says otherwise, and
         // the reels leave it alone: a name is something a person wrote, the
         // same reason the sock text survives a spin.
@@ -1072,6 +1136,8 @@
         MAX_SOCK_TEXT,
         SOCK_TEXT_PRESETS,
         MAX_KIT_NAME,
+        KIT_HISTORY,
+        KIT_TYPE_LABELS,
 
         numberFill: white,
 
@@ -1090,6 +1156,12 @@
       },
       stageGradient() {
         return toCssGradient(getBackdrop(this.setting));
+      },
+      browsingHistory() {
+        return this.historyIndex !== null;
+      },
+      historyKit() {
+        return this.browsingHistory ? KIT_HISTORY[this.historyIndex] : null;
       },
       // The backdrop says whether it has stars; the screen and the exporter
       // both ask it rather than each naming the one sky that does.
@@ -1438,6 +1510,62 @@
         this.kitName = normalizeKitName(value);
       },
       /**
+       * Step into the history, holding on to whatever was being designed.
+       *
+       * The snapshot is the persisted shape rather than a hand-written list,
+       * so a field added to a kit later is a field that comes back out of
+       * here too.
+       */
+      openHistory() {
+        if (!KIT_HISTORY.length) return;
+
+        this.kitBeforeHistory = { ...this.persistedKit };
+        this.historyIndex = 0;
+        this.showHistoryKit();
+      },
+      /** Wraps, because a catalogue you can walk off the end of is a list. */
+      stepHistory(delta) {
+        if (!this.browsingHistory) return;
+
+        const count = KIT_HISTORY.length;
+
+        this.historyIndex = (this.historyIndex + delta + count) % count;
+        this.showHistoryKit();
+      },
+      showHistoryKit() {
+        const entry = this.historyKit;
+
+        if (!entry) return;
+
+        // Twenty-odd fields move at once, which is what the reveal is for.
+        this.suppressFlash = true;
+
+        this.applyKit(entry.kit);
+        this.kitName = normalizeKitName(entry.name);
+
+        this.revealKit();
+      },
+      /**
+       * Leave the history.
+       *
+       * `keep` is someone deciding to carry on designing from the kit they
+       * are looking at; without it the kit they arrived with comes back.
+       */
+      exitHistory(keep = false) {
+        if (!this.browsingHistory) return;
+
+        const previous = this.kitBeforeHistory;
+
+        this.historyIndex = null;
+        this.kitBeforeHistory = null;
+
+        if (keep || !previous) return;
+
+        this.suppressFlash = true;
+        this.applyKit(previous);
+        this.revealKit();
+      },
+      /**
        * Bring the socks up to fill the stage, for lettering them.
        *
        * Five characters are a few pixels tall at rest, which is no way to
@@ -1608,6 +1736,10 @@
 
           return;
         }
+
+        // A pull from inside the history is a pull on the kit that was being
+        // designed, not on the one being looked at.
+        this.exitHistory(false);
 
         // Seventeen colors are about to move. Let the reels and the reveal
         // carry the change rather than flashing every part at once.
@@ -1924,7 +2056,8 @@
             this.$refs.kit.$el,
             getBackdrop(this.setting),
             this.$refs.stadium.$el,
-            this.stageHasStars
+            this.stageHasStars,
+            this.kitName
           );
 
           downloadBlob(blob, filename);
@@ -1963,11 +2096,14 @@
         });
       },
       dismissModal() {
-        // The greeting sits on top of the panel, so it closes first.
+        // The greeting sits on top of the panel, so it closes first, and the
+        // history is behind both: it is the stage rather than a layer over it.
         if (this.showGreeting) {
           this.handleGreetingClose(false);
         } else if (this.showColors) {
           this.showColors = false;
+        } else if (this.browsingHistory) {
+          this.exitHistory(false);
         }
       },
       handleShortcut(e) {
@@ -2000,6 +2136,23 @@
         if (e.key === '0') {
           this.resetZoom();
           return;
+        }
+
+        // While the history is open the arrows walk it. Enter and Space are
+        // left alone, so the buttons on the plate still work the way every
+        // other button in the app does.
+        if (this.browsingHistory) {
+          if (e.key === 'ArrowLeft') {
+            this.stepHistory(-1);
+
+            return;
+          }
+
+          if (e.key === 'ArrowRight') {
+            this.stepHistory(1);
+
+            return;
+          }
         }
 
         if (!RANDOMIZE_KEYS.includes(e.key)) return;
@@ -2693,6 +2846,136 @@
   .segmented button:focus-visible {
     outline: 2px solid var(--verde-bright);
     outline-offset: 2px;
+  }
+
+  /* ---- Kit history ----------------------------------------------------- */
+
+  /* The plate and the arrows sit over the stage rather than in a panel: the
+     kit itself is the exhibit, and a grid of thumbnails would have meant
+     drawing fifteen kits at once to show what one kit looks like. */
+  .history {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    /* Only the controls take clicks; the kit underneath stays paintable. */
+    pointer-events: none;
+  }
+
+  .history-plate {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(420px, calc(100% - 140px));
+    padding: 16px 20px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+    background-color: rgba(16, 20, 18, .93);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, .5);
+    text-align: center;
+    pointer-events: auto;
+  }
+
+  .history-meta {
+    margin: 0 0 6px;
+    color: var(--text-faint);
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .history-meta span {
+    color: var(--line-strong);
+  }
+
+  .history-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: .01em;
+    color: var(--text);
+  }
+
+  .history-note {
+    margin: 8px 0 0;
+    color: var(--text-dim);
+    font-size: .76rem;
+    line-height: 1.45;
+  }
+
+  /* Stated on every kit rather than once in a corner, because every kit is
+     an approximation and the one you are looking at is the one it is about. */
+  .history-caveat {
+    margin: 6px 0 0;
+    color: var(--text-faint);
+    font-size: .68rem;
+    font-style: italic;
+  }
+
+  .history-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .history-actions .btn {
+    flex: 1;
+  }
+
+  /* Flanking the kit, vertically centred on the stage rather than on the kit:
+     #kit-stage carries 76px of padding at the foot to clear the download
+     button, so the kit rests above centre and arrows pinned to it would sit
+     high. */
+  .history-step {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background-color: rgba(16, 20, 18, .9);
+    backdrop-filter: blur(10px);
+    color: var(--text);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color .18s ease, border-color .18s ease,
+                transform .18s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .history-step.prev { left: 20px; }
+  .history-step.next { right: 20px; }
+
+  .history-step:hover {
+    border-color: var(--verde);
+    background-color: rgba(0, 177, 64, .18);
+  }
+
+  .history-step:active {
+    transform: translateY(-50%) scale(.94);
+    transition-duration: .06s;
+  }
+
+  .history-step:focus-visible {
+    outline: 2px solid var(--verde-bright);
+    outline-offset: 2px;
+  }
+
+  .history-step svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   /* ---- Kit name -------------------------------------------------------- */

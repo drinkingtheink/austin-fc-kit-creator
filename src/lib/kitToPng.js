@@ -30,6 +30,15 @@ const CAPTION_SIZE = 42;
 const CAPTION_BASELINE_GAP = 54;
 const CAPTION_MAX_WIDTH = 0.8;
 
+// The kit's own name, when it has one, along the head of the download.
+//
+// The top rather than above the caption: the kit is fitted to 86% of the
+// canvas height, which leaves 112px clear at each end, and two lines sharing
+// the bottom band would have put the name into the socks. A title at the top
+// and the attribution at the foot is also the way round a poster reads.
+const TITLE_SIZE = 40;
+const TITLE_BASELINE = 74;
+
 // Everything that decides how a shape is painted. Most of the kit sets `fill`
 // inline, but ~124 elements take theirs from Kit.vue's *scoped* classes, which
 // do not survive serialization — the shapes would come out unpainted.
@@ -234,9 +243,10 @@ function loadImage(src) {
  * @param {object} backdrop            an entry from STAGE_BACKDROPS
  * @param {SVGSVGElement} [stadiumSvg] the stadium, drawn behind the kit
  * @param {boolean} [withStars]        paint the summer-night sky's stars
+ * @param {string} [kitName]           the kit's name, across the head of it
  * @returns {Promise<Blob>}
  */
-export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null, withStars = false) {
+export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null, withStars = false, kitName = '') {
   const canvas = document.createElement('canvas');
 
   canvas.width = OUTPUT_WIDTH;
@@ -260,7 +270,7 @@ export async function kitToPngBlob(kitSvg, backdrop, stadiumSvg = null, withStar
 
   paintVignette(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT);
   await paintKit(ctx, kitSvg);
-  await paintCaption(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT);
+  await paintCaption(ctx, OUTPUT_WIDTH, OUTPUT_HEIGHT, kitName);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => {
@@ -328,7 +338,8 @@ async function paintKit(ctx, kitSvg) {
 }
 
 /**
- * Writes the app's name across the foot of the image.
+ * Writes the app's name across the foot of the image, and the kit's own name
+ * across the head of it when it has one.
  *
  * The font has to be asked for before it can be drawn. A canvas given a web
  * font it has not loaded does not fail: fillText quietly paints the fallback
@@ -336,7 +347,7 @@ async function paintKit(ctx, kitSvg) {
  * document.fonts.load settles that, and the check afterwards is there because
  * the only other way to find out is to look at the file.
  */
-async function paintCaption(ctx, width, height) {
+async function paintCaption(ctx, width, height, kitName = '') {
   const face = `${CAPTION_SIZE}px 'Bungee Inline'`;
 
   try {
@@ -347,6 +358,10 @@ async function paintCaption(ctx, width, height) {
 
   if (!document.fonts.check(face, CAPTION_TEXT)) {
     console.warn('[kit-export] Bungee Inline unavailable; caption fell back');
+  }
+
+  if (kitName) {
+    paintBanner(ctx, kitName, TITLE_SIZE, TITLE_BASELINE, width);
   }
 
   ctx.save();
@@ -375,6 +390,38 @@ async function paintCaption(ctx, width, height) {
   ctx.shadowBlur = 12;
   ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
   ctx.fillText(CAPTION_TEXT, width / 2, height - CAPTION_BASELINE_GAP);
+  ctx.restore();
+}
+
+/**
+ * One centred line, shrunk until it fits.
+ *
+ * The same treatment the caption gets, kept in one place because the two
+ * lines differ in what they say and where they sit rather than in how they
+ * are drawn. The shadow is here for the same reason it is there: the sky
+ * behind this edge is a different colour in every backdrop, so the text
+ * carries its own contrast rather than trusting any one of them.
+ */
+function paintBanner(ctx, text, startSize, baseline, width) {
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '0.04em';
+
+  let size = startSize;
+
+  ctx.font = `${size}px ${CAPTION_STACK}`;
+
+  while (size > 12 && ctx.measureText(text).width > width * CAPTION_MAX_WIDTH) {
+    size -= 1;
+    ctx.font = `${size}px ${CAPTION_STACK}`;
+  }
+
+  ctx.shadowColor = 'rgba(4, 6, 5, 0.55)';
+  ctx.shadowBlur = 12;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.fillText(text, width / 2, baseline);
   ctx.restore();
 }
 
