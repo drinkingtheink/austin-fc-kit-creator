@@ -45,7 +45,8 @@ const FLAG_FIELDS = [
   'showRoundelBadge',
   'showBadgeDisc',
   'showLeafMaker',
-  'socksMaker'
+  'socksMaker',
+  'austinWordmark'
 ];
 
 const MAX_PALETTE = 64;

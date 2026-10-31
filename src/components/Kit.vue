@@ -670,6 +670,21 @@
         <path :style="{ fill: shirtTypeFill }" class="st2" d="M546.3,35.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-47.8v515h47.7c1.4-3.1,2.1-6.2,2.1-9.4c0-1.5-0.2-3-0.5-4.5h0.5
           L546.3,35.7z"/>
       </g>
+      <!-- A band across the chest with a thin stripe above and below it,
+           which is where a wordmark goes on a shirt built this way. The band
+           takes the design colour and the two thin ones the secondary, so a
+           kit can run them together or set the thin pair off against it.
+
+           Sized around the sponsor, which sits 249.7 to 306.5: the band runs
+           237 to 318 so the lettering lands inside it with room at both
+           edges. The sides follow the trunk, which leans out about 0.004 of
+           a unit across for every unit down, the same lean the hoops carry. -->
+      <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('chest-band') }]" id="chest-band">
+        <polygon :style="{ fill: shirtSecondaryFill }" class="st2" points="170.4,222 170.4,231 545.9,231 545.9,222  "/>
+        <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.5,237 170.8,318 546.3,318 546.0,237  "/>
+        <polygon :style="{ fill: shirtSecondaryFill }" class="st2" points="170.9,324 170.9,333 546.4,333 546.3,324  "/>
+      </g>
+
       <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('hoops') }]" id="hoops">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="171,361 171.1,384.6 546.5,384.6 546.4,361    "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170.7,279.9 170.8,303.5 546.2,303.5 546.1,279.9    "/>
@@ -1173,7 +1188,41 @@
          in dev, so writing the house style dash here takes the whole export
          down with it. stripComments in kitToPng.js now catches that, but it
          is worth not writing in the first place.) -->
+    <!-- AUSTIN is set in type rather than traced, which is what lets it be
+         any six letters later. textLength pins it to the width the YETI
+         wordmark occupies, 206 units from 256.6, so the two sit in the same
+         place whatever face the browser resolves; lengthAdjust spreads that
+         across the glyphs rather than only the gaps.
+
+         Generic family, carried as attributes. A serialized SVG renders
+         without the page's webfonts and PAINT_PROPS carries no font
+         property, so a scoped class would be dropped on the way to the PNG.
+         Same reasoning as the sock lettering. -->
     <g
+      v-if="austinWordmark"
+      data-part="sponsor"
+      :class="partClass('sponsor')"
+      id="austin-wordmark"
+      paint-order="stroke"
+      stroke-linejoin="round"
+      stroke-width="8"
+      :stroke="logoStroke ? logoStrokeFill : 'none'"
+    >
+      <text
+        x="359.8"
+        y="297"
+        text-anchor="middle"
+        textLength="206"
+        lengthAdjust="spacingAndGlyphs"
+        font-family="Arial, Helvetica, sans-serif"
+        font-weight="700"
+        font-size="52"
+        :style="{ fill: logoFill }"
+      >AUSTIN</text>
+    </g>
+
+    <g
+      v-else
       data-part="sponsor"
       :class="partClass('sponsor')"
       id="yeti-logo_1_"
@@ -1501,6 +1550,8 @@
       // The sponsor's optional outline, and what it is drawn in.
       'logoStroke',
       'logoStrokeFill',
+      // Which wordmark the chest carries: the traced YETI, or AUSTIN.
+      'austinWordmark',
       'badgeFill',
       'badgeTextFill',
       'badgeBGFill',

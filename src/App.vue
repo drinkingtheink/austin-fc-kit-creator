@@ -52,6 +52,7 @@
           :logoFill="logoFill"
           :logoStroke="logoStroke"
           :logoStrokeFill="logoStrokeFill"
+          :austinWordmark="austinWordmark"
           :badgeFill="badgeFill"
           :badgeTextFill="badgeTextFill"
           :badgeBGFill="badgeBGFill"
@@ -277,6 +278,23 @@
 
             <ToolField label="Secondary color" part="design">
               <ColorSwatches label="Shirt secondary color" :colors="colors" v-model="shirtSecondaryFill" />
+            </ToolField>
+
+            <ToolField label="Chest wordmark" part="sponsor">
+              <div class="segmented" role="group" aria-label="Chest wordmark">
+                <button
+                  type="button"
+                  :class="{ active: !austinWordmark }"
+                  :aria-pressed="String(!austinWordmark)"
+                  v-on:click="setAustinWordmark(false)"
+                >YETI</button>
+                <button
+                  type="button"
+                  :class="{ active: austinWordmark }"
+                  :aria-pressed="String(austinWordmark)"
+                  v-on:click="setAustinWordmark(true)"
+                >AUSTIN</button>
+              </div>
             </ToolField>
 
             <ToolField label="Sponsor color" part="sponsor">
@@ -953,7 +971,13 @@
         'logoStrokeFill',
         'collarFill'
       ],
-      toggles: ['showButtonCollar', 'logoStroke', 'showRoundelBadge', 'showLeafMaker']
+      toggles: [
+        'showButtonCollar',
+        'logoStroke',
+        'showRoundelBadge',
+        'showLeafMaker',
+        'austinWordmark'
+      ]
     },
     {
       key: 'shorts',
@@ -989,6 +1013,7 @@
     'off-center-stripe',
     'shoulder-stripes',
     'hoops',
+    'chest-band',
     'chevron',
     'sash',
     'double-sash',
@@ -1111,6 +1136,8 @@
         // the moment anyone turns it on.
         logoStroke: false,
         logoStrokeFill: white,
+        // The traced YETI unless asked otherwise.
+        austinWordmark: false,
         badgeFill: green,
         badgeTextFill: white,
         badgeBGFill: black,
@@ -1494,6 +1521,9 @@
       },
       setLogoStroke(pref) {
         this.logoStroke = pref;
+      },
+      setAustinWordmark(pref) {
+        this.austinWordmark = pref;
       },
       setShirtMakerFill(fill) {
         this.shirtMakerFill = fill;

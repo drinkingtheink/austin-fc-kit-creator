@@ -19,6 +19,12 @@
         <rect v-for="bar in BARCODE" :key="bar[0]" :x="bar[0]" y="3" :width="bar[1]" height="51" :fill="typeFill" />
       </g>
 
+      <g v-else-if="design === 'chest-band'">
+        <rect x="14" y="16" width="36" height="2" :fill="secondaryFill" />
+        <rect x="14" y="21" width="36" height="16" :fill="typeFill" />
+        <rect x="14" y="40" width="36" height="2" :fill="secondaryFill" />
+      </g>
+
       <g v-else-if="design === 'hoops'">
         <rect v-for="y in [8, 18, 28, 38, 48]" :key="y" x="14" :y="y" width="36" height="4.5" :fill="typeFill" />
       </g>
