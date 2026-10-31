@@ -755,6 +755,7 @@
   import { MAX_SOCK_TEXT, SOCK_TEXT_PRESETS, normalizeSockText } from './lib/sockText.js';
   import { MAX_KIT_NAME, normalizeKitName, toKitSlug } from './lib/kitName.js';
   import { KIT_HISTORY, KIT_TYPE_LABELS } from './lib/kitHistory.js';
+  import { galleryHash, idFromHash, isGalleryHash, urlWithHash } from './lib/galleryUrl.js';
 
   const green ='#00B140';
   // The home shirt's stripes are tonal rather than contrasting: a deeper verde
@@ -1310,7 +1311,16 @@
         // a kit anybody designed. The settle writes the real one.
         if (this.spinning) return;
 
-        writeKit(kit);
+        // Nor is a catalogue kit on the stage. Browsing used to write every
+        // kit it walked past straight over the one in storage, which was
+        // survivable while the only way in was pressing the button -- you
+        // had asked for it, and Back to mine put yours back on screen even
+        // though storage had moved on. A shared link opens the gallery on
+        // arrival, so that became: follow a URL, lose your saved design,
+        // having clicked nothing. kitBeforeHistory is holding the real one;
+        // exitHistory writes it back.
+        if (!this.browsingHistory) writeKit(kit);
+
         this.markAlteredIfChanged();
       }
     },
@@ -1644,11 +1654,27 @@
        * here too.
        */
       openHistory() {
+        this.enterHistory(0, 'push');
+      },
+      /**
+       * Step into the catalogue at `index`.
+       *
+       * `urlMode` is how the address bar should follow: 'push' when someone
+       * opened the gallery and Back should get them out again, 'none' when
+       * the URL is what sent us here in the first place and writing it back
+       * would be an echo.
+       */
+      enterHistory(index, urlMode) {
         if (!KIT_HISTORY.length) return;
 
-        this.kitBeforeHistory = { ...this.persistedKit };
-        this.historyIndex = 0;
+        // Only on the way in. Arriving from one catalogue kit at another --
+        // Back, Forward, or a second link pasted over the first -- must not
+        // overwrite the kit somebody was designing with a catalogue kit.
+        if (!this.browsingHistory) this.kitBeforeHistory = { ...this.persistedKit };
+
+        this.historyIndex = index;
         this.showHistoryKit();
+        this.writeGalleryUrl(urlMode);
       },
       /** Wraps, because a catalogue you can walk off the end of is a list. */
       stepHistory(delta) {
@@ -1658,6 +1684,57 @@
 
         this.historyIndex = (this.historyIndex + delta + count) % count;
         this.showHistoryKit();
+
+        // Replace, not push: walking the catalogue is one visit rather than
+        // nine, and pushing would mean nine presses of Back to leave a
+        // gallery you stepped through once.
+        this.writeGalleryUrl('replace');
+      },
+      /**
+       * Point the address bar at the kit on display, so whatever is in it is
+       * the link to send someone. No kit on display means the gallery is
+       * shut, and the hash comes off.
+       */
+      writeGalleryUrl(urlMode) {
+        if (urlMode === 'none') return;
+
+        const entry = this.historyKit;
+        const url = urlWithHash(entry ? galleryHash(entry.id) : '');
+
+        window.history[urlMode === 'push' ? 'pushState' : 'replaceState'](null, '', url);
+      },
+      /**
+       * Open whatever the address bar points at, and shut the gallery when it
+       * stops pointing at a kit. Runs once on load, for a link somebody was
+       * sent, and on every Back or Forward after that.
+       *
+       * Returns whether it left the gallery open, which mounted() uses to
+       * decide whether to greet somebody who has arrived mid-catalogue.
+       */
+      syncGalleryFromUrl() {
+        const id = idFromHash(window.location.hash);
+        const index = id ? KIT_HISTORY.findIndex(entry => entry.id === id) : -1;
+
+        if (index < 0) {
+          // A gallery address that names no kit is a stale link or a typo.
+          // Take it off the bar rather than leave a dead address sitting
+          // there, with replace so Back still goes where Back was going.
+          // Asked of the hash rather than of `id`, because a mangled escape
+          // sequence is also an address to clear and does not parse into
+          // one.
+          if (isGalleryHash(window.location.hash)) {
+            window.history.replaceState(null, '', urlWithHash(''));
+          }
+          if (this.browsingHistory) this.exitHistory(false, 'none');
+
+          return false;
+        }
+
+        // Already there. Stepping writes the URL itself, and re-applying the
+        // kit would restart the reveal for nothing.
+        if (this.historyIndex !== index) this.enterHistory(index, 'none');
+
+        return true;
       },
       showHistoryKit() {
         const entry = this.historyKit;
@@ -1709,14 +1786,27 @@
        *
        * `keep` is someone deciding to carry on designing from the kit they
        * are looking at; without it the kit they arrived with comes back.
+       *
+       * `urlMode` is 'none' when the address bar is what closed the gallery,
+       * so this does not write back over a Back press.
        */
-      exitHistory(keep = false) {
+      exitHistory(keep = false, urlMode = 'push') {
         if (!this.browsingHistory) return;
 
         const previous = this.kitBeforeHistory;
 
         this.historyIndex = null;
         this.kitBeforeHistory = null;
+
+        // Before the early return below, so leaving by Design from this
+        // drops the hash too: that kit is being edited now, and the link
+        // would promise the catalogue version of it.
+        this.writeGalleryUrl(urlMode);
+
+        // Browsing does not persist, so a kit somebody decides to carry on
+        // with has to be written here by hand. Nothing else is about to
+        // change, and the watcher only fires on a change.
+        if (keep) writeKit(this.persistedKit);
 
         // Carrying on from the kit on display keeps it as the thing any
         // later change is measured against. Going back to your own drops it:
@@ -2381,9 +2471,20 @@
       if (!this.colors) this.colors = [...defaultColors];
       if (!this.setting) this.getSetting();
 
+      // After the restore above, because opening the gallery snapshots the
+      // kit to come back to and that kit should be the restored one.
+      window.addEventListener('popstate', this.syncGalleryFromUrl);
+
+      const arrivedAtGallery = this.syncGalleryFromUrl();
+
       let hasVisited = localStorage.getItem('visitedAustinFCKitDesigner');
 
-      if (!hasVisited) {
+      // Somebody who followed a link to a kit asked to see that kit. Neither
+      // the first-run greeting nor the welcome-back toast is worth covering
+      // it with; both are for people who came to the front door.
+      if (arrivedAtGallery) {
+        localStorage.setItem('visitedAustinFCKitDesigner', 'true');
+      } else if (!hasVisited) {
         setTimeout(() => {
           this.showGreeting = true;
         }, 1000);
@@ -2393,6 +2494,7 @@
     },
     beforeUnmount() {
       window.removeEventListener('keyup', this.handleShortcut);
+      window.removeEventListener('popstate', this.syncGalleryFromUrl);
 
       const stage = this.$refs.stage;
 

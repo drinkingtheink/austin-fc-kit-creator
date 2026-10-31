@@ -37,6 +37,7 @@ that differed from the screen.
 | `lib/kitToPng.js` | the PNG exporter |
 | `lib/clubPalettes.js` | 87 club palettes, generated; Houston Dynamo is deliberately absent |
 | `lib/kitStorage.js` | localStorage persistence |
+| `lib/galleryUrl.js` | the gallery's `#/kits/<id>` address |
 
 Three tables in `App.vue` drive most behaviour, and adding a colour usually
 means touching all three: `FILL_PARTS` (which colour paints which part),
