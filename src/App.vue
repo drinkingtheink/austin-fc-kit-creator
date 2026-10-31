@@ -2861,19 +2861,24 @@
     pointer-events: none;
   }
 
+  /* Bottom left, not above the kit.
+     
+     Centred at the top is where a museum label belongs and the one place it
+     cannot go: the kit stands about 370px tall in a 460px stage, so a plate
+     of any useful size lands on the shirt, which is the one thing a gallery
+     of shirts must not cover. The corners are the only empty stage there is,
+     and the download button has the other one. */
   .history-plate {
     position: absolute;
-    top: 22px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(420px, calc(100% - 140px));
-    padding: 16px 20px 18px;
+    bottom: 22px;
+    left: 22px;
+    width: min(330px, calc(100% - 200px));
+    padding: 14px 16px 16px;
     border: 1px solid var(--line-strong);
     border-radius: var(--r-lg);
     background-color: rgba(16, 20, 18, .93);
     backdrop-filter: blur(14px);
     box-shadow: 0 14px 40px rgba(0, 0, 0, .5);
-    text-align: center;
     pointer-events: auto;
   }
 
@@ -2952,6 +2957,11 @@
 
   .history-step.prev { left: 20px; }
   .history-step.next { right: 20px; }
+
+  /* Above the plate, so the two never meet on a narrow stage. */
+  @media (max-height: 620px) {
+    .history-step { top: 38%; }
+  }
 
   .history-step:hover {
     border-color: var(--verde);
