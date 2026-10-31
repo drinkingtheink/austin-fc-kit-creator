@@ -206,6 +206,30 @@
           </div>
         </header>
 
+        <!-- The gallery is a way to GET a kit, like Feeling Lucky above it,
+             not a property of the kit being designed. It used to sit inside
+             the kit-name group below, which put a full-width bordered box
+             directly under a full-width bordered input and made the pair
+             read as two text fields.
+
+             Its own row rather than a third button in .toolbar-actions,
+             because that row is display:none on narrow screens and this is
+             not something to lose there. -->
+        <div class="history-entry">
+          <button
+            class="btn btn-archive"
+            type="button"
+            v-on:click="openHistory"
+          >
+            <svg class="archive-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 3v5h5" />
+              <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+            <span>Austin FC kits through the years</span>
+          </button>
+        </div>
+
         <!-- A name for the whole kit, so it sits above the palette rather
              than inside any one garment's section. It names the design and
              it names the file the design is saved as. -->
@@ -221,12 +245,6 @@
             autocomplete="off"
             v-on:input="setKitName($event.target.value)"
           />
-
-          <button
-            class="btn btn-ghost btn-block"
-            type="button"
-            v-on:click="openHistory"
-          >Austin FC kits through the years</button>
         </div>
 
         <!-- The working palette, in reach without opening anything. Its
@@ -3203,6 +3221,61 @@
   }
 
   /* ---- Kit name -------------------------------------------------------- */
+
+  /* ---- Gallery entry --------------------------------------------------- */
+
+  /* This wore btn-ghost until it read as an input: transparent, a 1px
+     --line-strong border and --r-sm, which is exactly .kit-name-input's
+     recipe, stacked straight under it at the same width.
+
+     So it is filled instead of outlined, and raised instead of flat -- an
+     inset top highlight over a drop shadow, which is the one combination
+     nothing else in the toolbar wears. Capitals, a wider track and a
+     verde icon finish separating it from anything you can type into, and
+     --r-md against the input's --r-sm keeps the corners from rhyming. */
+  .history-entry {
+    padding: 14px 20px 0;
+  }
+
+  .btn-archive {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 11px 16px;
+    border-color: rgba(255, 255, 255, .07);
+    border-radius: var(--r-md);
+    background-color: var(--bg-raised);
+    color: var(--text);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06),
+                0 2px 6px rgba(0, 0, 0, .35);
+    transition: background-color .18s ease, border-color .18s ease,
+                box-shadow .18s ease, transform .18s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .btn-archive:hover {
+    border-color: var(--line-strong);
+    background-color: #1F2522;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1),
+                0 4px 10px rgba(0, 0, 0, .45);
+  }
+
+  /* Verde, because the mark is the reason to press it. Sized and stroked
+     like .download-icon so the two buttons that carry an icon agree. */
+  .archive-icon {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    stroke: var(--verde-bright);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
 
   .kit-name {
     display: grid;
