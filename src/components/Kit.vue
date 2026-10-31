@@ -252,6 +252,31 @@
         <polygon :style="{ fill: socksHoopsFill }" points="445.2,1260.9 551.1,1260.9 556.9,1201.7 437.1,1201.7    "/>
       </g>
 
+      <!-- The same brand mark, down the sock in the gap between the two
+           hoops: 1169 to 1201.7, which is sock colour whether the hoops are
+           drawn or not. It sat in the band under the cuff first and read as
+           something stuck to the turnover rather than printed on the leg.
+
+           It takes the sock's print colour, the one the legibility table
+           already holds against the sock itself at the READ bar, so it
+           cannot end up painted onto its own ground. 34 units wide against
+           a sock about 130 across down here. -->
+      <g
+        v-if="socksMaker"
+        data-part="socksText"
+        :class="partClass('socksText')"
+        id="socks-maker"
+      >
+        <g transform="translate(210,1172) scale(0.34)">
+          <AustinFCLeaves v-if="showLeafMaker" :fill="socksTextFill" />
+          <AustinFCBars v-else :fill="socksTextFill" />
+        </g>
+        <g transform="translate(478.5,1172) scale(0.34)">
+          <AustinFCLeaves v-if="showLeafMaker" :fill="socksTextFill" />
+          <AustinFCBars v-else :fill="socksTextFill" />
+        </g>
+      </g>
+
       <!-- Sock lettering, down at the ankle: the bottom hoop ends at 1260.9
            and the sock at 1316.5, so a baseline of 1299 centres the type in
            that band whether or not the hoops are on. x is the midline of each
@@ -1116,12 +1141,10 @@
            33.7 by 25.4 from 225.3,135.4, and the leaf mark is scaled to that
            same footprint. Only one is ever in the DOM. -->
       <g data-part="maker" :class="partClass('maker')" id="shirt-maker">
-        <AustinFCLeaves v-if="showLeafMaker" :fill="shirtMakerFill" />
-        <template v-else>
-          <rect :style="{ fill: shirtMakerFill }" x="250.6" y="135.4" width="8.4" height="25.4"/>
-          <rect :style="{ fill: shirtMakerFill }" x="237.9" y="140.4" width="8.4" height="20.3"/>
-          <rect :style="{ fill: shirtMakerFill }" x="225.3" y="148" width="8.4" height="12.5"/>
-        </template>
+        <g transform="translate(225.3,135.4) scale(0.337)">
+          <AustinFCLeaves v-if="showLeafMaker" :fill="shirtMakerFill" />
+          <AustinFCBars v-else :fill="shirtMakerFill" />
+        </g>
       </g>
     </g>
     <!-- The outline is drawn behind the letters. Stroked the ordinary way, a
@@ -1446,11 +1469,12 @@
 <script>
   import AustinFCRoundel from './AustinFCRoundel.vue';
   import AustinFCLeaves from './AustinFCLeaves.vue';
+  import AustinFCBars from './AustinFCBars.vue';
   import { readableInk, toHsl, fromHsl } from '../lib/colorTools.js';
 
   export default {
     name: 'Kit',
-    components: { AustinFCRoundel, AustinFCLeaves },
+    components: { AustinFCRoundel, AustinFCLeaves, AustinFCBars },
     props: [ 
       'activeShirtOption',
       'shirtFill',
@@ -1467,8 +1491,10 @@
       'socksCuffsFill',
       'socksHoops',
       'socksHoopsFill',
-      // Up to five characters printed on each sock, and their color.
+      // Up to five characters printed on each sock, the brand mark above
+      // them, and the one colour both are printed in.
       'socksText',
+      'socksMaker',
       'socksTextFill',
       'numberFill',
       'logoFill',

@@ -66,6 +66,7 @@
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
           :socksText="socksText"
+          :socksMaker="socksMaker"
           :socksTextFill="socksTextFill"
           :shirtMakerFill="shirtMakerFill"
           :showLeafMaker="showLeafMaker"
@@ -554,11 +555,29 @@
               </div>
             </ToolField>
 
-            <transition name="field-pop">
-              <ToolField v-if="socksText" label="Text color" part="socksText">
-                <ColorSwatches label="Sock text color" :colors="colors" v-model="socksTextFill" />
-              </ToolField>
-            </transition>
+            <ToolField label="Sock mark" part="socksText">
+              <div class="segmented" role="group" aria-label="Sock brand mark">
+                <button
+                  type="button"
+                  :class="{ active: !socksMaker }"
+                  :aria-pressed="String(!socksMaker)"
+                  v-on:click="setSocksMaker(false)"
+                >Off</button>
+                <button
+                  type="button"
+                  :class="{ active: socksMaker }"
+                  :aria-pressed="String(socksMaker)"
+                  v-on:click="setSocksMaker(true)"
+                >On</button>
+              </div>
+            </ToolField>
+
+            <!-- One colour for everything printed on the sock, the mark as
+                 well as the lettering, which is why it no longer hides when
+                 there is nothing lettered. -->
+            <ToolField label="Print color" part="socksText">
+              <ColorSwatches label="Sock print color" :colors="colors" v-model="socksTextFill" />
+            </ToolField>
           </ToolSection>
         </div>
 
@@ -950,7 +969,7 @@
       // threw them away every time it was pulled would be a machine nobody
       // dared pull. The crest is left alone for the same reason.
       fills: ['socksFill', 'socksCuffsFill', 'socksHoopsFill', 'socksTextFill'],
-      toggles: ['socksHoops']
+      toggles: ['socksHoops', 'socksMaker']
     }
   ];
 
@@ -1118,6 +1137,9 @@
         // Up to five characters printed on each sock. Empty is the default,
         // and empty means the lettering is not drawn at all.
         socksText: '',
+        // The brand mark on the calf. On by default: a sock carries the
+        // maker's mark whether or not anybody has lettered it.
+        socksMaker: true,
         socksTextFill: white,
 
         // Which kit in the history is being looked at, or null for none. The
@@ -1505,6 +1527,9 @@
       },
       setSocksText(value) {
         this.socksText = normalizeSockText(value);
+      },
+      setSocksMaker(pref) {
+        this.socksMaker = pref;
       },
       setKitName(value) {
         this.kitName = normalizeKitName(value);

@@ -44,7 +44,8 @@ const FLAG_FIELDS = [
   'logoStroke',
   'showRoundelBadge',
   'showBadgeDisc',
-  'showLeafMaker'
+  'showLeafMaker',
+  'socksMaker'
 ];
 
 const MAX_PALETTE = 64;
