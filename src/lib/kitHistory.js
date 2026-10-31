@@ -89,6 +89,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: VERDE,
       socksText: '',
       socksMaker: true,
+      socksRoundel: false,
       // White on verde and white on black: one colour for both marks.
       socksTextFill: WHITE,
 
@@ -141,6 +142,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: VERDE,
       socksText: '',
       socksMaker: true,
+      socksRoundel: false,
       // Verde on white reads on both, so both marks are verde.
       socksTextFill: VERDE,
 
@@ -194,6 +196,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: BLACK,
       socksText: '',
       socksMaker: true,
+      socksRoundel: false,
       // Black on sage reads on both garments, so both marks are black.
       socksTextFill: BLACK,
 
@@ -253,6 +256,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: VERDE,
       socksText: '',
       socksMaker: true,
+      socksRoundel: false,
       socksTextFill: WHITE,
 
       colors: [VERDE, BLACK, WHITE]
@@ -307,6 +311,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: WHITE,
       socksText: '512',
       socksMaker: true,
+      socksRoundel: false,
       socksTextFill: JADE,
 
       colors: [BONE, JADE, JADE_LIGHT, WHITE]
@@ -355,6 +360,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: WHITE,
       socksText: '',
       socksMaker: true,
+      socksRoundel: false,
       socksTextFill: WHITE,
 
       colors: [BLACK, VERDE, VERDE_DEEP, WHITE, GREY]
@@ -384,7 +390,8 @@ export const KIT_HISTORY = [
       logoStroke: false,
       logoStrokeFill: CREAM,
       collarFill: CREAM,
-      showButtonCollar: false,
+      // The one shirt in the catalogue with a placket.
+      showButtonCollar: true,
 
       badgeFill: CREAM,
       badgeTextFill: VIOLET,
@@ -405,6 +412,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: CREAM,
       socksText: '',
       socksMaker: true,
+      socksRoundel: false,
       // Cream on violet in both places.
       socksTextFill: CREAM,
 
@@ -455,6 +463,7 @@ export const KIT_HISTORY = [
       socksHoopsFill: MINT,
       socksText: '512',
       socksMaker: true,
+      socksRoundel: false,
       socksTextFill: BLACK,
 
       colors: [WHITE, MINT, BLACK]
