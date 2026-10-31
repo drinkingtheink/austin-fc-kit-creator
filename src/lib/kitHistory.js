@@ -33,6 +33,9 @@ const BONE = '#F2EFE6';
 const MINT = '#8BD6A1';
 const SAGE = '#A6E2A2';
 const FOREST = '#12301E';
+const VIOLET = '#6D4098';
+const CREAM = '#F5F0EA';
+const ORCHID = '#C98FC4';
 
 const VERDE = '#00B140';
 const VERDE_DEEP = '#008A4B';
@@ -61,6 +64,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: WHITE,
       showLeafMaker: false,
       logoFill: WHITE,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: FOREST,
       collarFill: BLACK,
@@ -110,6 +114,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: VERDE,
       showLeafMaker: false,
       logoFill: VERDE,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: WHITE,
       // White on white, which is what the shirt does: the collar is there
@@ -163,6 +168,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: BLACK,
       showLeafMaker: false,
       logoFill: BLACK,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: SAGE,
       collarFill: BLACK,
@@ -219,6 +225,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: WHITE,
       showLeafMaker: false,
       logoFill: WHITE,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: BLACK,
       collarFill: BLACK,
@@ -274,6 +281,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: JADE,
       showLeafMaker: false,
       logoFill: JADE,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: WHITE,
       collarFill: JADE,
@@ -322,6 +330,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: WHITE,
       showLeafMaker: false,
       logoFill: BLACK,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: WHITE,
       collarFill: BLACK,
@@ -352,6 +361,57 @@ export const KIT_HISTORY = [
     }
   },
   {
+    id: 'violet-crown-2026-third',
+    name: 'The Violet Crown Kit',
+    seasons: '2026',
+    type: 'special',
+    note: 'Violet with a cream band across the chest, AUSTIN across the band.',
+    kit: {
+      // The band is what this shirt is, which is why `chest-band` exists:
+      // one wide hoop at the height a wordmark sits, with a thin stripe
+      // above and below it.
+      activeShirtOption: 'chest-band',
+      shirtFill: VIOLET,
+      shirtTypeFill: CREAM,
+      shirtSecondaryFill: CREAM,
+      shirtSleeveFill: VIOLET,
+      shirtCuffFill: CREAM,
+      shirtMakerFill: CREAM,
+      showLeafMaker: false,
+      // AUSTIN rather than the sponsor, set across the band in orchid.
+      austinWordmark: true,
+      logoFill: ORCHID,
+      logoStroke: false,
+      logoStrokeFill: CREAM,
+      collarFill: CREAM,
+      showButtonCollar: false,
+
+      badgeFill: CREAM,
+      badgeTextFill: VIOLET,
+      badgeBGFill: VIOLET,
+      shortsBadgeFill: CREAM,
+      shortsBadgeTextFill: VIOLET,
+      shortsBadgeBGFill: VIOLET,
+      showRoundelBadge: true,
+      showBadgeDisc: false,
+
+      shortsFill: VIOLET,
+      shortsCuffsFill: CREAM,
+      numberFill: CREAM,
+
+      socksFill: VIOLET,
+      socksCuffsFill: VIOLET,
+      socksHoops: false,
+      socksHoopsFill: CREAM,
+      socksText: '',
+      socksMaker: true,
+      // Cream on violet in both places.
+      socksTextFill: CREAM,
+
+      colors: [VIOLET, CREAM, ORCHID]
+    }
+  },
+  {
     id: 'rooted-2026-away',
     name: 'The Rooted Kit',
     seasons: '2026-27',
@@ -370,6 +430,7 @@ export const KIT_HISTORY = [
       shirtMakerFill: BLACK,
       showLeafMaker: false,
       logoFill: BLACK,
+      austinWordmark: false,
       logoStroke: false,
       logoStrokeFill: WHITE,
       collarFill: MINT,
