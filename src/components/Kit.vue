@@ -41,8 +41,9 @@
            sleeve cuffs. Nine shapes, four gradients -- one per cloth that
            can show through an opening.
 
-           Each runs from farSide() of that cloth to a step further away from
-           it, rather than from a fixed grey. That is the whole point: a grey
+           Each runs from farSide() of that cloth, at the top where the
+           opening turns over, down to a darker step of it at the bottom --
+           rather than from a fixed grey. That is the whole point: a grey
            gradient is a slab of someone else's kit on a white shirt and
            invisible on a black one, where these track whatever the kit is
            wearing. Flat farSide() was the other extreme and read as paper --
@@ -1237,18 +1238,26 @@
            360.6,102.6 and up the two arms, then arched over the top so it
            also stands proud of the shoulder the way a back collar does.
 
-           It is flat across the shoulder line, where it used to arch 5.9
-           above it. Every other inside-back on this kit sits within its
-           opening -- the sock mouths and the waistband curve down into
-           theirs, the hems drop below the cloth in front -- and this was the
-           one that stood proud of its own. At any height the arch read as a
-           hump behind the neck rather than as cloth seen through a hole,
-           which is what it is.
+           The top edge rises 7 at the centre. It has been all three heights
+           now -- a 5.9 arch that read as a lump, dead flat, and this -- and
+           what decides it is the SHAPE of the rise, not how tall it is. The
+           lump was a cubic whose control points sat at x 310 and 410, well
+           inside the corners at 291.4 and 429.9: steep sides and a level
+           top, which is a mesa behind the neck. This is a quadratic with its
+           one control on the centre line, so it is a parabola that tapers
+           out to nothing at both shoulders -- a swell rather than a mound.
+
+           Flat was the overcorrection, and it took a gradient to afford the
+           rise at all. A flat-filled arch has no shading to say which way it
+           turns, so it can only read as a silhouette stuck above the
+           shoulder line; with the ramp on it, the rise is the part that
+           catches the light and the apex is the part that falls away, which
+           is what makes it read as cloth behind a neck.
 
            Both collars cut the same V, so one shape serves either. A
            crescent sat above the opening instead of in it, which closed
            nothing. -->
-      <path fill="url(#backShirt)" d="M291.4 33.3 L360.6 102.6 L429.9 33.3 Z" />
+      <path fill="url(#backShirt)" d="M291.4 33.3 Q360.6 19.3 429.9 33.3 L360.6 102.6 Z" />
       <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
@@ -1804,49 +1813,50 @@
        * far side of the garment, lit where the opening turns over and
        * shadowed where it falls away.
        *
-       * farSide is one end of the ramp, never the middle. That is the whole
-       * design of this function. Centring the ramp on farSide was the first
-       * try and it put a stop .075 *toward* the cloth, which undoes the one
-       * thing farSide exists to guarantee: on the catalogue's mint, farSide
-       * separates from its cloth at 1.54 and that stop came out at 1.343 --
-       * under the 1.45 the app's own legibility guards call the bar for
-       * telling two colours apart. Keeping farSide at one end means every
-       * contrast already verified for the flat fills still holds exactly,
-       * and the ramp can only ever increase it.
+       * Only the stop that MEETS THE CLOTH needs farSide's separation. That
+       * is the whole design of this function, and it took two wrong turns to
+       * find.
        *
-       * The far stop carries on the way farSide went rather than doubling
-       * back: darker when farSide darkened a light cloth, lighter when it
-       * lifted a dark one. Doubling back is the same mistake as centring.
+       * farSide is therefore the lit stop, always, unchanged -- so every
+       * contrast already verified for the flat fills still holds exactly.
+       * Centring the ramp on it was the first try and it put a stop .075
+       * *toward* the cloth, which undoes the one thing farSide exists to
+       * guarantee: the catalogue's mint separates at 1.54 and that stop came
+       * out at 1.343, under the 1.45 the app's own legibility guards call
+       * the bar for telling two colours apart.
        *
-       * Then light on top, whichever end that is. One lighting direction for
-       * all nine openings, matching kitDepth.
+       * The second try kept farSide at one end but ran the far stop AWAY
+       * from the cloth in whichever direction farSide had gone -- lighter,
+       * for a dark one. That is what made a black shirt's neck glow. farSide
+       * already lifts black .24 to keep its edge visible; another .15 on top
+       * put the top of the opening at #636363, a mid-grey slab lit from
+       * inside a black shirt. The grey gradient all this replaced ran
+       * #535956 down to #1E2220 -- it got darker into the hole, and it was
+       * right about that.
        *
-       * The step is .15 of lightness, or .6 of whatever room is left that
-       * way when there is less -- which is how it avoids the other failure
-       * of the centred version, where a cloth just above farSide's .22
-       * threshold (#3B3B3B lands its far side at .03) ran the far stop into
-       * black and clamped. Proportional, it cannot clamp. It does go nearly
-       * flat for those few near-black cloths, and that is the honest answer:
-       * there is no room below .03, and the stop that meets the cloth still
-       * carries its full separation.
+       * So the deep stop always falls darker, on any cloth. It is read
+       * against the lit stop beside it rather than against the garment, so
+       * it is free to approach the cloth's own lightness or pass it: what
+       * keeps the opening legible is the crisp edge at the top, which is
+       * farSide's job and is untouched. No branch, and one lighting
+       * direction for all nine openings, matching kitDepth.
        *
-       * .15 because the fixed grey gradient this replaces spanned .146 end
-       * to end (#535956 to #1E2220). Wider reads as a second colour inside
-       * the hole; the flat fill that came between the two read as paper.
+       * The step is .15 of lightness, or .6 of what is left below when there
+       * is less, so it cannot clamp into black. .15 because that grey
+       * spanned .146 end to end. Wider reads as a second colour inside the
+       * hole; the flat fill that came between read as paper. It does go
+       * nearly flat on near-black cloth like #3B3B3B, whose far side lands
+       * at .03 with nothing under it -- the honest answer, and the lit stop
+       * still carries its full separation.
        */
       farSideRamp(hex) {
-        const near = this.farSide(hex);
+        const lit = this.farSide(hex);
 
-        if (!near) return { lit: near, deep: near };
+        if (!lit) return { lit, deep: lit };
 
-        const [, , cloth] = toHsl(hex);
-        const [h, s, l] = toHsl(near);
+        const [h, s, l] = toHsl(lit);
 
-        const away = l < cloth ? -1 : 1;
-        const room = away < 0 ? l : 1 - l;
-        const far = fromHsl(h, s, l + away * Math.min(0.15, room * 0.6));
-
-        return away < 0 ? { lit: near, deep: far } : { lit: far, deep: near };
+        return { lit, deep: fromHsl(h, s, l - Math.min(0.15, l * 0.6)) };
       },
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;
