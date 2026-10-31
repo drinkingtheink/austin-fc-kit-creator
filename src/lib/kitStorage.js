@@ -5,6 +5,7 @@
 // app on its defaults rather than render a kit with missing parts.
 
 import { normalizeSockText } from './sockText.js';
+import { normalizeKitName } from './kitName.js';
 
 const STORAGE_KEY = 'austinFcKitCreator:kit';
 
@@ -56,6 +57,7 @@ export const PERSISTED_FIELDS = [
   ...FLAG_FIELDS,
   'activeShirtOption',
   'socksText',
+  'kitName',
   'setting',
   'colors'
 ];
@@ -102,10 +104,14 @@ export function sanitizeKit(raw, shirtOptions, stageNames) {
     if (typeof raw[field] === 'boolean') kit[field] = raw[field];
   });
 
-  // The one free-text field. Normalized rather than trusted: what is on
+  // The two free-text fields. Normalized rather than trusted: what is on
   // disk was last written by this app, but nothing says it still is.
   if (typeof raw.socksText === 'string') {
     kit.socksText = normalizeSockText(raw.socksText);
+  }
+
+  if (typeof raw.kitName === 'string') {
+    kit.kitName = normalizeKitName(raw.kitName);
   }
 
   // null is a real value here: it means the solid shirt.

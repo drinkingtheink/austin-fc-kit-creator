@@ -142,6 +142,23 @@
           </div>
         </header>
 
+        <!-- A name for the whole kit, so it sits above the palette rather
+             than inside any one garment's section. It names the design and
+             it names the file the design is saved as. -->
+        <div class="kit-name">
+          <label class="field-label" for="kit-name-input">Kit name</label>
+          <input
+            id="kit-name-input"
+            class="kit-name-input"
+            type="text"
+            :maxlength="MAX_KIT_NAME"
+            :value="kitName"
+            placeholder="Untitled kit"
+            autocomplete="off"
+            v-on:input="setKitName($event.target.value)"
+          />
+        </div>
+
         <!-- The working palette, in reach without opening anything. Its
              picker adds straight to the palette rather than painting a part,
              which is why it carries no selection. -->
@@ -599,6 +616,7 @@
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
   import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
   import { MAX_SOCK_TEXT, SOCK_TEXT_PRESETS, normalizeSockText } from './lib/sockText.js';
+  import { MAX_KIT_NAME, normalizeKitName, toKitSlug } from './lib/kitName.js';
 
   const green ='#00B140';
   // The home shirt's stripes are tonal rather than contrasting: a deeper verde
@@ -1044,9 +1062,16 @@
         socksText: '',
         socksTextFill: white,
 
-        // Read by the template; they belong to lib/sockText.js.
+        // What this kit is called. Empty until somebody says otherwise, and
+        // the reels leave it alone: a name is something a person wrote, the
+        // same reason the sock text survives a spin.
+        kitName: '',
+
+        // Read by the template; they belong to lib/sockText.js and
+        // lib/kitName.js.
         MAX_SOCK_TEXT,
         SOCK_TEXT_PRESETS,
+        MAX_KIT_NAME,
 
         numberFill: white,
 
@@ -1408,6 +1433,9 @@
       },
       setSocksText(value) {
         this.socksText = normalizeSockText(value);
+      },
+      setKitName(value) {
+        this.kitName = normalizeKitName(value);
       },
       /**
        * Bring the socks up to fill the stage, for lettering them.
@@ -1846,11 +1874,20 @@
         this.showColors = true;
         this.backToTop();
       },
+      /**
+       * What the PNG is called.
+       *
+       * A named kit is saved under its name; an unnamed one falls back to
+       * the design, which is what every kit was called before kits had names.
+       * The date stays on either way: these are shared and compared, and two
+       * downloads of the same design on different days should not land on
+       * each other in a downloads folder.
+       */
       kitFilename() {
-        const design = this.activeShirtOption || 'solid';
+        const slug = toKitSlug(this.kitName) || this.activeShirtOption || 'solid';
         const stamp = new Date().toISOString().slice(0, 10);
 
-        return `austin-fc-kit-${design}-${stamp}.png`;
+        return `austin-fc-kit-${slug}-${stamp}.png`;
       },
       async downloadKit() {
         if (this.exporting) return;
@@ -2656,6 +2693,37 @@
   .segmented button:focus-visible {
     outline: 2px solid var(--verde-bright);
     outline-offset: 2px;
+  }
+
+  /* ---- Kit name -------------------------------------------------------- */
+
+  .kit-name {
+    display: grid;
+    gap: 7px;
+    padding: 16px 20px 0;
+  }
+
+  .kit-name-input {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-sunken);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: .86rem;
+    font-weight: 600;
+  }
+
+  .kit-name-input::placeholder {
+    color: var(--text-faint);
+    font-weight: 400;
+  }
+
+  .kit-name-input:focus {
+    border-color: var(--verde);
+    outline: none;
   }
 
   /* ---- Sock text ------------------------------------------------------- */
