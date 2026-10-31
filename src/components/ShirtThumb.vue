@@ -19,6 +19,10 @@
         <rect v-for="bar in BARCODE" :key="bar[0]" :x="bar[0]" y="3" :width="bar[1]" height="51" :fill="typeFill" />
       </g>
 
+      <g v-else-if="design === 'pinstripes'">
+        <rect v-for="x in [16, 21, 26, 31, 36, 41, 46]" :key="x" :x="x" y="3" width="1.4" height="51" :fill="typeFill" />
+      </g>
+
       <g v-else-if="design === 'chest-band'">
         <rect x="14" y="16" width="36" height="2" :fill="secondaryFill" />
         <rect x="14" y="21" width="36" height="16" :fill="typeFill" />

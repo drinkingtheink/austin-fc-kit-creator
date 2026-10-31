@@ -685,6 +685,33 @@
         <rect x="530" y="28" width="20" height="210" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
         <rect x="647" y="56" width="16" height="188" fill="#000" fill-opacity=".22" filter="url(#seamSoft)" />
       </g>
+      <!-- Pinstripes, and the only design here that is not hand traced.
+           Every other pattern carries polygons cut to the shirt's outline,
+           neck and hem included, which is thirteen traces for thirteen
+           hairlines. These are plain full-height bars clipped to the trunk
+           instead, using the clip the shading layer already defines, so the
+           V and the hem cut themselves.
+
+           Five units wide every thirty, which is about three screen pixels
+           of ink against eighteen of shirt: fine enough to read as pinstripe
+           rather than as the stripes above, which are fifty wide. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('pinstripes') }]"
+        id="pinstripes"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <rect
+          v-for="x in pinstripeColumns"
+          :key="x"
+          :x="x"
+          y="30"
+          width="5"
+          height="525"
+          :style="{ fill: shirtTypeFill }"
+        />
+      </g>
+
       <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="280.8,549.5 331.6,549.5 331.6,74.7 291.4,34.5 280.8,34.5     "/>
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="389.7,549.5 440.5,549.5 440.5,34.5 429.9,34.5 389.7,74.7     "/>
@@ -1636,6 +1663,17 @@
        * platform still fits. The cap of 30 is what keeps one or two
        * characters from swelling to fill the whole sock.
        */
+      // Where the pinstripes fall: from 175 to the far side of the trunk,
+      // one every thirty units. Generated rather than written out, because
+      // thirteen hand-typed x positions are thirteen chances to fat-finger
+      // one and not notice.
+      pinstripeColumns() {
+        const columns = [];
+
+        for (let x = 175; x < 545; x += 30) columns.push(x);
+
+        return columns;
+      },
       socksTextSize() {
         return Math.min(30, 88 / Math.max(1, (this.socksText || '').length));
       },

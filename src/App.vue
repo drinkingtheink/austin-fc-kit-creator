@@ -1040,6 +1040,7 @@
   const shirtOptions = [
     'barcode',
     'stripes',
+    'pinstripes',
     'center-stripe',
     'off-center-stripe',
     'shoulder-stripes',
