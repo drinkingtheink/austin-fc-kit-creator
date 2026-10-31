@@ -57,6 +57,16 @@ property has to respect that freeze.
 the randomize flash and the spotlight halo both use `filter` precisely so they
 stay off the exported image.
 
+`inlinePaint` never restyles the contents of `<defs>`, and that is what lets a
+gradient's colours be *dynamic*. Vue writes the bound `stop-color` as an inline
+style on each `<stop>`, nothing overwrites it, and `cloneNode` carries it into
+the export — which is how the nine garment backs take their ramp from whatever
+cloth they sit in. The shapes themselves reference it as a
+`fill="url(#...)"` **attribute**, because `shouldSkip` drops `url()` values from
+the inlined style and relies on the attribute surviving the clone. Both halves
+of that are load-bearing: a `:style`-bound `url()` fill would be dropped by one
+and never replaced by the other.
+
 **Zoom and pan live on a wrapper, not on the kit.** `.kit-display` already
 animates `transform` for the float, and an animation beats an inline style on
 the same property. The wrapper also keeps the zoom out of the export for free,
