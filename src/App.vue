@@ -203,32 +203,25 @@
               v-on:click="randomizeKit"
             >{{ spinning ? 'Spinning...' : 'Feeling Lucky' }}</button>
             <button class="btn btn-ghost" v-on:click="showColors = true">Colors</button>
+
+            <!-- Its own row under the other two, spanning both columns. It
+                 belongs with them -- all three are ways to GET a kit rather
+                 than properties of the one on the stage -- but its label is
+                 far too long to stand as a third column beside them. -->
+            <button
+              class="btn btn-archive"
+              type="button"
+              v-on:click="openHistory"
+            >
+              <svg class="archive-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3v5h5" />
+                <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              <span>Austin FC kits through the years</span>
+            </button>
           </div>
         </header>
-
-        <!-- The gallery is a way to GET a kit, like Feeling Lucky above it,
-             not a property of the kit being designed. It used to sit inside
-             the kit-name group below, which put a full-width bordered box
-             directly under a full-width bordered input and made the pair
-             read as two text fields.
-
-             Its own row rather than a third button in .toolbar-actions,
-             because that row is display:none on narrow screens and this is
-             not something to lose there. -->
-        <div class="history-entry">
-          <button
-            class="btn btn-archive"
-            type="button"
-            v-on:click="openHistory"
-          >
-            <svg class="archive-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 3v5h5" />
-              <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
-              <path d="M12 7v5l3 2" />
-            </svg>
-            <span>Austin FC kits through the years</span>
-          </button>
-        </div>
 
         <!-- A name for the whole kit, so it sits above the palette rather
              than inside any one garment's section. It names the design and
@@ -2831,15 +2824,16 @@
     font-size: .74rem;
   }
 
+  /* A grid rather than a flex row now that a third button sits under the
+     first two: 1fr 1fr still splits the top row evenly, which is what keeps
+     the shorter label from shifting the one beside it, and the archive
+     button spans both columns on its own row. */
   .toolbar-actions {
-    display: flex;
+    display: grid;
     grid-column: 1 / -1;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: 14px;
-  }
-
-  .toolbar-actions .btn {
-    flex: 1;
   }
 
   .toolbar-sections {
@@ -3224,21 +3218,18 @@
 
   /* ---- Gallery entry --------------------------------------------------- */
 
-  /* This wore btn-ghost until it read as an input: transparent, a 1px
-     --line-strong border and --r-sm, which is exactly .kit-name-input's
-     recipe, stacked straight under it at the same width.
+  /* This wore btn-ghost under the kit-name input, where it read as a second
+     text field: transparent, a 1px --line-strong border and --r-sm is
+     exactly .kit-name-input's recipe, at the same width.
 
      So it is filled instead of outlined, and raised instead of flat -- an
      inset top highlight over a drop shadow, which is the one combination
      nothing else in the toolbar wears. Capitals, a wider track and a
      verde icon finish separating it from anything you can type into, and
      --r-md against the input's --r-sm keeps the corners from rhyming. */
-  .history-entry {
-    padding: 14px 20px 0;
-  }
-
   .btn-archive {
     display: flex;
+    grid-column: 1 / -1;
     width: 100%;
     align-items: center;
     justify-content: center;
@@ -3249,8 +3240,14 @@
     background-color: var(--bg-raised);
     color: var(--text);
     font-size: .72rem;
-    letter-spacing: .08em;
+    /* The label is long enough to take two lines once the toolbar is near
+       its 320px floor -- 32 capitals do not fit whatever the tracking -- so
+       it is given a line-height that reads as two lines rather than one
+       crammed one, and centred to match. */
+    line-height: 1.35;
+    letter-spacing: .06em;
     text-transform: uppercase;
+    text-align: center;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06),
                 0 2px 6px rgba(0, 0, 0, .35);
     transition: background-color .18s ease, border-color .18s ease,
@@ -3474,7 +3471,7 @@
   /* The lever reads on the button as well as on the kit, so a spin started
      from the keyboard still has something to look at, and a second press --
      which slams the reels rather than starting again -- has something to aim
-     at. Both buttons stand in a flex row that splits the width evenly, so the
+     at. Both buttons stand in a grid row that splits the width evenly, so the
      shorter label cannot shift the one beside it. */
   .btn-primary.is-pulling {
     animation: pullPulse .42s ease-in-out infinite alternate;
@@ -3749,7 +3746,10 @@
       position: static;
     }
 
-    .toolbar-actions {
+    /* Only the two that .mobile-actions repeats. The gallery is not down
+       there, so hiding the whole group would lose it on a phone. */
+    .toolbar-actions > .btn-primary,
+    .toolbar-actions > .btn-ghost {
       display: none;
     }
 

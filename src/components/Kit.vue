@@ -80,6 +80,35 @@
         <stop offset="0" :style="{ stopColor: garmentBacks.shorts.lit }" />
         <stop offset="1" :style="{ stopColor: garmentBacks.shorts.deep }" />
       </linearGradient>
+
+      <!-- The waistband's own version of backShorts, with a lit rim on top.
+           It is the one opening on the kit that cannot prove it is an
+           opening the way the others do.
+
+           Every other back reads because it hangs OUTSIDE its garment, with
+           backdrop around it: the shirt hem and the four leg hems all drop
+           past the cloth in front of them. The waistband cannot. It sits
+           under the shirt -- 2px of clearance, measured -- so a back drawn
+           rising above the front waistband is simply not visible, and drawn
+           falling below it is a dark lens painted on the front of the
+           shorts, which reads as a dent rather than a hole. Dropping the
+           shorts to open a gap does not rescue it either: the backdrop
+           behind the waistband is dark, so a dark band disappears into it
+           where the leg hems have the bright pitch to sit against.
+
+           So this one gets the cue the others get from their silhouette. A
+           sliver of the back rim catching the light runs along the top
+           edge, and the inside falls away under it. A lit edge over a dark
+           interior is what says hole; the dark alone said smudge.
+
+           The rim holds flat to .2 and then steps, rather than fading in.
+           A rim that ramps is a gradient; a rim that steps is an edge. -->
+      <linearGradient id="backWaist" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :style="{ stopColor: garmentBacks.waistRim }" />
+        <stop offset=".2" :style="{ stopColor: garmentBacks.waistRim }" />
+        <stop offset=".21" :style="{ stopColor: garmentBacks.shorts.lit }" />
+        <stop offset="1" :style="{ stopColor: garmentBacks.shorts.deep }" />
+      </linearGradient>
       <linearGradient id="backSocks" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" :style="{ stopColor: garmentBacks.socks.lit }" />
         <stop offset="1" :style="{ stopColor: garmentBacks.socks.deep }" />
@@ -385,9 +414,10 @@
         c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l31.7-105l31.7,105l0.5-0.2c0.1,0.2,0.2,0.3,0.3,0.5l185.5-56c0-0.2,0-0.4-0.1-0.6L579.1,842.6z"
         />
 
-      <!-- The inside back of the waistband, through the opening. backShorts,
-           the same ramp the four leg hems below take. -->
-      <path fill="url(#backShorts)" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
+      <!-- The inside back of the waistband, through the opening. backWaist:
+           the same ramp the four leg hems below take, plus the lit rim that
+           this opening needs and they do not. -->
+      <path fill="url(#backWaist)" d="M188.1 612.6 L532.8 612.6 C505 622 440 627.5 360.5 627.5 C281 627.5 215 622 188.1 612.6 Z" />
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="right-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M134.4,869.4l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l7.9-26.3
         l-186.8-56.4L134.4,869.4z"/>
       <path data-part="shortsTrim" :class="partClass('shortsTrim')" id="left-trim" :style="{ fill: shortsCuffsFill }" class="st0" d="M587.8,869.4l-0.5,0.2c0,0.2,0,0.4,0.1,0.6l-185.5,56c-0.1-0.2-0.2-0.3-0.3-0.5l-0.5,0.2
@@ -1756,11 +1786,25 @@
        * every frame of a spinning reel.
        */
       garmentBacks() {
+        const shorts = this.farSideRamp(this.shortsFill);
+
         return {
           shirt: this.farSideRamp(this.shirtFill),
-          shorts: this.farSideRamp(this.shortsFill),
+          shorts,
           socks: this.farSideRamp(this.socksCuffsFill),
-          cuff: this.farSideRamp(this.shirtCuffFill)
+          cuff: this.farSideRamp(this.shirtCuffFill),
+
+          /*
+           * The waistband alone carries a rim; backWaist in the defs says
+           * why. Taken off the ramp's lit stop rather than off the cloth,
+           * which is what keeps it on the right side of the band below it
+           * whichever way farSide went: on white the ramp darkens, so the
+           * rim at .51 lightness sits above a .38 band, and on black the
+           * ramp lifts, so the rim at .37 sits above a .24 one. Measured
+           * off the cloth instead, a black kit would want a rim darker
+           * than the band it is supposed to be lighting.
+           */
+          waistRim: this.lighten(shorts.lit, 0.13)
         };
       },
       reelClasses() {
@@ -1862,6 +1906,15 @@
        * at .03 with nothing under it -- the honest answer, and the lit stop
        * still carries its full separation.
        */
+      // Lightness up by a fixed step, clamped. Only the waistband rim wants
+      // this; farSideRamp does its own stepping, downward, and proportional.
+      lighten(hex, by) {
+        if (!hex) return hex;
+
+        const [h, s, l] = toHsl(hex);
+
+        return fromHsl(h, s, Math.min(1, l + by));
+      },
       farSideRamp(hex) {
         const lit = this.farSide(hex);
 
