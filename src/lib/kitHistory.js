@@ -96,16 +96,17 @@ export const KIT_HISTORY = [
     name: 'The Sentimiento Kit',
     seasons: '2022-23',
     type: 'away',
-    note: 'Sage through and through, black at the collar, cuffs and shoulder.',
+    note: 'Sage through and through, black at the collar, the cuffs and the hems.',
     kit: {
-      // Plain but for the three black stripes over the shoulder, which is
-      // what `shoulder-stripes` draws when the yoke is left the colour of
-      // the body: the panel disappears into the shirt and only the stripes
-      // show. Solid is the alternative and loses them.
+      // Plain sage: the yoke and the stripes are both the body's colour, so
+      // `shoulder-stripes` draws nothing that can be seen and the shirt
+      // reads solid. The template stays selected rather than being swapped
+      // for the solid shirt, so putting a colour back in the stripes is a
+      // colour rather than a different kit.
       activeShirtOption: 'shoulder-stripes',
       shirtFill: SAGE,
       shirtSecondaryFill: SAGE,
-      shirtTypeFill: BLACK,
+      shirtTypeFill: SAGE,
       shirtSleeveFill: SAGE,
       shirtCuffFill: BLACK,
       shirtMakerFill: BLACK,
