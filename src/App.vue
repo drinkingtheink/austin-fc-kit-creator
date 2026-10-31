@@ -102,15 +102,17 @@
 
         <transition name="fade">
           <div v-if="browsingHistory" class="history" aria-live="polite">
-            <!-- A label above the exhibit, which is also the one place with
-                 nothing else in it: the zoom badge sits left, the download
-                 button and the hint sit along the foot. -->
+            <!-- Season and type straight above the kit. One line is short
+                 enough to sit in the gap over the shoulders, which is more
+                 than can be said for the plate that used to be there. -->
+            <p class="history-season">
+              {{ historyKit.seasons }}
+              <span>&middot;</span>
+              {{ KIT_TYPE_LABELS[historyKit.type] || historyKit.type }}
+            </p>
+
             <div class="history-plate">
               <p class="history-meta">
-                {{ historyKit.seasons }}
-                <span>&middot;</span>
-                {{ KIT_TYPE_LABELS[historyKit.type] || historyKit.type }}
-                <span>&middot;</span>
                 {{ historyIndex + 1 }} of {{ KIT_HISTORY.length }}
               </p>
               <h2 class="history-name">{{ historyKit.name }}</h2>
@@ -127,24 +129,32 @@
               </div>
             </div>
 
+            <!-- The arrows carry the kit they would step to, so stepping is
+                 a choice rather than a guess. -->
             <button
               class="history-step prev"
               type="button"
-              title="Previous kit"
-              aria-label="Previous kit"
+              :title="`Previous: ${historyNeighbours.prev.name}`"
+              :aria-label="`Previous kit: ${historyNeighbours.prev.name}`"
               v-on:click="stepHistory(-1)"
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+              <KitThumb class="history-step-kit" :kit="historyNeighbours.prev.kit" />
+              <span class="history-step-arrow">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+              </span>
             </button>
 
             <button
               class="history-step next"
               type="button"
-              title="Next kit"
-              aria-label="Next kit"
+              :title="`Next: ${historyNeighbours.next.name}`"
+              :aria-label="`Next kit: ${historyNeighbours.next.name}`"
               v-on:click="stepHistory(1)"
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+              <KitThumb class="history-step-kit" :kit="historyNeighbours.next.kit" />
+              <span class="history-step-arrow">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+              </span>
             </button>
           </div>
         </transition>
@@ -703,6 +713,7 @@
   import ToolSection from './components/ToolSection.vue';
   import ToolField from './components/ToolField.vue';
   import ShirtThumb from './components/ShirtThumb.vue';
+  import KitThumb from './components/KitThumb.vue';
   import ColorPanel from './components/ColorPanel.vue';
   import { computed } from 'vue';
   import { contrast, isValidColor, nearest, toHex } from './lib/colorTools.js';
@@ -1033,6 +1044,7 @@
       ToolSection,
       ToolField,
       ShirtThumb,
+      KitThumb,
       ColorPanel
     },
     // Every field would otherwise repeat the same pair of listeners. Handing
@@ -1174,6 +1186,12 @@
         historyIndex: null,
         kitBeforeHistory: null,
 
+        // The catalogue kit currently on the stage, and whether its name has
+        // already been marked. A kit from the history that somebody has
+        // since changed is no longer that kit, and the name should say so.
+        historySource: null,
+        historyAltered: false,
+
         // What this kit is called. Empty until somebody says otherwise, and
         // the reels leave it alone: a name is something a person wrote, the
         // same reason the sock text survives a spin.
@@ -1211,6 +1229,18 @@
       historyKit() {
         return this.browsingHistory ? KIT_HISTORY[this.historyIndex] : null;
       },
+      // What each arrow would step to, so the arrow can show it rather than
+      // only point. Wraps, the way stepHistory does.
+      historyNeighbours() {
+        if (!this.browsingHistory) return null;
+
+        const count = KIT_HISTORY.length;
+
+        return {
+          prev: KIT_HISTORY[(this.historyIndex - 1 + count) % count],
+          next: KIT_HISTORY[(this.historyIndex + 1) % count]
+        };
+      },
       // The backdrop says whether it has stars; the screen and the exporter
       // both ask it rather than each naming the one sky that does.
       stageHasStars() {
@@ -1242,6 +1272,7 @@
         if (this.spinning) return;
 
         writeKit(kit);
+        this.markAlteredIfChanged();
       }
     },
     methods: {
@@ -1597,7 +1628,39 @@
         this.applyKit(entry.kit);
         this.kitName = normalizeKitName(entry.name);
 
+        // What the kit looked like when it arrived, to tell later whether
+        // anybody has touched it. Set after applying, so the watcher that
+        // compares the two finds them identical on the way in.
+        this.historySource = entry;
+        this.historyAltered = false;
+
         this.revealKit();
+      },
+      /**
+       * Put ALTERED on the name the first time a catalogue kit is changed.
+       *
+       * Compared field by field against the entry rather than tracked by
+       * watching every control: there are thirty ways to change a kit, and
+       * only one question worth asking -- is this still the kit it says it
+       * is. Arrays are compared as text, which is enough for a palette.
+       */
+      markAlteredIfChanged() {
+        if (!this.historySource || this.historyAltered) return;
+
+        const source = this.historySource.kit;
+        const changed = Object.keys(source).some(field => {
+          const now = this[field];
+          const then = source[field];
+
+          return Array.isArray(then)
+            ? JSON.stringify(now) !== JSON.stringify(then)
+            : now !== then;
+        });
+
+        if (!changed) return;
+
+        this.historyAltered = true;
+        this.kitName = normalizeKitName(`${this.historySource.name} (ALTERED)`);
       },
       /**
        * Leave the history.
@@ -1612,6 +1675,14 @@
 
         this.historyIndex = null;
         this.kitBeforeHistory = null;
+
+        // Carrying on from the kit on display keeps it as the thing any
+        // later change is measured against. Going back to your own drops it:
+        // your kit was never a catalogue kit to begin with.
+        if (!keep) {
+          this.historySource = null;
+          this.historyAltered = false;
+        }
 
         if (keep || !previous) return;
 
@@ -2984,6 +3055,32 @@
     flex: 1;
   }
 
+  /* Season and type, centred over the shoulders.
+     
+     At 20px it sat six pixels into the top of the sleeves; the stage's own
+     28px of padding is the only clear air there is, so this sits in it. */
+  .history-season {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background-color: rgba(16, 20, 18, .82);
+    backdrop-filter: blur(10px);
+    color: var(--text);
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .history-season span {
+    color: var(--text-faint);
+  }
+
   /* Flanking the kit, vertically centred on the stage rather than on the kit:
      #kit-stage carries 76px of padding at the foot to clear the download
      button, so the kit rests above centre and arrows pinned to it would sit
@@ -2993,13 +3090,13 @@
     top: 50%;
     transform: translateY(-50%);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    padding: 0;
+    gap: 6px;
+    width: 78px;
+    padding: 8px 8px 6px;
     border: 1px solid var(--line-strong);
-    border-radius: 50%;
+    border-radius: var(--r-lg);
     background-color: rgba(16, 20, 18, .9);
     backdrop-filter: blur(10px);
     color: var(--text);
@@ -3011,6 +3108,27 @@
 
   .history-step.prev { left: 20px; }
   .history-step.next { right: 20px; }
+
+  /* The kit on the button, kept pale until the button is wanted: it is a
+     label for where the arrow goes, not a second exhibit competing with the
+     one on the stage. */
+  .history-step-kit {
+    width: 54px;
+    opacity: .72;
+    transition: opacity .18s ease;
+  }
+
+  .history-step:hover .history-step-kit {
+    opacity: 1;
+  }
+
+  .history-step-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+  }
 
   /* Above the plate, so the two never meet on a narrow stage. */
   @media (max-height: 620px) {
@@ -3032,9 +3150,9 @@
     outline-offset: 2px;
   }
 
-  .history-step svg {
-    width: 22px;
-    height: 22px;
+  .history-step-arrow svg {
+    width: 20px;
+    height: 20px;
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
