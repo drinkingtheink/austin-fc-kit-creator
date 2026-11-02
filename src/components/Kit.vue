@@ -167,6 +167,15 @@
         <use href="#right-trim" transform="translate(0,-40)" />
         <use href="#left-trim" transform="translate(0,-40)" />
       </clipPath>
+
+      <!-- The same garment, for callers INSIDE #shorts. clipShorts carries
+           translate(0,-40) because everything that uses it -- the shading
+           groups -- sits outside that group and has to be brought into its
+           space. Anything already inside is in that space, so using
+           clipShorts there would shift the clip 40 up and cut the garment
+           across the thigh. A clip is silent when it is wrong, which is the
+           worst way for this to be wrong. -->
+      <clipPath id="clipShortsBody"><use href="#shorts-trunk" /></clipPath>
       <clipPath id="clipRightSock"><use href="#right-sock" transform="translate(0,-40)" /></clipPath>
       <clipPath id="clipLeftSock"><use href="#left-sock" transform="translate(0,-40)" /></clipPath>
 
@@ -413,6 +422,47 @@
       <path data-part="shorts" :class="partClass('shorts')" id="shorts-trunk" :style="{ fill: shortsFill }" class="st0" d="M579.1,842.6l-46.3-153.2v-76.8H188.1v77.8l-46,152.2l0.5,0.2c0,0.2,0,0.4-0.1,0.6l185.5,56
         c0.1-0.2,0.2-0.3,0.3-0.5l0.5,0.2l31.7-105l31.7,105l0.5-0.2c0.1,0.2,0.2,0.3,0.3,0.5l185.5-56c0-0.2,0-0.4-0.1-0.6L579.1,842.6z"
         />
+
+      <!-- A contrasting panel down the outer seam of each leg.
+           
+           Both are the leg's OWN outer edge plus that edge pushed 13
+           inboard, so the outside of the panel is the outside of the
+           garment by construction and the two cannot drift apart.
+
+           That edge is a DOGLEG, not a slant, and assuming otherwise is the
+           bug this shape was born with. It drops straight down -- x 188.1
+           and 532.8 -- from the waist at 612.6 to the hip at 690.4 and
+           689.4, and only then splays out to 142.1 and 579.1 at 842.6. A
+           single straight line from waist to hem sits well outside the
+           garment across the whole hip, where the clip quietly ate it and
+           left a panel that tapered from nothing to a sliver. A clip is
+           silent when it is wrong.
+
+           They run to y 860, past the trunk's corner at 842.6, and the clip
+           cuts them back. Stopping exactly on the corner left a 0.6 sliver
+           of base colour above the trim; overshooting is easier than
+           landing on it.
+
+           13 wide, and the number is what decides that. Measured by probing
+           the artwork rather than off bounding boxes, which lie here: the
+           21 is slanted, so the corner of its box is empty air and its box
+           says the gap is 14.4 when the nearest actual ink is 19.0 away, at
+           y 826. The crest's leg allows 20.8. So 13 leaves 6 of daylight at
+           the tightest point on the kit.
+
+           A wider panel was tried, by stepping the number and crest inboard
+           to make room. Wrong trade: new art does not get to move art that
+           is already there. The eight catalogue kits were approved against
+           photographs with the number where it is, so a toggle that
+           rearranges the leg is a toggle that makes those kits wrong. The
+           panel gives way instead. -->
+      <g clip-path="url(#clipShortsBody)"
+         data-part="shortsPanels"
+         :class="[partClass('shortsPanels'), 'fade-part', { on: shortsPanels }]"
+         id="shorts-panels">
+        <polygon :style="{ fill: shortsPanelsFill }" points="188.1,612.6 188.1,690.4 136.8,860 149.8,860 201.1,690.4 201.1,612.6" />
+        <polygon :style="{ fill: shortsPanelsFill }" points="532.8,612.6 532.8,689.4 584.4,860 571.4,860 519.8,689.4 519.8,612.6" />
+      </g>
 
       <!-- The inside back of the waistband, through the opening. backWaist:
            the same ramp the four leg hems below take, plus the lit rim that
@@ -1718,6 +1768,9 @@
       'showBadgeDisc',
       'collarFill',
       'showButtonCollar',
+      // The panels down the outer seam of each leg, and what paints them.
+      'shortsPanels',
+      'shortsPanelsFill',
       'prideColors',
       // Spotlight key of the control the pointer is currently over, so the
       // part it paints can announce itself on the kit.

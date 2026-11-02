@@ -81,6 +81,7 @@ export const KIT_HISTORY = [
 
       shortsFill: BLACK,
       shortsCuffsFill: BLACK,
+      shortsPanels: false,
       numberFill: WHITE,
 
       socksFill: BLACK,
@@ -134,6 +135,7 @@ export const KIT_HISTORY = [
 
       shortsFill: WHITE,
       shortsCuffsFill: WHITE,
+      shortsPanels: false,
       numberFill: VERDE,
 
       socksFill: WHITE,
@@ -188,6 +190,7 @@ export const KIT_HISTORY = [
       // Shorts and socks in the shirt's own colours, trim and all.
       shortsFill: SAGE,
       shortsCuffsFill: BLACK,
+      shortsPanels: false,
       numberFill: BLACK,
 
       socksFill: SAGE,
@@ -248,6 +251,7 @@ export const KIT_HISTORY = [
       // obvious alternative and would stop them reading as plain black.
       shortsFill: BLACK,
       shortsCuffsFill: BLACK,
+      shortsPanels: false,
       numberFill: WHITE,
 
       socksFill: BLACK,
@@ -303,6 +307,7 @@ export const KIT_HISTORY = [
 
       shortsFill: JADE,
       shortsCuffsFill: BONE,
+      shortsPanels: false,
       numberFill: BONE,
 
       socksFill: BONE,
@@ -352,6 +357,7 @@ export const KIT_HISTORY = [
 
       shortsFill: BLACK,
       shortsCuffsFill: VERDE,
+      shortsPanels: false,
       numberFill: WHITE,
 
       socksFill: BLACK,
@@ -404,6 +410,7 @@ export const KIT_HISTORY = [
 
       shortsFill: VIOLET,
       shortsCuffsFill: CREAM,
+      shortsPanels: false,
       numberFill: CREAM,
 
       socksFill: VIOLET,
@@ -455,6 +462,7 @@ export const KIT_HISTORY = [
 
       shortsFill: WHITE,
       shortsCuffsFill: MINT,
+      shortsPanels: false,
       numberFill: BLACK,
 
       socksFill: WHITE,

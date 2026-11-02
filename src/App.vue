@@ -64,6 +64,8 @@
           :numberFill="numberFill"
           :collarFill="collarFill"
           :showButtonCollar="showButtonCollar"
+          :shortsPanels="shortsPanels"
+          :shortsPanelsFill="shortsPanelsFill"
           :socksHoops="socksHoops"
           :socksHoopsFill="socksHoopsFill"
           :socksText="socksText"
@@ -515,6 +517,33 @@
               <ColorSwatches label="Shorts trim color" :colors="colors" v-model="shortsCuffsFill" />
             </ToolField>
 
+            <ToolField label="Side panels" part="shortsPanels">
+              <div class="segmented" role="group" aria-label="Side panels">
+                <button
+                  type="button"
+                  :class="{ active: !shortsPanels }"
+                  :aria-pressed="String(!shortsPanels)"
+                  v-on:click="setShortsPanels(false)"
+                >Off</button>
+                <button
+                  type="button"
+                  :class="{ active: shortsPanels }"
+                  :aria-pressed="String(shortsPanels)"
+                  v-on:click="setShortsPanels(true)"
+                >On</button>
+              </div>
+            </ToolField>
+
+            <transition name="field-pop">
+              <ToolField v-if="shortsPanels" label="Panel color" part="shortsPanels">
+                <ColorSwatches
+                  label="Side panel color"
+                  :colors="colors"
+                  v-model="shortsPanelsFill"
+                />
+              </ToolField>
+            </transition>
+
             <ToolField label="Number color" part="number">
               <ColorSwatches label="Number color" :colors="colors" v-model="numberFill" />
             </ToolField>
@@ -864,6 +893,7 @@
     shortsBadgeTextFill: 'shortsBadge',
     shortsBadgeBGFill: 'shortsBadge',
     shortsFill: 'shorts',
+    shortsPanelsFill: 'shortsPanels',
     shortsCuffsFill: 'shortsTrim',
     numberFill: 'number',
     socksFill: 'socks',
@@ -943,6 +973,10 @@
     { on: 'shirtCuffFill', over: ['shirtSleeveFill'] },
     { on: 'numberFill', over: ['shortsFill'], min: READ },
     { on: 'shortsCuffsFill', over: ['shortsFill'] },
+    // The panels sit on the shorts and nothing else. The number and crest
+    // step clear of them rather than onto them, so neither has to be held
+    // against the panel colour as well as the cloth.
+    { on: 'shortsPanelsFill', over: ['shortsFill'] },
     { on: 'socksCuffsFill', over: ['socksFill'] },
     { on: 'socksHoopsFill', over: ['socksFill'] },
     // Lettering is meant to be read, not merely noticed, so it is held to the
@@ -1025,8 +1059,8 @@
     {
       key: 'shorts',
       stop: 940,
-      fills: ['shortsFill', 'shortsCuffsFill', 'numberFill'],
-      toggles: []
+      fills: ['shortsFill', 'shortsCuffsFill', 'shortsPanelsFill', 'numberFill'],
+      toggles: ['shortsPanels']
     },
     {
       key: 'socks',
@@ -1201,6 +1235,13 @@
 
         shortsFill: black,
         shortsCuffsFill: green,
+
+        // A contrasting panel down the outer seam of each leg, off until
+        // asked for. Verde, which is what the trim already is, so switching
+        // them on gives a kit that matches itself rather than one that
+        // needs recolouring before it looks deliberate.
+        shortsPanels: false,
+        shortsPanelsFill: green,
 
         socksFill: black,
         socksCuffsFill: green,
@@ -1612,6 +1653,9 @@
       },
       setCollarButton(pref) {
         this.showButtonCollar = pref;
+      },
+      setShortsPanels(pref) {
+        this.shortsPanels = pref;
       },
       setShortsFill(fill) {
         this.shortsFill = fill;

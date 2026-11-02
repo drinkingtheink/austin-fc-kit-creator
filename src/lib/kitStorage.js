@@ -31,6 +31,8 @@ const COLOR_FIELDS = [
   'collarFill',
   'shortsFill',
   'shortsCuffsFill',
+  'shortsPanels',
+  'shortsPanelsFill',
   'socksFill',
   'socksCuffsFill',
   'socksHoopsFill',
