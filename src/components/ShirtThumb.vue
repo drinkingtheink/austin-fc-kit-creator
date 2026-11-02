@@ -10,7 +10,9 @@
     <path :d="SLEEVE_RIGHT" :fill="sleeveFill" />
     <path :d="BODY" :fill="shirtFill" />
 
-    <g :clip-path="`url(#${clipId})`">
+    <!-- stroke and stroke-width are inherited, so one pair of attributes
+         here outlines all fifteen patterns without touching any of them. -->
+    <g :clip-path="`url(#${clipId})`" :stroke="patternOutline" stroke-width=".35">
       <g v-if="design === 'stripes'">
         <rect v-for="x in [15, 21, 27, 33, 39, 45]" :key="x" :x="x" y="3" width="3" height="51" :fill="typeFill" />
       </g>
@@ -82,6 +84,8 @@
 </template>
 
 <script>
+  import { contrast, readableInk } from '../lib/colorTools.js';
+
   // Each thumbnail clips its pattern to its own silhouette, and clipPath ids
   // are document-global, so every instance needs its own.
   let instances = 0;
@@ -116,6 +120,15 @@
     }
   }
 
+  // Below this, a pattern is outlined rather than left to its own colour.
+  //
+  // The same 1.45 the kit's own legibility guards use as the bar for telling
+  // two colours apart, on purpose. This only has to rescue the case where
+  // the app itself would say there is nothing to see; it is not here to
+  // second-guess palettes that merely run close. The default kit's greenDeep
+  // on verde scores 1.554 and keeps its honest colours.
+  const OUTLINE_BELOW = 1.45;
+
   export default {
     name: 'ShirtThumb',
     props: {
@@ -126,6 +139,34 @@
       secondaryFill: { type: String, required: true },
       sleeveFill: { type: String, required: true },
       collarFill: { type: String, required: true }
+    },
+    computed: {
+      /**
+       * An outline for the pattern, or none when its colours carry it.
+       *
+       * The Sentimiento Kit is why this exists. It carries shirtFill,
+       * shirtTypeFill and shirtSecondaryFill all set to the same sage, on
+       * purpose -- that is how its shoulder stripes were taken off, by
+       * painting them the colour of the shirt. Correct for the kit, and it
+       * turns the picker into fifteen identical sage shirts, because every
+       * thumb paints its pattern in a colour it cannot be seen in. Any
+       * monochrome kit does the same; that one is just the one in the
+       * catalogue.
+       *
+       * An outline rather than a substituted colour, which is the trick
+       * LEGIBILITY already pulls for the sponsor on a two-colour kit: the
+       * shape becomes legible without the preview lying about which colours
+       * the kit is actually wearing. Judged on whichever of the two pattern
+       * colours reads worse, since a design may use either.
+       */
+      patternOutline() {
+        const worst = Math.min(
+          contrast(this.typeFill, this.shirtFill),
+          contrast(this.secondaryFill, this.shirtFill)
+        );
+
+        return worst < OUTLINE_BELOW ? readableInk(this.shirtFill) : 'none';
+      }
     },
     data() {
       instances += 1;
