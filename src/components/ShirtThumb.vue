@@ -4,6 +4,11 @@
       <clipPath :id="clipId">
         <path :d="BODY" />
       </clipPath>
+
+      <linearGradient :id="fadeId" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :stop-color="typeFill" />
+        <stop offset="1" :stop-color="secondaryFill" />
+      </linearGradient>
     </defs>
 
     <path :d="SLEEVE_LEFT" :fill="sleeveFill" />
@@ -24,6 +29,23 @@
       <g v-else-if="design === 'pinstripes'">
         <rect v-for="x in [16, 21, 26, 31, 36, 41, 46]" :key="x" :x="x" y="3" width="1.4" height="51" :fill="typeFill" />
       </g>
+
+      <g v-else-if="design === 'diagonal-pinstripes'" transform="rotate(-22 32 28)">
+        <rect v-for="x in [-4, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66]" :key="x" :x="x" y="-18" width="1.4" height="92" :fill="typeFill" />
+      </g>
+
+      <rect v-else-if="design === 'fade'" x="14" y="3" width="36" height="51" :fill="`url(#${fadeId})`" />
+
+      <g v-else-if="design === 'thirds'">
+        <rect x="14" y="3" width="12" height="51" :fill="typeFill" />
+        <rect x="38" y="3" width="12" height="51" :fill="secondaryFill" />
+      </g>
+
+      <g v-else-if="design === 'diamonds'">
+        <polygon v-for="d in DIAMONDS" :key="d.key" :points="d.points" :fill="d.alt ? secondaryFill : typeFill" />
+      </g>
+
+      <path v-else-if="design === 'diagonal-half'" d="M14 3 L50 3 L50 54 Z" :fill="typeFill" />
 
       <g v-else-if="design === 'chest-band'">
         <rect x="14" y="16" width="36" height="2" :fill="secondaryFill" />
@@ -110,6 +132,20 @@
     'M14 47 L34 45 L34 49 L14 51 Z'
   ];
 
+  // The diamond lattice at thumbnail scale: rows every 13, every other one
+  // stepped half a column across. Same shape as the kit's, far coarser --
+  // the kit's pitch would put a third of a diamond in this box.
+  const DIAMONDS = [];
+
+  for (let row = 0; row < 5; row += 1) {
+    const cy = 5 + row * 13;
+    const alt = row % 2 === 1;
+
+    for (let cx = 15 + (alt ? 6 : 0); cx < 52; cx += 12) {
+      DIAMONDS.push({ key: `${cx}-${cy}`, alt, points: `${cx},${cy - 6} ${cx + 4.5},${cy} ${cx},${cy + 6} ${cx - 4.5},${cy}` });
+    }
+  }
+
   const CHECKERS = [];
 
   for (let col = 0; col < 6; col += 1) {
@@ -173,13 +209,17 @@
 
       return {
         clipId: `thumb-body-${instances}`,
+        // Gradient ids are document-global too, and there are twenty of
+        // these on screen at once.
+        fadeId: `thumb-fade-${instances}`,
         BODY,
         SLEEVE_LEFT,
         SLEEVE_RIGHT,
         COLLAR,
         BARCODE,
         TIGER,
-        CHECKERS
+        CHECKERS,
+        DIAMONDS
       };
     }
   };

@@ -118,6 +118,22 @@
         <stop offset="1" :style="{ stopColor: garmentBacks.cuff.deep }" />
       </linearGradient>
 
+      <!-- The fade design. Bound stops, the same way the garment backs work
+           and for the same reason: inlinePaint never restyles the contents
+           of defs, so what Vue writes here is what the clone carries into
+           the PNG, and the rect below references it as a fill ATTRIBUTE
+           because shouldSkip drops url() out of the inlined style.
+
+           Type at the shoulders down to secondary at the hem. Setting
+           secondary to the shirt's own colour is how you get a fade that
+           dissolves into the garment rather than into a second colour --
+           which is the more common kit, so it wants to be reachable without
+           a separate design. -->
+      <linearGradient id="shirtFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" :style="{ stopColor: shirtTypeFill }" />
+        <stop offset="1" :style="{ stopColor: shirtSecondaryFill }" />
+      </linearGradient>
+
       <!-- Knit weave. userSpaceOnUse so the tile stays a constant size across
            every garment instead of stretching to each one. -->
       <pattern id="kitKnit" width="6" height="6" patternUnits="userSpaceOnUse">
@@ -841,6 +857,86 @@
           height="525"
           :style="{ fill: shirtTypeFill }"
         />
+      </g>
+
+      <!-- The same stripe field as above, turned 22 degrees about the middle
+           of the trunk. The columns run much wider than the upright set --
+           35 to 690 against 175 to 545 -- because a rotated field has to
+           cover the trunk's DIAGONAL, 643 units corner to corner, not its
+           381 of width. Generated from the same helper, so the gauge cannot
+           drift between the two. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('diagonal-pinstripes') }]"
+        id="diagonal-pinstripes"
+        clip-path="url(#clipShirtTrunk)"
+        transform="rotate(-22 360.5 292)"
+      >
+        <rect
+          v-for="x in diagonalPinstripeColumns"
+          :key="x"
+          :x="x"
+          y="-45"
+          width="5"
+          height="675"
+          :style="{ fill: shirtTypeFill }"
+        />
+      </g>
+
+      <!-- Shoulders to hem in one pass. The only design in the set that is
+           not made of edges, which is the point of having it. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('fade') }]"
+        id="fade"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <rect x="170" y="30" width="381" height="525" fill="url(#shirtFade)" />
+      </g>
+
+      <!-- Three equal bands across a trunk that runs 170 to 551, so 127
+           each. Only the outer two are drawn; the middle third is the shirt
+           itself, which is what makes this three colours rather than two
+           panels on a background. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('thirds') }]"
+        id="thirds"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <rect x="170" y="30" width="127" height="525" :style="{ fill: shirtTypeFill }" />
+        <rect x="424" y="30" width="127" height="525" :style="{ fill: shirtSecondaryFill }" />
+      </g>
+
+      <!-- A lattice rather than a tiling: the diamonds stand apart, with the
+           shirt showing between them, which is what separates argyle from a
+           checkerboard turned 45 degrees. Alternate rows step half a column
+           across and swap to the secondary colour. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('diamonds') }]"
+        id="diamonds"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <polygon
+          v-for="d in diamondLattice"
+          :key="d.key"
+          :points="d.points"
+          :style="{ fill: d.alt ? shirtSecondaryFill : shirtTypeFill }"
+        />
+      </g>
+
+      <!-- Corner to corner, upper right. Drawn past the trunk on every side
+           so the clip decides the edges; a triangle traced to the garment's
+           own corners leaves a hairline of base colour down the hypotenuse
+           when it is antialiased. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('diagonal-half') }]"
+        id="diagonal-half"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <polygon points="160,25 560,25 560,560" :style="{ fill: shirtTypeFill }" />
       </g>
 
       <g data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('stripes') }]" id="stripes">
@@ -1821,11 +1917,44 @@
       // thirteen hand-typed x positions are thirteen chances to fat-finger
       // one and not notice.
       pinstripeColumns() {
-        const columns = [];
+        return this.stripeColumns(175, 545);
+      },
+      diagonalPinstripeColumns() {
+        return this.stripeColumns(35, 690);
+      },
+      /**
+       * The diamond lattice, as points strings.
+       *
+       * Rows every 96 with every other one stepped half a column across,
+       * which is what makes it a lattice instead of a grid. The diamonds are
+       * 52 by 76 on a 70 by 96 pitch, so 18 across and 20 down of shirt
+       * shows between them -- take the gaps out and this is a checkerboard
+       * turned 45 degrees, which the set already has.
+       *
+       * Generous bounds, because the clip is what decides the edges and a
+       * lattice that stops short of the armhole reads as a mistake.
+       */
+      diamondLattice() {
+        const W = 26;
+        const H = 38;
+        const PITCH_X = 70;
+        const PITCH_Y = 96;
+        const out = [];
+        let row = 0;
 
-        for (let x = 175; x < 545; x += 30) columns.push(x);
+        for (let cy = -20; cy < 620; cy += PITCH_Y, row += 1) {
+          const alt = row % 2 === 1;
 
-        return columns;
+          for (let cx = 140 + (alt ? PITCH_X / 2 : 0); cx < 600; cx += PITCH_X) {
+            out.push({
+              key: `${cx}-${cy}`,
+              alt,
+              points: `${cx},${cy - H} ${cx + W},${cy} ${cx},${cy + H} ${cx - W},${cy}`
+            });
+          }
+        }
+
+        return out;
       },
       socksTextSize() {
         return Math.min(30, 88 / Math.max(1, (this.socksText || '').length));
@@ -1976,6 +2105,16 @@
         const [h, s, l] = toHsl(lit);
 
         return { lit, deep: fromHsl(h, s, l - Math.min(0.15, l * 0.6)) };
+      },
+      // Evenly spaced x positions for a field of stripes. Both the upright
+      // set and the diagonal one come through here, so the 30-unit gauge has
+      // one home and the two cannot drift apart.
+      stripeColumns(from, to, step = 30) {
+        const columns = [];
+
+        for (let x = from; x < to; x += step) columns.push(x);
+
+        return columns;
       },
       idMatchesActiveShirtOption(id) {
         return this.activeShirtOption === id;

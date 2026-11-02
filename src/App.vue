@@ -1098,7 +1098,12 @@
     'half-panel',
     'quarter-panel',
     'checkered',
-    'tiger-stripes'
+    'tiger-stripes',
+    'diagonal-pinstripes',
+    'diagonal-half',
+    'thirds',
+    'diamonds',
+    'fade'
   ];
 
   export default {
