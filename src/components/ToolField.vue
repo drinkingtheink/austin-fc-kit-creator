@@ -2,6 +2,7 @@
   <div
     class="field"
     :class="{ lit: lit }"
+    :data-part="part"
     v-on:mouseenter="hovering = true"
     v-on:mouseleave="hovering = false"
     v-on:focusin="focused = true"

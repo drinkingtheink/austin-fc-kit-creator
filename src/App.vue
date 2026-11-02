@@ -74,7 +74,7 @@
           :socksTextFill="socksTextFill"
           :shirtMakerFill="shirtMakerFill"
           :showLeafMaker="showLeafMaker"
-          :highlight="highlight"
+          :highlight="pinnedPart || highlight"
           :flash="flash"
           :revealing="revealing"
           :spinReels="spinReels"
@@ -85,6 +85,27 @@
           v-on:hover="setSpotlight($event, highlight)"
         />
         </div>
+
+        <!-- The palette, over whatever was just clicked. Lives inside
+             #kit-stage because its position is measured from that box, and
+             because it should not escape the stage onto the toolbar. -->
+        <transition name="painter">
+          <div
+            v-if="painter"
+            class="painter"
+            :style="{ left: `${painter.left}px`, top: `${painter.top}px` }"
+            role="group"
+            :aria-label="`${painter.label} colour`"
+          >
+            <p class="painter-label">{{ painter.label }}</p>
+            <ColorSwatches
+              :label="painter.label"
+              :colors="colors"
+              :modelValue="painterColor"
+              v-on:update:modelValue="paintWith"
+            />
+          </div>
+        </transition>
 
         <transition name="badge">
           <button
@@ -181,7 +202,7 @@
         </button>
       </section>
 
-      <aside id="toolbar">
+      <aside id="toolbar" ref="toolbar">
         <header class="toolbar-header">
           <a
             href="https://austinfc.com/"
@@ -255,9 +276,14 @@
           </div>
           <ColorSwatches label="Palette" :colors="colors" v-model="currentColor" />
 
+          <!-- This used to read "click the kit to paint with #00B140", and
+               the chip beside it showed that colour. Both were true when a
+               click painted immediately with whatever was selected here.
+               Now a click opens the palette over the part instead, so the
+               selected swatch no longer decides anything and saying it does
+               would send people hunting for a colour before clicking. -->
           <p class="palette-current">
-            <span class="palette-current-chip" :style="{ backgroundColor: currentColor }"></span>
-            <span>Click the kit to paint with <strong>{{ currentColor }}</strong></span>
+            <span>Click any part of the kit to recolour it</span>
           </p>
         </div>
 
@@ -1083,6 +1109,48 @@
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
 
+  /**
+   * What each paintable part is called, and which toolbar section holds its
+   * controls.
+   *
+   * One table rather than two, and a table rather than a switch, for the
+   * reason the legibility guards are one: these two facts are always wanted
+   * together -- the popover needs the name, and reaching the field needs the
+   * section -- and a part that gains a control without gaining a row here
+   * would open a popover with no label that scrolls nowhere.
+   *
+   * Keyed by the `data-part` the artwork carries, which is the same key
+   * FILL_PARTS maps colours onto and ToolField takes as `part`.
+   */
+  const PART_INFO = {
+    shirt: { label: 'Shirt', section: 'shirt' },
+    design: { label: 'Shirt design', section: 'shirt' },
+    sponsor: { label: 'Sponsor', section: 'shirt' },
+    collar: { label: 'Collar', section: 'shirt' },
+    sleeve: { label: 'Sleeve', section: 'shirt' },
+    shirtCuff: { label: 'Cuff', section: 'shirt' },
+    maker: { label: 'Brand mark', section: 'shirt' },
+    badge: { label: 'Badge', section: 'badge' },
+    shortsBadge: { label: 'Shorts badge', section: 'badge' },
+    shorts: { label: 'Shorts', section: 'shorts' },
+    shortsTrim: { label: 'Shorts trim', section: 'shorts' },
+    shortsPanels: { label: 'Side panels', section: 'shorts' },
+    number: { label: 'Number', section: 'shorts' },
+    socks: { label: 'Socks', section: 'socks' },
+    socksCuff: { label: 'Sock top', section: 'socks' },
+    socksHoops: { label: 'Sock hoops', section: 'socks' },
+    socksText: { label: 'Sock print', section: 'socks' }
+  };
+
+  // The popover's own size, kept here rather than measured. Reading a box
+  // back to place the thing that box belongs to is how the pan clamp ran
+  // away; the width is fixed in the stylesheet, so this is layout, not a
+  // reading.
+  const PAINTER_W = 236;
+  const PAINTER_H = 104;
+  const PAINTER_GAP = 18;
+  const PAINTER_EDGE = 12;
+
   const shirtOptions = [
     'barcode',
     'stripes',
@@ -1133,7 +1201,10 @@
         noteColor: color => { this.currentColor = color; },
         // Reactive, so a part lit by hovering the kit lights its field in the
         // toolbar too. A plain value would be read once and never update.
-        spotlightState: computed(() => this.highlight)
+        // The pinned part wins. Without it, moving the pointer off the kit
+        // emits hover(null) and the field the popover is pointing at goes
+        // dark while the popover is still open.
+        spotlightState: computed(() => this.pinnedPart || this.highlight)
       };
     },
     data() {
@@ -1155,6 +1226,12 @@
         // Spotlight state, read by Kit.vue. `highlight` follows the pointer
         // around the toolbar; `flash` marks a part whose color just moved.
         highlight: null,
+        // The open paint popover: { part, model, label, x, y }, in stage
+        // coordinates. Null when nothing is selected.
+        painter: null,
+        // The part that popover is painting, held lit on the kit and in the
+        // toolbar for as long as it is open.
+        pinnedPart: null,
         flash: null,
         // A randomize changes seventeen colors at once, which would flash the
         // whole kit. The reels and the reveal speak for it instead.
@@ -1300,6 +1377,11 @@
     computed: {
       // Watched rather than rendered: any change to a persisted field yields a
       // new object, which is the cue to save.
+      // What the open popover's part is wearing, so its swatch reads as
+      // selected. A plain lookup, but the template cannot index `this`.
+      painterColor() {
+        return this.painter ? this[this.painter.model] : null;
+      },
       persistedKit() {
         const kit = {};
 
@@ -1963,16 +2045,100 @@
        * deliberately putting a color somewhere, and second-guessing a direct
        * click would feel like the app arguing with them.
        */
-      paintPart(part) {
+      /**
+       * A click on the kit: open the palette over whatever was hit.
+       *
+       * This used to paint straight away with whichever swatch was selected,
+       * which meant knowing in advance both what you wanted to change and
+       * what colour you wanted it. Picking the part and picking the colour
+       * are two decisions, and this lets them happen in that order.
+       */
+      paintPart({ part, x, y }) {
         // The click that ends a drag lands on whatever was under the finger.
-        // Dragging the kit around should not repaint it on the way past.
+        // Dragging the kit around should not open anything on the way past.
         if (this.panMoved) return;
 
-        const model = PART_MODELS[part];
+        const info = part && PART_INFO[part];
+        const model = part && PART_MODELS[part];
 
-        if (!model || !this.currentColor || this[model] === this.currentColor) return;
+        // A click on the kit that is not on anything paintable -- the gaps
+        // between garments, a part with no colour of its own -- is how you
+        // put the popover away without reaching for Escape.
+        if (!info || !model) {
+          this.closePainter();
 
-        this[model] = this.currentColor;
+          return;
+        }
+
+        const stage = this.$refs.stage.getBoundingClientRect();
+
+        // Centred under the click and below it, then kept inside the stage.
+        // Flipped above when there is no room underneath, which is most of
+        // the time for the socks.
+        let left = x - stage.left - PAINTER_W / 2;
+        let top = y - stage.top + PAINTER_GAP;
+
+        left = Math.min(Math.max(left, PAINTER_EDGE), stage.width - PAINTER_W - PAINTER_EDGE);
+
+        if (top + PAINTER_H > stage.height - PAINTER_EDGE) {
+          top = y - stage.top - PAINTER_H - PAINTER_GAP;
+        }
+
+        top = Math.max(top, PAINTER_EDGE);
+
+        this.painter = { part, model, label: info.label, left, top };
+        this.pinnedPart = part;
+        this.revealField(part, info.section);
+      },
+      /** Paint the selected part. Stays open, so colours can be tried. */
+      paintWith(color) {
+        if (!this.painter || !color) return;
+
+        this[this.painter.model] = color;
+      },
+      closePainter() {
+        this.painter = null;
+        this.pinnedPart = null;
+      },
+      /**
+       * Bring the clicked part's own control into view in the toolbar.
+       *
+       * Opening its section first, because only one is open at a time and a
+       * field inside a shut one has no box to scroll to. The wait is for
+       * that section to actually render -- asking before it does scrolls to
+       * where the field used to be.
+       */
+      revealField(part, section) {
+        if (this.openSection !== section) this.openSection = section;
+
+        this.$nextTick(() => {
+          const panel = this.$refs.toolbar;
+          const field = panel && panel.querySelector(`[data-part="${part}"]`);
+
+          if (!field) return;
+
+          // The panel's own scrollTop, not scrollIntoView. That walks up the
+          // ancestors and scrolls whichever of them can move, which here is
+          // the document: clicking the shorts slid the whole page down and
+          // took the kit half out of frame with it. #toolbar is the only
+          // thing that should move.
+          const offset = field.getBoundingClientRect().top
+            - panel.getBoundingClientRect().top
+            + panel.scrollTop;
+
+          panel.scrollTo({
+            top: offset - panel.clientHeight / 2 + field.offsetHeight / 2,
+            behavior: 'smooth'
+          });
+        });
+      },
+      // Anything outside the popover puts it away, except the kit -- the kit
+      // decides for itself, and closing here first would fight the reopen.
+      onDocumentPointerDown(event) {
+        if (!this.painter) return;
+        if (event.target.closest('.painter') || event.target.closest('.kit-display')) return;
+
+        this.closePainter();
       },
       flashPart(part) {
         // Nothing to announce: the part is already wearing a halo, or a
@@ -2047,6 +2213,7 @@
         // A pull from inside the history is a pull on the kit that was being
         // designed, not on the one being looked at.
         this.exitHistory(false);
+        this.closePainter();
 
         // Seventeen colors are about to move. Let the reels and the reveal
         // carry the change rather than flashing every part at once.
@@ -2403,6 +2570,14 @@
         });
       },
       dismissModal() {
+        // Nearest thing first, and this is the nearest: it sits over the kit
+        // rather than over the panel.
+        if (this.painter) {
+          this.closePainter();
+
+          return;
+        }
+
         // The greeting sits on top of the panel, so it closes first, and the
         // history is behind both: it is the stage rather than a layer over it.
         if (this.showGreeting) {
@@ -2495,6 +2670,7 @@
     },
     mounted() {
       window.addEventListener('keyup', this.handleShortcut);
+      window.addEventListener('pointerdown', this.onDocumentPointerDown);
 
       // Bound by hand rather than in the template, because both have to be
       // non-passive: a passive listener may not preventDefault, and without
@@ -2544,6 +2720,7 @@
     },
     beforeUnmount() {
       window.removeEventListener('keyup', this.handleShortcut);
+      window.removeEventListener('pointerdown', this.onDocumentPointerDown);
       window.removeEventListener('popstate', this.syncGalleryFromUrl);
 
       const stage = this.$refs.stage;
@@ -3424,6 +3601,44 @@
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
+  }
+
+  /* ---- Paint popover ---------------------------------------------------- */
+
+  /* Width is fixed because the placement maths in paintPart uses it. Change
+     it here and change PAINTER_W with it, or the thing will hang off the
+     side of the stage at the edges. */
+  .painter {
+    position: absolute;
+    z-index: 6;
+    width: 236px;
+    padding: 11px 13px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    background-color: var(--bg-raised);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .5);
+  }
+
+  .painter-label {
+    margin: 0 0 9px;
+    color: var(--text-dim);
+    font-size: .64rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+
+  /* Grows from the click rather than fading in on the spot, so it reads as
+     having come from the thing that was pressed. */
+  .painter-enter-active,
+  .painter-leave-active {
+    transition: opacity .14s ease, transform .14s cubic-bezier(.33, 1, .68, 1);
+  }
+
+  .painter-enter-from,
+  .painter-leave-to {
+    opacity: 0;
+    transform: scale(.94);
   }
 
   .kit-name {

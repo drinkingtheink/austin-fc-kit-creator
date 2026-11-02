@@ -2189,12 +2189,25 @@
 
         return hit ? hit.dataset.part : null;
       },
+      /**
+       * Report a click on the kit, with where it landed.
+       *
+       * The coordinates go up because the app opens its palette over the
+       * spot, and only the event knows where that is. Null parts are
+       * reported too rather than swallowed: a click on the gap between
+       * garments is how the popover gets put away, so the app has to hear
+       * about it.
+       *
+       * No longer gated on a colour being selected. It was, back when a
+       * click painted immediately and a click with nothing chosen had
+       * nothing to do; now the click is what opens the choosing.
+       */
       onPaint(event) {
-        if (!this.paintColor) return;
-
-        const part = this.partOf(event);
-
-        if (part) this.$emit('paint', part);
+        this.$emit('paint', {
+          part: this.partOf(event),
+          x: event.clientX,
+          y: event.clientY
+        });
       },
       onPointerOver(event) {
         this.$emit('hover', this.partOf(event));
