@@ -981,6 +981,36 @@
         <polygon :style="{ fill: shirtTypeFill }" class="st2" points="170,117.6 170.1,141.3 545.5,141.3 545.4,117.6    "/>
       </g>
       <polygon data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('chevron') }]" id="chevron" :style="{ fill: shirtTypeFill }" class="st2" points="546.5,261.2 545.9,119.4 359.9,236.2 170.5,117.2 171.1,259.6 359.9,398.3   "/>
+
+      <!-- Two chevrons where chevron has one, the way double-sash pairs with
+           sash: the upper band in the design colour, the lower in the
+           secondary.
+
+           The two touch, and together they fill exactly the band the single
+           chevron fills: that one runs 117.2 to 259.6 down the side seam,
+           and these are 118 to 189 and 189 to 260. Same weight on the
+           chest, divided in two. That is also what double-sash does to
+           sash -- the sash's 116.7 split into a 43.3 and a 73.4 that meet
+           -- and it is the reason the pair reads as one detail in two
+           colours rather than as two separate chevrons.
+
+           Generated rather than traced. The single chevron above is traced
+           artwork whose two edges are not quite parallel -- its lower edge
+           drops 138.7 to the apex where its upper edge drops 119, so the
+           band fattens toward the point. Copying that by hand four times
+           over would be four chances to get a V slightly wrong. These bands
+           take one slope for both edges, which is what a band of constant
+           width around a V actually is, and the difference against the
+           traced one is invisible at the angle a chevron sits at. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('double-chevron') }]"
+        id="double-chevron"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <polygon :style="{ fill: shirtTypeFill }" :points="chevronBand(118, 71)" />
+        <polygon :style="{ fill: shirtSecondaryFill }" :points="chevronBand(189, 71)" />
+      </g>
       <path data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('half-panel') }]" id="half-panel" :style="{ fill: shirtTypeFill }" class="st2" d="M359.4,103.8l-69.3-69.3H175.3c-1.1,0.5-2.1,0.9-2.9,1.2h-2.8l2.1,499.9h0.5
         c-0.3,1.5-0.5,3-0.5,4.5c0,3.2,0.7,6.3,2.1,9.4h185.6V103.8z"/>
       <path data-part="design" :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('sash') }]" id="sash" :style="{ fill: shirtTypeFill }" class="st2" d="M545.9,152.4l-0.5-116.7l4.1,0c0,0-1.5-0.4-4.1-1.2h-28.7L171.8,466.4l0.3,69.2h0.5
@@ -2105,6 +2135,38 @@
         const [h, s, l] = toHsl(lit);
 
         return { lit, deep: fromHsl(h, s, l - Math.min(0.15, l * 0.6)) };
+      },
+      /**
+       * One chevron band, as points: a V across the trunk whose upper edge
+       * starts at `top` where it meets the side seams, and whose lower edge
+       * is that same V pushed down by `thickness`.
+       *
+       * The apex drops 119 over the half-width, which is the single
+       * chevron's own angle, measured off its traced upper edge. Taking the
+       * angle from there rather than picking one is what keeps the two
+       * designs looking like the same garment detail.
+       *
+       * Both edges share that slope, so the arms are parallel and the band
+       * holds its width along them. At the point it reads a little deeper
+       * than the sides, which is what a V does and what the traced chevron
+       * does too.
+       */
+      chevronBand(top, thickness) {
+        const LEFT = 170.5;
+        const RIGHT = 546.5;
+        const MID = 359.9;
+        const DROP = 119;
+
+        const lower = top + thickness;
+
+        return [
+          `${RIGHT},${lower}`,
+          `${RIGHT},${top}`,
+          `${MID},${top + DROP}`,
+          `${LEFT},${top}`,
+          `${LEFT},${lower}`,
+          `${MID},${lower + DROP}`
+        ].join(' ');
       },
       // Evenly spaced x positions for a field of stripes. Both the upright
       // set and the diagonal one come through here, so the 30-unit gauge has

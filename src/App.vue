@@ -1093,6 +1093,7 @@
     'hoops',
     'chest-band',
     'chevron',
+    'double-chevron',
     'sash',
     'double-sash',
     'half-panel',

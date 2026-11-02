@@ -70,6 +70,13 @@
 
       <path v-else-if="design === 'chevron'" d="M14 13 L32 27 L50 13 L50 21 L32 35 L14 21 Z" :fill="typeFill" />
 
+      <!-- Touching, and together filling the single chevron's own band:
+           that one is 13 to 21, these are 13 to 17 and 17 to 21. -->
+      <g v-else-if="design === 'double-chevron'">
+        <path d="M14 13 L32 27 L50 13 L50 17 L32 31 L14 17 Z" :fill="typeFill" />
+        <path d="M14 17 L32 31 L50 17 L50 21 L32 35 L14 21 Z" :fill="secondaryFill" />
+      </g>
+
       <path v-else-if="design === 'sash'" d="M14 40 L42 3 L50 3 L14 52 Z" :fill="typeFill" />
 
       <g v-else-if="design === 'double-sash'">
