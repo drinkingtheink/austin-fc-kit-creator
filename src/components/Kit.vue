@@ -2074,20 +2074,29 @@
        * start -- the rise, the thickness and the gap are shared, which is
        * what keeps the three parallel.
        *
-       * 62 apart for a thickness of 44 leaves 18 of shirt between them. The
-       * lowest arm reaches 498 against the trunk's 551, so the band sits on
-       * the belly rather than running off the hem.
+       * The whole set sits below the sponsor, and that is what the heights
+       * are for. The sponsor box measures x 256.6 to 463.1 and y 249.7 to
+       * 306.6, so it covers 103 either side of the centre line -- more than
+       * the gap can ever clear without pulling the arms into stubs. The
+       * first attempt opened the gap instead and ran them straight under
+       * the lettering. Dropping them clear is also the more faithful
+       * reading: on the shirt this comes from they sit on the belly, not
+       * across the chest.
+       *
+       * The highest tip lands at 316 against the sponsor's 306.6, so 9 of
+       * clearance, and the lowest arm reaches 542 against a hem at 549.5.
+       * There is no room for a fourth.
        */
       splitChevronArms() {
         const LEFT = 170.5;
         const RIGHT = 546.5;
         const MID = 359.9;
-        const GAP = 26;
-        const RISE = 140;
-        const T = 44;
+        const GAP = 70;
+        const RISE = 96;
+        const T = 34;
         const out = [];
 
-        [330, 392, 454].forEach((top, i) => {
+        [412, 460, 508].forEach((top, i) => {
           const tip = top - RISE;
 
           out.push({
