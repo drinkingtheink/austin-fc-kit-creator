@@ -935,34 +935,6 @@
         />
       </g>
 
-      <!-- A yoke of lozenges from the shoulder seam down, alternating the
-           two design colours.
-
-           It sits at the TOP of the shirt rather than across the middle of
-           the chest: the straight edge is the shoulder line itself, and the
-           clip is what cuts it, which is why the band needs no top edge of
-           its own. The zigzag along the bottom is not drawn either -- it is
-           what the last row of diamonds leaves behind as it runs out.
-
-           Two colours where the shirt this comes from has three. The app
-           has two design slots, and inventing a third for one design would
-           put a colour on every other kit's panel that nothing else uses;
-           alternating two keeps the harlequin read, which is the point of
-           the band. -->
-      <g
-        data-part="design"
-        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('diamond-band') }]"
-        id="diamond-band"
-        clip-path="url(#clipShirtTrunk)"
-      >
-        <polygon
-          v-for="d in diamondYoke"
-          :key="d.key"
-          :points="d.points"
-          :style="{ fill: d.alt ? shirtSecondaryFill : shirtTypeFill }"
-        />
-      </g>
-
       <!-- Three chevrons climbing to the centre and stopping short of it.
            Chevron and double-chevron both point down and meet at the apex;
            these point up and never touch, which is what the gap down the
@@ -2026,45 +1998,6 @@
        * Generous bounds, because the clip is what decides the edges and a
        * lattice that stops short of the armhole reads as a mistake.
        */
-      /**
-       * The lozenge yoke: three rows of diamonds from the shoulder down.
-       *
-       * A true rhombus tiling, not diamonds set tip to tip. Rows step HALF_H
-       * down and HALF_W across from the row above, which is the arrangement
-       * where each diamond shares a whole edge with its neighbours and the
-       * band comes out solid. Space the rows a full height apart instead --
-       * the obvious thing, and what the first attempt did -- and they only
-       * kiss at their points, leaving a row of shirt-coloured squares
-       * through the middle of the band.
-       *
-       * Three rows reach y 184 from a first row centred at 28. The top is
-       * ragged too, and never seen: the shoulder seam is at 34.5 and the
-       * clip cuts everything above it, which is what gives the yoke its one
-       * straight edge. The bottom keeps its zigzag because nothing cuts it.
-       *
-       * Runs 140 to 590 against a trunk of 170 to 551, so both side seams
-       * get a cut diamond rather than stopping short with a whole one.
-       */
-      diamondYoke() {
-        const HALF_W = 29;
-        const HALF_H = 52;
-        const out = [];
-
-        [28, 80, 132].forEach((cy, row) => {
-          const stagger = row % 2 === 1 ? HALF_W : 0;
-          let i = 0;
-
-          for (let cx = 140 + stagger; cx < 590; cx += HALF_W * 2, i += 1) {
-            out.push({
-              key: `${row}-${cx}`,
-              alt: (i + row) % 2 === 1,
-              points: `${cx},${cy - HALF_H} ${cx + HALF_W},${cy} ${cx},${cy + HALF_H} ${cx - HALF_W},${cy}`
-            });
-          }
-        });
-
-        return out;
-      },
       /**
        * Three chevrons pointing up, split down the middle.
        *
