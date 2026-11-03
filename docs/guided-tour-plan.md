@@ -5,7 +5,8 @@ A first-run walkthrough for people who have never opened the app.
 This plan exists because of the two-sessions-one-checkout problem in
 `CLAUDE.md`. `App.vue` is 4,200 lines and both sessions touch it constantly,
 so the tour is designed to live almost entirely in files nobody else has open.
-**Target: two lines of `App.vue`, and the rest in new files.**
+**Target: two additions and three one-line swaps in `App.vue`, in a single
+commit, and the rest in new files.**
 
 ---
 
@@ -19,7 +20,7 @@ Worth knowing before designing anything, because most of it exists:
 | `:data-part="part"` | `ToolField.vue` | Stable selector for every toolbar control |
 | `data-part` on kit shapes | `Kit.vue` | Stable selector for every garment |
 | `ToolSection` header buttons | `ToolSection.vue` | Open a drawer by clicking its real header |
-| `visitedAustinFCKitDesigner` | `localStorage` | The existing first-run gate |
+| `visitedAustinFCKitDesigner` | `localStorage` | The old first-run gate. **Being removed** — see Gating |
 | Greeting modal | `App.vue` ~743 | Runs before the tour; the tour follows it |
 
 The spotlight is the important one. It already does the hard part — linking a
@@ -47,9 +48,9 @@ dependency-free script under plain node. Follow that file's shape exactly.
 
 ---
 
-## The two lines in App.vue
+## The App.vue footprint
 
-Everything else is new files. These two need agreeing before anyone starts,
+Everything else is new files. All of this needs agreeing before anyone starts,
 and should land in **one small commit of their own** so the other session can
 pull it and carry on.
 
@@ -73,9 +74,13 @@ not appear in `App.vue`'s data, methods or template beyond the mount. It is an
 unusual choice in a Vue app and it is the right one here: the coupling it
 removes is the thing that would otherwise make two sessions collide.
 
-Anything beyond these two lines should be questioned. If a step needs a target
-with no stable hook, add the `data-tour` attribute in the same single commit
-rather than drip-feeding changes into `App.vue`.
+**3. Swap the three `visitedAustinFCKitDesigner` reads and writes** for calls
+into `tourStorage.js`. They are at roughly lines 2472, 2709 and 2715, one line
+each. See Gating below for why the key is going.
+
+Anything beyond this should be questioned. If a step needs a target with no
+stable hook, add the `data-tour` attribute in the same single commit rather
+than drip-feeding changes into `App.vue`.
 
 ---
 
@@ -140,28 +145,57 @@ the corner of the screen. Log it so it gets noticed.
 
 ## Gating
 
-Separate key from the greeting: `austinFcKitCreator:tourSeen`.
+`visitedAustinFCKitDesigner` goes. One new key replaces it and governs both
+the greeting and the tour:
 
-Reusing `visitedAustinFCKitDesigner` would mean everyone who has ever opened
-the app is treated as having seen a tour that did not exist when they visited.
-A new key lets the tour run once for them too.
+```
+austinFcKitCreator:onboarded
+```
 
-It does **not** run when someone arrived on a shared gallery link. `App.vue`
-already makes that distinction for the greeting: that person asked to see a
-specific kit, and should see it.
+Owned by `tourStorage.js`, namespaced like `austinFcKitCreator:kit` rather
+than loose in the storage root the way the old one was.
+
+**Everybody starts from scratch.** Dropping the old key means people who have
+used the app before are no longer marked as having seen anything, so they get
+the greeting and the tour once, and then never again. That is the point: the
+tour did not exist when they visited, and keeping the old flag would hide it
+from exactly the people most likely to have missed what has been added since.
+
+Three things to get right while swapping it:
+
+**Clear the old key.** `tourStorage.js` should `removeItem` it on first run.
+It costs one line and saves somebody finding a dead key in devtools in a
+year and wondering what reads it.
+
+**"Explore colors" never set the flag.** Of the three greeting buttons, two
+call `handleGreetingClose` and one calls `handleGreetingToManageColors`, which
+closes the modal without recording anything — so anyone who left through that
+button saw the greeting again next visit. Pre-existing, and worth fixing in
+the same pass rather than carrying it over.
+
+**Do not burn the flag on a gallery arrival.** Today a shared-link visitor is
+marked as having visited, which under the new key would mean they never get
+the tour at all, even when they later come to the front door. They asked to
+see a specific kit, so suppress the greeting and the tour for that visit —
+but leave the flag unset, so they get both the first time they arrive
+normally. This is a deliberate change from the current behaviour.
+
+The "Welcome back" toast keys off the same flag and needs no other change. It
+simply moves back by one visit for existing users, which is correct: their
+next arrival is a first run again.
 
 ---
 
 ## Splitting the work
 
-Agree the two `App.vue` lines first and land them. After that:
+Agree the `App.vue` commit first and land it. After that:
 
 | Session | Owns | Depends on |
 |---|---|---|
 | A | `GuidedTour.vue` | the mount line |
 | B | `tourSteps.js` | the step shape only |
 | C | `tourPlacement.js` + its test | nothing |
-| D | `tourStorage.js`, the gating | the event line |
+| D | `tourStorage.js`, the gating, the three swaps | the event line |
 
 C can start immediately and has a real test. B is content and needs no
 running app. A is the only one that needs the other three to finish, so it
