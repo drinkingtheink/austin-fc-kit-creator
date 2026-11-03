@@ -45,6 +45,14 @@
         <polygon v-for="d in DIAMONDS" :key="d.key" :points="d.points" :fill="d.alt ? secondaryFill : typeFill" />
       </g>
 
+      <g v-else-if="design === 'diamond-band'">
+        <polygon v-for="d in BAND_DIAMONDS" :key="d.key" :points="d.points" :fill="d.alt ? secondaryFill : typeFill" />
+      </g>
+
+      <g v-else-if="design === 'split-chevron'">
+        <path v-for="arm in SPLIT_CHEVRONS" :key="arm.key" :d="arm.d" :fill="typeFill" />
+      </g>
+
       <path v-else-if="design === 'diagonal-half'" d="M14 3 L50 3 L50 54 Z" :fill="typeFill" />
 
       <g v-else-if="design === 'chest-band'">
@@ -153,6 +161,35 @@
     }
   }
 
+  // The lozenge yoke, at the top of the shirt. Same tiling as the kit's --
+  // rows step half a height down and half a width across -- so it comes out
+  // solid here too rather than gapped.
+  const BAND_DIAMONDS = [];
+
+  [2, 8, 14].forEach((cy, row) => {
+    const stagger = row % 2 === 1 ? 4 : 0;
+    let i = 0;
+
+    for (let cx = 10 + stagger; cx < 56; cx += 8, i += 1) {
+      BAND_DIAMONDS.push({
+        key: `${row}-${cx}`,
+        alt: (i + row) % 2 === 1,
+        points: `${cx},${cy - 6} ${cx + 4},${cy} ${cx},${cy + 6} ${cx - 4},${cy}`
+      });
+    }
+  });
+
+  // Three chevrons climbing to a gap at the centre. Same construction as the
+  // kit's, at a tenth of the size.
+  const SPLIT_CHEVRONS = [];
+
+  [33, 40, 47].forEach((top, i) => {
+    const tip = top - 11;
+
+    SPLIT_CHEVRONS.push({ key: `l${i}`, d: `M14 ${top} L30 ${tip} L30 ${tip + 4} L14 ${top + 4} Z` });
+    SPLIT_CHEVRONS.push({ key: `r${i}`, d: `M50 ${top} L34 ${tip} L34 ${tip + 4} L50 ${top + 4} Z` });
+  });
+
   const CHECKERS = [];
 
   for (let col = 0; col < 6; col += 1) {
@@ -226,7 +263,9 @@
         BARCODE,
         TIGER,
         CHECKERS,
-        DIAMONDS
+        DIAMONDS,
+        BAND_DIAMONDS,
+        SPLIT_CHEVRONS
       };
     }
   };

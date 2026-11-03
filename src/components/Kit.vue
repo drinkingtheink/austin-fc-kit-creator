@@ -870,17 +870,26 @@
         :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('diagonal-pinstripes') }]"
         id="diagonal-pinstripes"
         clip-path="url(#clipShirtTrunk)"
-        transform="rotate(-22 360.5 292)"
       >
-        <rect
-          v-for="x in diagonalPinstripeColumns"
-          :key="x"
-          :x="x"
-          y="-45"
-          width="5"
-          height="675"
-          :style="{ fill: shirtTypeFill }"
-        />
+        <!-- The turn goes on an inner group, and that is not tidiness.
+             clip-path is resolved in the user space of the element carrying
+             it, which includes that element's OWN transform -- so a rotate
+             and a clip on the same tag rotates the clip too, and the stripes
+             get cut to a shirt that is leaning 22 degrees. They escaped onto
+             the backdrop at one shoulder and left bare wedges at the
+             opposite hip. Split in two, the clip is still a shirt standing
+             upright and only the stripes turn. -->
+        <g transform="rotate(-22 360.5 292)">
+          <rect
+            v-for="x in diagonalPinstripeColumns"
+            :key="x"
+            :x="x"
+            y="-45"
+            width="5"
+            height="675"
+            :style="{ fill: shirtTypeFill }"
+          />
+        </g>
       </g>
 
       <!-- Shoulders to hem in one pass. The only design in the set that is
@@ -923,6 +932,59 @@
           :key="d.key"
           :points="d.points"
           :style="{ fill: d.alt ? shirtSecondaryFill : shirtTypeFill }"
+        />
+      </g>
+
+      <!-- A yoke of lozenges from the shoulder seam down, alternating the
+           two design colours.
+
+           It sits at the TOP of the shirt rather than across the middle of
+           the chest: the straight edge is the shoulder line itself, and the
+           clip is what cuts it, which is why the band needs no top edge of
+           its own. The zigzag along the bottom is not drawn either -- it is
+           what the last row of diamonds leaves behind as it runs out.
+
+           Two colours where the shirt this comes from has three. The app
+           has two design slots, and inventing a third for one design would
+           put a colour on every other kit's panel that nothing else uses;
+           alternating two keeps the harlequin read, which is the point of
+           the band. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('diamond-band') }]"
+        id="diamond-band"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <polygon
+          v-for="d in diamondYoke"
+          :key="d.key"
+          :points="d.points"
+          :style="{ fill: d.alt ? shirtSecondaryFill : shirtTypeFill }"
+        />
+      </g>
+
+      <!-- Three chevrons climbing to the centre and stopping short of it.
+           Chevron and double-chevron both point down and meet at the apex;
+           these point up and never touch, which is what the gap down the
+           middle is doing -- close it and this is double-chevron with an
+           extra band.
+
+           The arms are parallelograms rather than a traced V, so the three
+           are one loop over three heights. Their angle comes from the rise
+           over the run they actually have, not from the chevron above:
+           these stop 26 short of the centre line, so matching that one's
+           119 would have them climbing at a visibly different slope. -->
+      <g
+        data-part="design"
+        :class="[partClass('design'), 'fade-part', { on: idMatchesActiveShirtOption('split-chevron') }]"
+        id="split-chevron"
+        clip-path="url(#clipShirtTrunk)"
+      >
+        <polygon
+          v-for="arm in splitChevronArms"
+          :key="arm.key"
+          :points="arm.points"
+          :style="{ fill: shirtTypeFill }"
         />
       </g>
 
@@ -1964,6 +2026,82 @@
        * Generous bounds, because the clip is what decides the edges and a
        * lattice that stops short of the armhole reads as a mistake.
        */
+      /**
+       * The lozenge yoke: three rows of diamonds from the shoulder down.
+       *
+       * A true rhombus tiling, not diamonds set tip to tip. Rows step HALF_H
+       * down and HALF_W across from the row above, which is the arrangement
+       * where each diamond shares a whole edge with its neighbours and the
+       * band comes out solid. Space the rows a full height apart instead --
+       * the obvious thing, and what the first attempt did -- and they only
+       * kiss at their points, leaving a row of shirt-coloured squares
+       * through the middle of the band.
+       *
+       * Three rows reach y 184 from a first row centred at 28. The top is
+       * ragged too, and never seen: the shoulder seam is at 34.5 and the
+       * clip cuts everything above it, which is what gives the yoke its one
+       * straight edge. The bottom keeps its zigzag because nothing cuts it.
+       *
+       * Runs 140 to 590 against a trunk of 170 to 551, so both side seams
+       * get a cut diamond rather than stopping short with a whole one.
+       */
+      diamondYoke() {
+        const HALF_W = 29;
+        const HALF_H = 52;
+        const out = [];
+
+        [28, 80, 132].forEach((cy, row) => {
+          const stagger = row % 2 === 1 ? HALF_W : 0;
+          let i = 0;
+
+          for (let cx = 140 + stagger; cx < 590; cx += HALF_W * 2, i += 1) {
+            out.push({
+              key: `${row}-${cx}`,
+              alt: (i + row) % 2 === 1,
+              points: `${cx},${cy - HALF_H} ${cx + HALF_W},${cy} ${cx},${cy + HALF_H} ${cx - HALF_W},${cy}`
+            });
+          }
+        });
+
+        return out;
+      },
+      /**
+       * Three chevrons pointing up, split down the middle.
+       *
+       * Each is two parallelograms: one arm from the side seam up to the
+       * gap, and its mirror. Written as a loop over the three heights
+       * because the only thing that changes between them is where they
+       * start -- the rise, the thickness and the gap are shared, which is
+       * what keeps the three parallel.
+       *
+       * 62 apart for a thickness of 44 leaves 18 of shirt between them. The
+       * lowest arm reaches 498 against the trunk's 551, so the band sits on
+       * the belly rather than running off the hem.
+       */
+      splitChevronArms() {
+        const LEFT = 170.5;
+        const RIGHT = 546.5;
+        const MID = 359.9;
+        const GAP = 26;
+        const RISE = 140;
+        const T = 44;
+        const out = [];
+
+        [330, 392, 454].forEach((top, i) => {
+          const tip = top - RISE;
+
+          out.push({
+            key: `left-${i}`,
+            points: `${LEFT},${top} ${MID - GAP},${tip} ${MID - GAP},${tip + T} ${LEFT},${top + T}`
+          });
+          out.push({
+            key: `right-${i}`,
+            points: `${RIGHT},${top} ${MID + GAP},${tip} ${MID + GAP},${tip + T} ${RIGHT},${top + T}`
+          });
+        });
+
+        return out;
+      },
       diamondLattice() {
         const W = 26;
         const H = 38;

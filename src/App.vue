@@ -1172,6 +1172,8 @@
     'diagonal-half',
     'thirds',
     'diamonds',
+    'diamond-band',
+    'split-chevron',
     'fade'
   ];
 
