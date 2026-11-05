@@ -774,6 +774,8 @@
       </div>
     </transition>
 
+    <GuidedTour />
+
     <transition name="toast">
       <div
         v-if="toast"
@@ -794,6 +796,7 @@
 <script>
   import Kit from './components/Kit.vue';
   import AustinFCBadge from './components/AustinFCBadge.vue';
+  import GuidedTour from './components/GuidedTour.vue';
   import Stadium from './components/Stadium.vue';
   import Stars from './components/Stars.vue';
   import ColorSwatches from './components/ColorSwatches.vue';
@@ -811,6 +814,7 @@
   import { MAX_KIT_NAME, normalizeKitName, toKitSlug } from './lib/kitName.js';
   import { KIT_HISTORY, KIT_TYPE_LABELS } from './lib/kitHistory.js';
   import { galleryHash, idFromHash, isGalleryHash, urlWithHash } from './lib/galleryUrl.js';
+  import { hasOnboarded, markOnboarded } from './lib/tourStorage.js';
 
   const green ='#00B140';
   // The home shirt's stripes are tonal rather than contrasting: a deeper verde
@@ -1179,6 +1183,7 @@
   export default {
     name: 'App',
     components: {
+      GuidedTour,
       Kit,
       AustinFCBadge,
       Stadium,
@@ -2467,7 +2472,7 @@
         });
       },
       handleGreetingClose(randomizePref) {
-        localStorage.setItem('visitedAustinFCKitDesigner', true);
+        markOnboarded();
         this.showGreeting = false;
 
         if(randomizePref) {
@@ -2475,11 +2480,26 @@
         }
 
         this.backToTop();
+        this.startTour();
       },
       handleGreetingToManageColors() {
+        // Marks too. This button used to close the greeting without
+        // recording anything, so anyone who left through it saw the greeting
+        // again on their next visit.
+        markOnboarded();
         this.showGreeting = false;
         this.showColors = true;
         this.backToTop();
+      },
+      /**
+       * Hand over to the walkthrough.
+       *
+       * A window event rather than a ref or a prop: it is the whole of this
+       * component's coupling to the tour, and keeping it to one line is what
+       * lets the tour be built in its own files without blocking work here.
+       */
+      startTour() {
+        window.dispatchEvent(new Event('kit-tour:start'));
       },
       /**
        * What the PNG is called.
@@ -2704,14 +2724,19 @@
 
       const arrivedAtGallery = this.syncGalleryFromUrl();
 
-      let hasVisited = localStorage.getItem('visitedAustinFCKitDesigner');
+      const onboarded = hasOnboarded();
 
       // Somebody who followed a link to a kit asked to see that kit. Neither
       // the first-run greeting nor the welcome-back toast is worth covering
       // it with; both are for people who came to the front door.
+      //
+      // Deliberately does not mark them onboarded. One flag now covers the
+      // greeting and the walkthrough, and burning it here would cost a
+      // shared-link visitor the walkthrough for good, including the first
+      // time they come to the front door themselves.
       if (arrivedAtGallery) {
-        localStorage.setItem('visitedAustinFCKitDesigner', 'true');
-      } else if (!hasVisited) {
+        // Nothing to record.
+      } else if (!onboarded) {
         setTimeout(() => {
           this.showGreeting = true;
         }, 1000);
