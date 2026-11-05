@@ -269,3 +269,90 @@ function pickFlashes() {
 }
 
 export const CROWD_FLASHES = pickFlashes();
+
+// Fans who change colour while you watch.
+//
+// A stand is never still: people stand up, sit down, turn round, swap seats,
+// pull a scarf over a shirt. None of that is legible at four pixels a head.
+// The one thing that does survive the scale is the colour change it causes,
+// so that is all this models -- no movement, no scaling, no redrawing of a
+// figure that is three circles wide to begin with.
+//
+// Screen only, and that is the load-bearing part. fill and opacity are both
+// in PAINT_PROPS, and the stadium gets none of the export freeze the kit
+// does, so a capture landing mid-fade would bake a half-blended fan into the
+// PNG and two exports of one kit would differ. These carry data-screen-only
+// and the exporter drops them, which is the same bargain the camera flashes
+// above take, and the reason stars.js declines to twinkle.
+//
+// Opacity and nothing else, for the floodlight reason: drop-shadow is costed
+// per element per frame and halved the frame rate at 96 elements. There is no
+// filter here. The three decks these sit on are also the three unfiltered
+// ones -- the front and spill decks render inside #front-blur, where
+// animating anything would re-run a large blur every frame.
+//
+// The tone is drawn from TONES, the same weighted table the crowd itself is
+// built from, which is what keeps this tasteful rather than decorative: a fan
+// can only ever change into a colour the stand already wears, so the bowl
+// stays three fifths verde however long you watch it.
+const SHIFT_COUNT = 180;
+const SHIFT_MIN_SECONDS = 14;
+const SHIFT_MAX_SECONDS = 26;
+
+function pickShifts() {
+  // Its own stream, like the flashes', so changing the count below cannot
+  // reshuffle the crowd or the flashes.
+  const random = mulberry32(0x5EA7ED);
+
+  const lit = CROWD_DECKS.filter(deck => deck.flashes);
+
+  // Flattened, so a shift is drawn per person rather than per deck. Picking a
+  // deck first and somebody in it second -- which is what the flashes do, at
+  // eighteen, where it does not show -- would put as many changes among the
+  // 845 seats of the near stand as among the 3,511 of the far one, and that
+  // corner would read as a busier crowd rather than a nearer one.
+  const roster = lit.flatMap(deck => deck.people.map(person => ({ person, deck: deck.id })));
+  const taken = new Set();
+  const shifts = [];
+
+  while (shifts.length < SHIFT_COUNT && taken.size < roster.length) {
+    const at = Math.floor(random() * roster.length);
+
+    // Two shifts on one person would cross-fade over each other, and the
+    // pair would read as one fan flickering.
+    if (taken.has(at)) continue;
+
+    taken.add(at);
+
+    const { person, deck } = roster[at];
+    const tone = pickTone(random);
+
+    // A change into the colour they already are is a change nobody can see.
+    // Dropped rather than re-rolled: insisting on a different tone here
+    // would quietly bias the weighting away from whatever the crowd wears
+    // most, which is precisely the verde this is supposed to preserve. The
+    // cost is a handful of the 180 going unused.
+    if (tone === person.fill) continue;
+
+    const duration = SHIFT_MIN_SECONDS + random() * (SHIFT_MAX_SECONDS - SHIFT_MIN_SECONDS);
+
+    shifts.push({
+      cx: person.cx,
+      cy: person.cy,
+      // The person's own size. Larger reads as a dot landing on top of them,
+      // smaller leaves a rim of the colour they used to be.
+      r: person.r,
+      fill: tone,
+      deck,
+      duration: +duration.toFixed(2),
+      // Negative and spread across this circle's own cycle, so the stand is
+      // already part-way through changing when the page opens rather than
+      // changing all at once a few seconds in.
+      delay: +(-random() * duration).toFixed(2)
+    });
+  }
+
+  return shifts;
+}
+
+export const CROWD_SHIFTS = pickShifts();

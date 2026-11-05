@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test:colors": "node src/lib/colorTools.test.mjs",
-    "test:tour": "node src/lib/tourPlacement.test.mjs"
+    "test:tour": "node src/lib/tourPlacement.test.mjs",
+    "test:crowd": "node src/lib/crowd.test.mjs"
   },
   "dependencies": {
     "vue": "^3.5.13"

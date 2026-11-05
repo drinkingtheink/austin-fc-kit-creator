@@ -162,6 +162,18 @@
           :cx="person.cx" :cy="person.cy" :r="person.r" :fill="person.fill"/>
 </g>
 
+<!-- The bustle: fans changing colour, on the same three decks and the same
+     clips as the flashes below, and data-screen-only for the same reason --
+     fill and opacity both reach the PNG, so a capture landing mid-fade would
+     bake a half-blended fan in. Drawn under the flashes so a photo still
+     goes off over the top of one. See lib/crowd.js. -->
+<g v-for="deck in ['far', 'mid', 'near']" :key="`shift-${deck}`"
+   class="crowd-shifts" data-screen-only :clip-path="`url(#crowd-${deck}-deck)`">
+  <circle v-for="(shift, i) in deckShifts(deck)" :key="i"
+          :cx="shift.cx" :cy="shift.cy" :r="shift.r" :fill="shift.fill"
+          :style="{ animationDelay: `${shift.delay}s`, animationDuration: `${shift.duration}s` }"/>
+</g>
+
 <!-- Camera flashes, over the crowd and clipped to the same decks so a halo
      cannot spill off the stand. data-screen-only keeps them out of the PNG:
      the glow is a filter, which the exporter never carries, but the opacity
@@ -595,7 +607,7 @@
 </template>
 
 <script>
-  import { CROWD_DECKS, CROWD_FLASHES } from '../lib/crowd.js';
+  import { CROWD_DECKS, CROWD_FLASHES, CROWD_SHIFTS } from '../lib/crowd.js';
 
   export default {
     name: 'Stadium',
@@ -607,6 +619,9 @@
       },
       deckFlashes(id) {
         return CROWD_FLASHES.filter(flash => flash.deck === id);
+      },
+      deckShifts(id) {
+        return CROWD_SHIFTS.filter(shift => shift.deck === id);
       }
     }
   };
@@ -746,6 +761,26 @@
 
      filter only, deliberately. It is the one painted property the exporter
      does not carry, so none of this reaches the PNG. */
+  /* The fade is the whole effect. Switched on at full opacity this is a dot
+     changing colour; eased in, held, and eased back out it is somebody
+     standing up and sitting down again. The hold matters as much as the
+     fade -- without it the fan never actually reads as having changed, only
+     as having flickered.
+
+     Duration and delay are per circle, inline, from lib/crowd.js: one shared
+     duration would beat across the stand however random the delays were. */
+  .crowd-shifts circle {
+    opacity: 0;
+    animation-name: crowdShift;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes crowdShift {
+    0%, 100% { opacity: 0; }
+    38%, 62% { opacity: 1; }
+  }
+
   .crowd-flashes circle {
     opacity: 0;
     animation: crowdFlash 12s linear infinite;
@@ -916,6 +951,14 @@
     .crowd-flashes circle {
       opacity: 0;
       filter: none;
+    }
+
+    /* Same reasoning, and the resting state is the one that matters here:
+       collapsed to nothing these are invisible, which leaves every fan the
+       colour lib/crowd.js gave them. A stranded shift would be a fan stuck
+       in somebody else's shirt. */
+    .crowd-shifts circle {
+      opacity: 0;
     }
   }
 </style>
