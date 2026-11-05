@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!--
+  The social preview card, at the 1200x630 Open Graph wants.
+
+  A harness, not part of the app. It mounts the real Kit and Stadium
+  components off the dev server, so the artwork, its scoped CSS and its
+  gradients are the genuine article rather than a clone — which is the
+  whole reason it exists. kitToPng.js has to inline paint onto a detached
+  copy because a clone carries no scoped styles, and getting that wrong
+  paints all twenty-two shirt designs at once. A live page has no such
+  problem: what Chrome screenshots here is what the app draws.
+
+  To regenerate, with the dev server already running:
+
+    npm run og
+
+  which is headless Chrome pointed at http://localhost:8080/tools/og-image.html
+  with a 1200x630 window, writing public/og-image.png.
+
+  Vite only builds index.html, so nothing in here ships.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Austin FC Kit Creator — social card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background-color: #0A0A2E;
+      }
+
+      #card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+
+      .card-sky {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      /* Same treatment the stage gives it: saturate(.7) at 34%, scaled up so
+         the stands sit behind the kit instead of the empty apron. */
+      .card-stadium {
+        position: absolute;
+        bottom: -12%;
+        left: 50%;
+        width: 135%;
+        transform: translateX(-50%);
+        z-index: 2;
+        opacity: .34;
+        filter: saturate(.7);
+      }
+
+      /* Darkens the lower half so the type below the wordmark keeps its
+         contrast wherever the stands happen to be bright. */
+      .card-scrim {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        background: linear-gradient(100deg, rgba(5, 6, 18, .82) 0%, rgba(5, 6, 18, .55) 46%, rgba(5, 6, 18, 0) 72%);
+      }
+
+      .card-body {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 72px 0 76px;
+        box-sizing: border-box;
+      }
+
+      .card-words {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 620px;
+      }
+
+      .card-crest {
+        width: 74px;
+        height: auto;
+      }
+
+      .card-title {
+        margin: 0;
+        color: #FFFFFF;
+        font-family: 'Bungee Inline', system-ui, sans-serif;
+        font-size: 76px;
+        line-height: .98;
+        letter-spacing: .01em;
+      }
+
+      .card-sub {
+        margin: 0;
+        max-width: 540px;
+        color: #CFE6D8;
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 27px;
+        font-weight: 500;
+        line-height: 1.32;
+      }
+
+      .card-rule {
+        width: 132px;
+        height: 7px;
+        border-radius: 4px;
+        background-color: #00B140;
+      }
+
+      /* The same lift the kit gets on the stage. */
+      .card-kit {
+        position: relative;
+        display: block;
+        height: 560px;
+        width: auto;
+        margin-right: 18px;
+        filter: drop-shadow(0 24px 48px rgba(0, 0, 0, .45));
+      }
+    </style>
+  </head>
+  <body>
+    <div id="card"></div>
+
+    <script type="module">
+      // The esm-bundler build by name, because this page writes its layout
+      // as a string template and the runtime-only build Vite hands out by
+      // default cannot compile one. Nothing ships from here, so paying for
+      // the compiler costs the app nothing.
+      import { createApp } from 'vue/dist/vue.esm-bundler.js';
+      import Kit from '/src/components/Kit.vue';
+      import Stadium from '/src/components/Stadium.vue';
+      import AustinFCBadge from '/src/components/AustinFCBadge.vue';
+      import { KIT_HISTORY } from '/src/lib/kitHistory.js';
+      import { getBackdrop, toCssGradient } from '/src/lib/stageBackdrops.js';
+
+      // A real kit from the catalogue rather than one invented here, so the
+      // card cannot drift into showing a shirt the app would never produce.
+      const entry = KIT_HISTORY.find(one => one.id === 'heartbeat-2025-home');
+
+      createApp({
+        components: { Kit, Stadium, AustinFCBadge },
+        data() {
+          return {
+            kit: entry.kit,
+            sky: toCssGradient(getBackdrop('springNight'))
+          };
+        },
+        template: `
+          <div class="card-sky" :style="{ backgroundImage: sky }"></div>
+          <Stadium class="card-stadium" />
+          <div class="card-scrim"></div>
+
+          <div class="card-body">
+            <div class="card-words">
+              <AustinFCBadge class="card-crest" />
+              <h1 class="card-title">Kit Creator</h1>
+              <div class="card-rule"></div>
+              <p class="card-sub">Design your own Austin FC kit, then browse every kit the club has worn.</p>
+            </div>
+
+            <Kit class="card-kit" v-bind="kit" :frozen="true" />
+          </div>
+        `
+      }).mount('#card');
+
+      // Chrome's --virtual-time-budget stops when the page goes quiet, and a
+      // webfont that has not landed yet would be screenshotted in the
+      // fallback face. Waiting on document.fonts keeps the clock running.
+      document.fonts.ready.then(() => {
+        document.documentElement.dataset.ready = 'true';
+      });
+    </script>
+  </body>
+</html>

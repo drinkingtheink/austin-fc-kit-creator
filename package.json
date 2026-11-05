@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
+    "og": "\"${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}\" --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=9000 --screenshot=public/og-image.png http://localhost:8080/tools/og-image.html",
     "test:colors": "node src/lib/colorTools.test.mjs",
     "test:tour": "node src/lib/tourPlacement.test.mjs",
     "test:crowd": "node src/lib/crowd.test.mjs"
