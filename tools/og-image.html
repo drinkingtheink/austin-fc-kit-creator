@@ -86,7 +86,7 @@
         display: flex;
         flex-direction: column;
         gap: 18px;
-        max-width: 620px;
+        max-width: 700px;
       }
 
       .card-crest {
@@ -105,12 +105,27 @@
 
       .card-sub {
         margin: 0;
-        max-width: 540px;
+        /* Wide enough that "home, away, or third" survives as one phrase.
+           At 540 the line broke after "home," and split the list in half.
+           text-wrap: balance does the rest without needing a wider measure,
+           which the kit now wants back. */
+        max-width: 616px;
         color: #CFE6D8;
         font-family: 'Inter', system-ui, sans-serif;
-        font-size: 27px;
+        font-size: 26px;
         font-weight: 500;
-        line-height: 1.32;
+        line-height: 1.34;
+        /* Evens the ragged edge rather than filling each line to the measure
+           and leaving a short last one. */
+        text-wrap: balance;
+      }
+
+      /* Three words that are one idea. Left to itself the line broke after
+         "home," and left "away, or third" stranded on the next one, which
+         reads as a list that has come apart. balance evens the rag; it will
+         still break mid-phrase to do it. */
+      .hold {
+        white-space: nowrap;
       }
 
       .card-rule {
@@ -120,13 +135,18 @@
         background-color: #00B140;
       }
 
-      /* The same lift the kit gets on the stage. */
+      /* The same lift the kit gets on the stage.
+         Pulled in from the right edge, and a little smaller than it was.
+         Several places that show these cards crop them square, which on a
+         1200x630 keeps only x 285 to 915 -- a side-by-side layout can never
+         survive that whole, but the further in the kit sits the more of it
+         lives through the crop. */
       .card-kit {
         position: relative;
         display: block;
-        height: 560px;
+        height: 520px;
         width: auto;
-        margin-right: 18px;
+        margin-right: 76px;
         filter: drop-shadow(0 24px 48px rgba(0, 0, 0, .45));
       }
     </style>
@@ -168,7 +188,7 @@
               <AustinFCBadge class="card-crest" />
               <h1 class="card-title">Kit Creator</h1>
               <div class="card-rule"></div>
-              <p class="card-sub">Design your own Austin FC kit, then browse every kit the club has worn.</p>
+              <p class="card-sub">Design your own Austin FC kit, <span class="hold">home, away, or third.</span> Browse every kit the club has worn, then download yours to share.</p>
             </div>
 
             <Kit class="card-kit" v-bind="kit" :frozen="true" />
