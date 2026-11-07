@@ -9,6 +9,34 @@
 //
 // Houston Dynamo is deliberately absent. Regenerating this list from the
 // source will put it back.
+//
+// So are eight clubs whose palettes were already here under another name.
+// The panel draws each one as a row of equal bars, so two palettes with the
+// same number of colours and near enough the same colours are one row
+// printed twice -- and the pair that prompted this, Sheffield United against
+// Southampton, averaged 12.3 deltaE a swatch, which is close enough that
+// neither tells you anything the other did not. Measured in Lab rather than
+// by eye: 87 palettes is 3741 pairs.
+//
+// Dropped, each against the twin that stayed:
+//
+//   Swansea City AFC      Juventus, and identical to it -- deltaE 0.0
+//   Borussia Dortmund     Columbus Crew           1.3
+//   Millwall              Tottenham Hotspur       2.6
+//   West Bromwich Albion  Tottenham Hotspur       3.2
+//   Sassuolo              Austin FC               4.6
+//   Brescia               Porto                   7.0
+//   Osasuna               RB Leipzig             11.5
+//   Sheffield United      Southampton FC         12.3
+//
+// Which of each pair stayed was a judgement, not a measurement. Austin FC
+// stays because it is the club whose app this is. Columbus Crew stays over
+// Dortmund because this is an MLS app and the palette is the same either
+// way. The rest kept the better-known club.
+//
+// The closest surviving pair is D.C. United against RB Leipzig at 12.6,
+// which is the floor this leaves. Regenerating from the source puts all
+// eight back.
 
 export const CLUB_PALETTES = [
   { id: 'as-roma', name: "A.S. Roma", colors: ['#F0BC42', '#8E1F2F', '#CACACC', '#000000'] },
@@ -21,8 +49,6 @@ export const CLUB_PALETTES = [
   { id: 'austin', name: "Austin FC", colors: ['#00B140', '#000000', '#FFFFFF'] },
   { id: 'barcelona', name: "Barcelona", colors: ['#EDBB00', '#004D98', '#A50044', '#DB0030', '#FFED02', '#000000'] },
   { id: 'bayern-munich', name: "Bayern Munich", colors: ['#DC052D', '#0066B2'] },
-  { id: 'borussia-dortmund', name: "Borussia Dortmund", colors: ['#FDE100', '#000000'] },
-  { id: 'brescia', name: "Brescia", colors: ['#005CA8', '#FFFFFF', '#CCA738'] },
   { id: 'brighton', name: "Brighton & Hove Albion", colors: ['#0057B8', '#FFCD00'] },
   { id: 'burnley', name: "Burnley", colors: ['#6C1D45', '#99D6EA', '#EDE939', '#F0B323'] },
   { id: 'leganes', name: "CD Leganes", colors: ['#0C1F6E', '#FFFFFF', '#3BAD36', '#194A0E', '#CF9802'] },
@@ -55,7 +81,6 @@ export const CLUB_PALETTES = [
   { id: 'lyon', name: "Lyon", colors: ['#DA0812', '#14387F', '#FFFFFF', '#D29D46'] },
   { id: 'manchester-city', name: "Manchester City", colors: ['#6CABDD', '#1C2C5B', '#FFC659', '#FFFFFF'] },
   { id: 'manchester-united', name: "Manchester United", colors: ['#DA291C', '#000000', '#FFFFFF', '#FFE200'] },
-  { id: 'millwall', name: "Millwall", colors: ['#00194A', '#FFFFFF'] },
   { id: 'minnesota-united', name: "Minnesota United", colors: ['#8CD2F4', '#231F20', '#E4E5E6'] },
   { id: 'montreal-impact', name: "Montreal Impact", colors: ['#122089', '#000000', '#7A878F'] },
   { id: 'new-england-revolution', name: "New England Revolution", colors: ['#0A2240', '#CE0E2D'] },
@@ -64,7 +89,6 @@ export const CLUB_PALETTES = [
   { id: 'newcastle-united', name: "Newcastle United", colors: ['#241F20', '#FFFFFF', '#F1BE48'] },
   { id: 'norwich-city', name: "Norwich City", colors: ['#FFF200', '#00A650', '#000000'] },
   { id: 'orlando-city', name: "Orlando City SC", colors: ['#633492', '#FDE192'] },
-  { id: 'osasuna', name: "Osasuna", colors: ['#D91A21', '#0A346F', '#FFFFFF'] },
   { id: 'paris-saint-germain', name: "Paris Saint-Germain", colors: ['#004170', '#DA291C', '#CEAB5D', '#FFFFFF'] },
   { id: 'parma', name: "Parma", colors: ['#1B4094', '#FFD200', '#FFFFFF'] },
   { id: 'philadelphia-union', name: "Philadelphia Union", colors: ['#071B2C', '#B19B69', '#3E8EDE'] },
@@ -78,16 +102,13 @@ export const CLUB_PALETTES = [
   { id: 'real-sociedad', name: "Real Sociedad", colors: ['#FFFFFF', '#0067B1', '#D87722'] },
   { id: 'sampdoria', name: "Sampdoria", colors: ['#1B5497', '#C21718', '#FFFFFF', '#000000'] },
   { id: 'san-jose-earthquakes', name: "San Jose Earthquakes", colors: ['#0067B1', '#000000', '#E31837'] },
-  { id: 'sassuolo', name: "Sassuolo", colors: ['#00A752', '#000000', '#FFFFFF'] },
   { id: 'eibar', name: "SD Eibar", colors: ['#0071B9', '#AA093C', '#0C2D69', '#FFFFFF', '#E09701'] },
   { id: 'seattle-sounders', name: "Seattle Sounders FC", colors: ['#5D9741', '#005595', '#142530'] },
   { id: 'sevilla', name: "Sevilla FC", colors: ['#FFFFFF', '#F43333', '#C79100'] },
-  { id: 'sheffield-united', name: "Sheffield United", colors: ['#EE2737', '#000000', '#FFEC2D'] },
   { id: 'southampton', name: "Southampton FC", colors: ['#D71920', '#130C0E', '#FFC20E'] },
   { id: 'spal', name: "SPAL", colors: ['#3697C4', '#FFFFFF', '#C7A76C'] },
   { id: 'sporting-kansas-city', name: "Sporting Kansas City", colors: ['#002F65', '#91B0D5'] },
   { id: 'stoke-city', name: "Stoke City FC", colors: ['#E03A3E', '#1B449C'] },
-  { id: 'swansea-city', name: "Swansea City AFC", colors: ['#000000', '#FFFFFF'] },
   { id: 'torino', name: "Torino", colors: ['#8A1E03', '#EEB111', '#5E91CC'] },
   { id: 'toronto', name: "Toronto FC", colors: ['#B81137', '#000000', '#455560'] },
   { id: 'tottenham', name: "Tottenham Hotspur", colors: ['#132257', '#FFFFFF'] },
@@ -96,7 +117,6 @@ export const CLUB_PALETTES = [
   { id: 'vancouver-whitecaps', name: "Vancouver Whitecaps FC", colors: ['#00245E', '#9DC2EA', '#FFFFFF'] },
   { id: 'villarreal', name: "Villarreal CF", colors: ['#FFE667', '#005187'] },
   { id: 'watford', name: "Watford FC", colors: ['#FBEE23', '#ED2127', '#11210C'] },
-  { id: 'west-brom', name: "West Bromwich Albion", colors: ['#122F67', '#FFFFFF'] },
   { id: 'west-ham', name: "West Ham United", colors: ['#7A263A', '#1BB1E7', '#F3D459'] }
 ];
 
