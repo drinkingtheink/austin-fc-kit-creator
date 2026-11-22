@@ -138,6 +138,41 @@ export function sanitizeKit(raw, shirtOptions, stageNames) {
   return Object.keys(kit).length ? kit : null;
 }
 
+/**
+ * Whether a restored kit is somebody's work, or just what the app wrote for
+ * itself on the way in.
+ *
+ * A first visit saves before anyone has touched anything: mounting resolves
+ * the backdrop, which is a persisted field, so the watcher that saves fires
+ * on a kit nobody designed. Offering to resume that is a question with no
+ * useful answer, so the greeting-or-resume decision asks this first.
+ *
+ * `setting` is the field that is skipped, and it is skipped precisely
+ * because it is the one the app rolls for itself: it is random on every
+ * arrival, so it differs from the defaults every time and says nothing about
+ * whether anybody designed anything.
+ *
+ * Only fields the entry actually carries are compared. A missing field means
+ * the app fell back to its default, which is not a difference.
+ *
+ * @param {object|null} saved     a sanitized entry, or null
+ * @param {object} defaults       the same fields as the app opens on
+ */
+export function hasDesign(saved, defaults) {
+  if (!saved) return false;
+
+  return PERSISTED_FIELDS.some(field => {
+    if (field === 'setting' || !(field in saved)) return false;
+
+    const mine = saved[field];
+    const stock = defaults[field];
+
+    return Array.isArray(mine) || Array.isArray(stock)
+      ? JSON.stringify(mine) !== JSON.stringify(stock)
+      : mine !== stock;
+  });
+}
+
 export function readKit(shirtOptions, stageNames) {
   const store = storage();
 

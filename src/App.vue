@@ -780,6 +780,40 @@
       </div>
     </transition>
 
+    <!-- Raised on a return visit when the last one left a kit somebody had
+         actually designed. The kit itself is already on the stage behind it:
+         data() restores before anything renders, which is what lets this be
+         a question about what to do next rather than a loading screen. -->
+    <transition name="fade">
+      <div
+        class="modal-backdrop"
+        v-show="showResume"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="resume-title"
+        v-on:click.self="dismissModal"
+      >
+        <div class="modal">
+          <p class="modal-eyebrow">Welcome back</p>
+          <h2 class="modal-title" id="resume-title">You left a kit on the pitch</h2>
+
+          <p>
+            This is the design you were working on last time, restored exactly as you
+            left it. Carry on with it, or clear the stage and start a new one.
+          </p>
+
+          <p class="modal-note" v-if="kitName">
+            It is called <strong>{{ kitName }}</strong>.
+          </p>
+
+          <div class="modal-actions">
+            <button class="btn btn-primary" v-on:click="continueKit">Continue this kit</button>
+            <button class="btn btn-ghost" v-on:click="startOverKit">Start over</button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <GuidedTour />
 
     <transition name="toast">
@@ -811,11 +845,11 @@
   import ShirtThumb from './components/ShirtThumb.vue';
   import KitThumb from './components/KitThumb.vue';
   import ColorPanel from './components/ColorPanel.vue';
-  import { computed } from 'vue';
+  import { computed, markRaw } from 'vue';
   import { contrast, isValidColor, nearest, toHex } from './lib/colorTools.js';
   import { STAGE_NAMES, getBackdrop, toCssGradient } from './lib/stageBackdrops.js';
   import { kitToPngBlob, downloadBlob } from './lib/kitToPng.js';
-  import { readKit, writeKit, PERSISTED_FIELDS } from './lib/kitStorage.js';
+  import { readKit, writeKit, hasDesign, PERSISTED_FIELDS } from './lib/kitStorage.js';
   import { MAX_SOCK_TEXT, SOCK_TEXT_PRESETS, normalizeSockText } from './lib/sockText.js';
   import { MAX_KIT_NAME, normalizeKitName, toKitSlug } from './lib/kitName.js';
   import { KIT_HISTORY, KIT_TYPE_LABELS } from './lib/kitHistory.js';
@@ -1227,9 +1261,16 @@
       // had just made it.
       const saved = readKit(shirtOptions, STAGE_NAMES);
 
-      return {
+      // Named rather than returned straight, because two things need the kit
+      // as it comes out of the box: Start over, which puts it back, and
+      // hasDesign, which asks whether what was restored differs from it at
+      // all. Both would otherwise need a second copy of these values.
+      const fresh = {
         setting: null,
         showGreeting: false,
+        // The resume ask: raised in mounted() when a previous session left a
+        // kit worth coming back to.
+        showResume: false,
 
         // The one passing-message channel: { id, title, message, tone }.
         toast: null,
@@ -1283,7 +1324,11 @@
         // which is what stops it also painting on release.
         panMoved: false,
 
-        colors: null,
+        // The palette's default lives here rather than being filled in on
+        // mount, which is what gives hasDesign something to compare a
+        // restored palette against. While it was null here, every visit
+        // looked like a design.
+        colors: [...defaultColors],
 
         openSection: 'shirt',
 
@@ -1381,10 +1426,25 @@
         KIT_HISTORY,
         KIT_TYPE_LABELS,
 
-        numberFill: white,
+        numberFill: white
+      };
 
-        ...saved
-      }
+      return {
+        ...fresh,
+        ...saved,
+
+        // Not reactive: it never changes, and it is only ever read.
+        //
+        // Its palette is a copy rather than the array the spread above just
+        // handed the component. Nothing mutates this.colors in place today --
+        // addColor and the rest all reassign -- but one push() somewhere
+        // later would otherwise be editing the defaults Start over restores.
+        freshKit: markRaw({ ...fresh, colors: [...fresh.colors] }),
+        // Whether the entry just restored is somebody's design or only what
+        // the app saved for itself on a previous arrival. mounted() turns
+        // this into the resume ask, or into the plain welcome-back toast.
+        restoredDesign: hasDesign(saved, fresh)
+      };
     },
     computed: {
       // Watched rather than rendered: any change to a persisted field yields a
@@ -2488,6 +2548,42 @@
         this.backToTop();
         this.startTour();
       },
+      /**
+       * Keep the restored kit. Nothing to apply -- it is already on the
+       * stage -- so this only takes the question away.
+       */
+      continueKit() {
+        this.showResume = false;
+        this.notify('Picking up where you left off.', this.kitName || 'Your kit is back on the stage');
+      },
+      /**
+       * Put the kit back to the one the app opens on.
+       *
+       * Deliberately not clearKit(): the persistedKit watcher is about to
+       * fire on everything below and write the defaults over the entry
+       * anyway, so removing it first would only be a gap of one tick. What
+       * matters for the next visit is that what is in storage no longer
+       * differs from the defaults, which is exactly what hasDesign reads.
+       *
+       * The backdrop is rolled rather than restored, the same as any other
+       * arrival, and the history markers go with it: a cleared stage is not
+       * a kit anybody has altered.
+       */
+      startOverKit() {
+        const stock = {};
+
+        PERSISTED_FIELDS.forEach(field => { stock[field] = this.freshKit[field]; });
+
+        this.applyKit(stock);
+        this.getSetting();
+
+        this.historySource = null;
+        this.historyAltered = false;
+        this.resetZoom();
+
+        this.showResume = false;
+        this.notify('Fresh kit.', 'Back to verde, black and white');
+      },
       handleGreetingToManageColors() {
         // Marks too. This button used to close the greeting without
         // recording anything, so anyone who left through it saw the greeting
@@ -2605,6 +2701,16 @@
           return;
         }
 
+        // Above even the greeting, because the two never show together and
+        // this one is holding a restored kit nobody has spoken for yet.
+        // Escape keeps it: dismissing an ask should not be the destructive
+        // answer to it.
+        if (this.showResume) {
+          this.continueKit();
+
+          return;
+        }
+
         // The greeting sits on top of the panel, so it closes first, and the
         // history is behind both: it is the stage rather than a layer over it.
         if (this.showGreeting) {
@@ -2622,6 +2728,12 @@
           this.dismissModal();
           return;
         }
+
+        // The resume ask is holding somebody's restored kit on the stage and
+        // has not been answered yet. Randomize is on Enter, Space and all
+        // four arrows, so without this, the most reflexive key on the page
+        // paints over the very thing being asked about.
+        if (this.showResume) return;
 
         const el = e.target;
         const tag = el && el.tagName;
@@ -2718,10 +2830,9 @@
       window.addEventListener('pointerup', this.onStagePointerUp);
       window.addEventListener('pointercancel', this.onStagePointerUp);
 
-      // Either may already hold a restored value, so only fall back when
-      // nothing was persisted.
-      // Copy, don't alias: addColor() pushes onto this array.
-      if (!this.colors) this.colors = [...defaultColors];
+      // The palette has its default in data() now, where hasDesign can see
+      // it. The backdrop cannot: it is rolled rather than fixed, so it stays
+      // here and is the one persisted field hasDesign has to ignore.
       if (!this.setting) this.getSetting();
 
       // After the restore above, because opening the gallery snapshots the
@@ -2745,6 +2856,19 @@
       } else if (!onboarded) {
         setTimeout(() => {
           this.showGreeting = true;
+        }, 1000);
+      } else if (this.restoredDesign) {
+        // Their kit is already on the stage -- data() restored it, quietly,
+        // before any of this ran -- so the ask is about what happens next
+        // rather than about what to load. Continue is therefore the do
+        // nothing answer, which is why it is also what Escape and a click
+        // outside give.
+        //
+        // The same beat the greeting waits: the kit settles onto the stage
+        // first, so the thing being asked about is on screen behind the
+        // question.
+        setTimeout(() => {
+          this.showResume = true;
         }, 1000);
       } else {
         this.notify('Welcome back.', 'Post your favorites with #AustinFCKitCreator');
