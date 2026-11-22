@@ -705,9 +705,15 @@
             <a href="https://github.com/drinkingtheink/austin-fc-kit-creator" target="_blank" rel="noopener">About this project</a>
             <a href="http://drinkingtheink.com/" target="_blank" rel="noopener">About the author</a>
           </nav>
+          <!-- The notice has to disclaim affiliation, not just concede
+               ownership: the badge in the header links to austinfc.com, the
+               title says Austin FC, and every export is captioned with it, so
+               a reader has plenty of reasons to assume the club made this. -->
           <p class="attribution">
-            Austin FC owns all rights to the Austin FC Badge and any other intellectual
-            property under their purview. I am merely a huge supporter.
+            Austin FC Kit Creator is an unofficial fan project, not affiliated with,
+            endorsed by, or sponsored by Austin FC, Major League Soccer, or any club
+            shown here. The Austin FC badge, and all other club names, crests, and
+            colors, belong to their owners. Made by a supporter.
           </p>
         </footer>
       </aside>
