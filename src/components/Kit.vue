@@ -72,6 +72,18 @@
            fill="url(#...)" as an attribute for the matching reason --
            shouldSkip drops url() values from the inlined style and leaves
            the attribute to do it. -->
+      <!-- Along the back collar, not down it: the one gradient in here that
+           runs across its shape rather than with the overhead light. It is
+           not lighting the cloth, it is turning it -- the band runs out of
+           sight around a neck, and the ends go to collarBackEdge to say so.
+           Held flat across the middle so the band reads as one colour with
+           two shaded ends rather than as a smear. -->
+      <linearGradient id="collarBandShade" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" :style="{ stopColor: collarBackEdge }" />
+        <stop offset=".28" :style="{ stopColor: collarBack }" />
+        <stop offset=".72" :style="{ stopColor: collarBack }" />
+        <stop offset="1" :style="{ stopColor: collarBackEdge }" />
+      </linearGradient>
       <linearGradient id="backShirt" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" :style="{ stopColor: garmentBacks.shirt.lit }" />
         <stop offset="1" :style="{ stopColor: garmentBacks.shirt.deep }" />
@@ -1497,25 +1509,20 @@
            Both collars cut the same V, so one shape serves either. A
            crescent sat above the opening instead of in it, which closed
            nothing. -->
-      <path fill="url(#backShirt)" d="M291.4 33.3 Q360.6 19.3 429.9 33.3 L360.6 102.6 Z" />
+      <path fill="url(#backShirt)" :d="neckOpening" />
       <!-- The collar coming round the back of the neck, over the inside of
            the shirt and under whichever front collar is on.
 
-           A lens, not a band: both edges land on the same two corners the
-           opening does, 291.4 and 429.9, so it is thickest on the centre
-           line and tapers to nothing at each shoulder -- which is how a
-           collar goes out of sight behind a shoulder. A band of even width
-           would have had to stop somewhere, and a blunt end inside the
-           opening is a shape nobody is wearing.
+           Its outer edge IS the opening's arch -- the same four points,
+           through neckOpening -- and its inner edge is that arch dropped by
+           COLLAR_BAND. Each end is mitred on the 45 the front collar leaves
+           the shoulder corner on, so the two meet along a seam instead of
+           the band stopping in mid air. See collarBandPath.
 
-           Its outer edge IS the opening's arch, the same quadratic with the
-           same control, so the two cannot drift apart. The inner edge dips 8
-           below the shoulder line, which with the 7 the arch rises puts 15
-           units of collar across the back of the neck. The export fits the
-           kit to 86% of 1600, so a unit is 1.05px there and the band comes
-           out 15px, measured off an export: a hint at the size this is
-           actually looked at, and about half that on screen. -->
-      <path id="collar-back" data-part="collar" :class="partClass('collar')" :style="{ fill: collarBack }" d="M291.4 33.3 Q360.6 19.3 429.9 33.3 Q360.6 49.3 291.4 33.3 Z" />
+           It takes its colour as an attribute, not a :style, because that is
+           a url() and shouldSkip drops those from the inlined style -- the
+           attribute is what survives the clone into the PNG. -->
+      <path id="collar-back" data-part="collar" :class="partClass('collar')" fill="url(#collarBandShade)" :d="collarBand" />
       <path data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" :d="veeCollar"/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
@@ -1899,6 +1906,19 @@
   import AustinFCBars from './AustinFCBars.vue';
   import { readableInk, toHsl, fromHsl } from '../lib/colorTools.js';
 
+  // The neck opening: the two shoulder corners, the control that arches its
+  // top edge, and the point it falls to. The opening is cut from these and so
+  // is the band of collar behind it, because the band's outer edge IS the
+  // arch and a second copy of these numbers is a second thing to keep in
+  // step.
+  const NECK_L = [291.4, 33.3];
+  const NECK_R = [429.9, 33.3];
+  const NECK_ARCH = [360.6, 19.3];
+  const NECK_POINT = [360.6, 102.6];
+
+  // How thick the collar reads across the back of the neck.
+  const COLLAR_BAND = 13;
+
   // The V-neck's geometry, shared by the collar band and by the shadow under
   // it. Both are built from one edge shape, because they have to agree: the
   // shadow IS the collar's outer edge, pushed down. They were two sets of
@@ -1975,6 +1995,84 @@
   /** Path data reads better without fifteen decimal places in it. */
   function round1(v) {
     return Math.round(v * 10) / 10;
+  }
+
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+
+  /** A point on the quadratic P0 -> C -> P1. */
+  function quadAt(p0, c, p1, t) {
+    return lerp(lerp(p0, c, t), lerp(c, p1, t), t);
+  }
+
+  /**
+   * The piece of that quadratic between two parameters, as its own quadratic.
+   *
+   * De Casteljau twice: split at `t2` and keep the left curve, whose control
+   * is P0 to C at t2; split that at t1/t2 and keep the right one.
+   */
+  function quadSlice(p0, c, p1, t1, t2) {
+    const leftC = lerp(p0, c, t2);
+    const end = quadAt(p0, c, p1, t2);
+
+    return { start: quadAt(p0, c, p1, t1), control: lerp(leftC, end, t1 / t2), end };
+  }
+
+  /**
+   * Where the band's lower edge runs into the seam it shares with the front
+   * collar -- the 45-degree line out of a shoulder corner, which is the V's
+   * inner edge and the diagonal the button collar leaves too.
+   *
+   * Bisection rather than algebra: the curve is a quadratic and the line is a
+   * line, so this could be solved, but it is solved ONCE at module load and
+   * twenty-four halvings land it inside a thousandth of a unit. Worth more
+   * than the quadratic formula is to read.
+   */
+  function seamParam(corner, dir) {
+    const lower = t => {
+      const [x, y] = quadAt(NECK_L, NECK_ARCH, NECK_R, t);
+
+      return [x, y + COLLAR_BAND];
+    };
+    // Positive where the lower edge has passed the seam line.
+    const side = t => {
+      const [x, y] = lower(t);
+
+      return (y - corner[1]) - dir * (x - corner[0]);
+    };
+
+    let lo = 0;
+    let hi = 1;
+
+    for (let i = 0; i < 24; i++) {
+      const mid = (lo + hi) / 2;
+
+      if ((side(mid) > 0) === (side(lo) > 0)) lo = mid; else hi = mid;
+    }
+
+    return (lo + hi) / 2;
+  }
+
+  /**
+   * The collar across the back of the neck: the opening's arch, the same
+   * arch dropped by COLLAR_BAND, and a mitre at each end.
+   *
+   * It was a lens -- both edges on the two corners, tapering to nothing at
+   * each shoulder -- and a lens is an oblong floating in a hole, not a
+   * collar. The ends are cut on the 45 the front collar leaves the corner
+   * on instead, so the band meets it along a seam rather than stopping in
+   * mid air, and keeps its thickness almost to the shoulder. What makes it
+   * turn away there is collarBandShade, not the outline.
+   */
+  function collarBandPath() {
+    const tL = seamParam(NECK_L, 1);
+    const tR = seamParam(NECK_R, -1);
+    const lower = quadSlice(NECK_L, NECK_ARCH, NECK_R, tL, tR);
+    const n = ([x, y]) => `${round1(x)} ${round1(y)}`;
+    const drop = ([x, y]) => `${round1(x)} ${round1(y + COLLAR_BAND)}`;
+
+    return `M${n(NECK_L)}Q${n(NECK_ARCH)} ${n(NECK_R)}`
+      + `L${drop(lower.end)}`
+      + `Q${drop(lower.control)} ${drop(lower.start)}Z`;
   }
 
   export default {
@@ -2134,6 +2232,27 @@
        */
       collarBack() {
         return this.deepen(this.collarFill);
+      },
+      /**
+       * A second step down, for the two ends of the band.
+       *
+       * This is the whole reason the band can keep its width: a collar does
+       * not get thinner as it goes round a neck, it turns away from the
+       * light. So the outline stays a band and the ENDS carry the falloff,
+       * which is what collarBandShade ramps between.
+       */
+      collarBackEdge() {
+        return this.deepen(this.collarBack);
+      },
+      // Both built from the same four points, so the band's outer edge and
+      // the opening's top edge cannot come apart.
+      neckOpening() {
+        const n = ([x, y]) => `${x} ${y}`;
+
+        return `M${n(NECK_L)}Q${n(NECK_ARCH)} ${n(NECK_R)}L${n(NECK_POINT)}Z`;
+      },
+      collarBand() {
+        return collarBandPath();
       },
       diagonalPinstripeColumns() {
         return this.stripeColumns(35, 690);
