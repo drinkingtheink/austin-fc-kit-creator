@@ -1498,7 +1498,25 @@
            crescent sat above the opening instead of in it, which closed
            nothing. -->
       <path fill="url(#backShirt)" d="M291.4 33.3 Q360.6 19.3 429.9 33.3 L360.6 102.6 Z" />
-      <polygon data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" points="360.6,132.5 459.9,33.3 429.9,33.3 360.6,102.6 291.4,33.3 261.4,33.3  "/>
+      <!-- The collar coming round the back of the neck, over the inside of
+           the shirt and under whichever front collar is on.
+
+           A lens, not a band: both edges land on the same two corners the
+           opening does, 291.4 and 429.9, so it is thickest on the centre
+           line and tapers to nothing at each shoulder -- which is how a
+           collar goes out of sight behind a shoulder. A band of even width
+           would have had to stop somewhere, and a blunt end inside the
+           opening is a shape nobody is wearing.
+
+           Its outer edge IS the opening's arch, the same quadratic with the
+           same control, so the two cannot drift apart. The inner edge dips 8
+           below the shoulder line, which with the 7 the arch rises puts 15
+           units of collar across the back of the neck. The export fits the
+           kit to 86% of 1600, so a unit is 1.05px there and the band comes
+           out 15px, measured off an export: a hint at the size this is
+           actually looked at, and about half that on screen. -->
+      <path id="collar-back" data-part="collar" :class="partClass('collar')" :style="{ fill: collarBack }" d="M291.4 33.3 Q360.6 19.3 429.9 33.3 Q360.6 49.3 291.4 33.3 Z" />
+      <path data-part="collar" :class="[partClass('collar'), 'fade-part', { on: !showButtonCollar }]" id="collar" :style="{ fill: collarFill }" class="st0" :d="veeCollar"/>
       <!-- Lifted 4 units, which is about 2px at the size the kit draws, to
            sit on the shoulder line rather than just under it. The V-neck does
            not need it and has not moved.
@@ -1721,7 +1739,7 @@
              They carry the same fade-part toggle the collars do, so each
              shadow crossfades with the collar it belongs to rather than
              switching under it. -->
-        <path :class="['fade-part', { on: !showButtonCollar }]" d="M261.4 33.3 L360.6 132.5 L459.9 33.3 L459.9 47 L360.6 146 L261.4 47 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
+        <path :class="['fade-part', { on: !showButtonCollar }]" :d="veeCollarShadow" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
         <path :class="['fade-part', { on: showButtonCollar }]" transform="translate(0,-4)" d="M301.7 132.2 L338.4 92.7 L355.1 109.4 L342.6 132.9 L382.8 92.7 L419.4 132.1 L419.4 145.1 L382.8 105.7 L342.6 145.9 L355.1 122.4 L338.4 105.7 L301.7 145.2 Z" fill="#000" fill-opacity=".26" filter="url(#seamSoft)" />
       </g>
       <!-- Out to 21 and 688 rather than the sleeve's own 28 and 687: the
@@ -1881,6 +1899,84 @@
   import AustinFCBars from './AustinFCBars.vue';
   import { readableInk, toHsl, fromHsl } from '../lib/colorTools.js';
 
+  // The V-neck's geometry, shared by the collar band and by the shadow under
+  // it. Both are built from one edge shape, because they have to agree: the
+  // shadow IS the collar's outer edge, pushed down. They were two sets of
+  // hand-written coordinates, which held while both were straight lines and
+  // would not have survived rounding one of them.
+  const VEE_SHOULDER_Y = 33.3;
+  const VEE_MID_X = 360.6;
+  const VEE_OUTER_X = 261.4;
+  const VEE_INNER_X = 291.4;
+  const VEE_SHADOW_DROP = 13.5;
+
+  // How far back along each arm the point starts to turn, and how far each
+  // arm bows out at its middle. See veeEdge.
+  const VEE_ROUND_OUTER = 16;
+  const VEE_ROUND_INNER = 14;
+  const VEE_BOW = 2;
+
+  /**
+   * One edge of the V-neck, as the four points and three controls of a path
+   * running from the left shoulder, down around the point, and up to the
+   * right shoulder.
+   *
+   * Both edges are 45-degree Vs, so an edge's point falls as far below the
+   * shoulder line as the edge stands inside the centre. That is computed
+   * rather than typed: the two apex y values used to be written out beside
+   * the four x values, and a 45 that is 44 at one end shows at this size.
+   *
+   * `round` is how far back along each arm the point starts to turn. The
+   * turn is a quadratic whose control is the corner the polygon used to
+   * have, so it leaves and rejoins the arms tangentially, and it lifts the
+   * point by 0.354 of `round` -- a mitre rather than a needle.
+   *
+   * `bow` pushes each arm's midpoint away from the opening. A quadratic sits
+   * half way to its control, so the control goes out by twice it. Two units
+   * across a ninety-nine unit arm is nothing to measure and the whole
+   * difference between a neckline and a chevron: a dead straight 45 reads as
+   * drawn, and cloth hanging off two shoulders does not.
+   *
+   * `dy` drops the whole edge, which is all the shadow's lower edge is.
+   */
+  function veeEdge(xAtShoulder, round, bow, dy = 0) {
+    const xL = xAtShoulder;
+    const xR = 2 * VEE_MID_X - xL;
+    const yTop = VEE_SHOULDER_Y + dy;
+    const yApex = yTop + (VEE_MID_X - xL);
+
+    // Along a 45-degree arm, backing off `round` costs that much over root 2
+    // in each of x and y.
+    const back = round * Math.SQRT1_2;
+    const tangentY = yApex - back;
+    const out = 2 * bow * Math.SQRT1_2;
+
+    return [
+      [xL, yTop],
+      // Away from the opening is down-left on the left arm, down-right on
+      // the right one; both are the outward normal of a 45-degree line.
+      [(xL + VEE_MID_X - back) / 2 - out, (yTop + tangentY) / 2 + out],
+      [VEE_MID_X - back, tangentY],
+      [VEE_MID_X, yApex],
+      [VEE_MID_X + back, tangentY],
+      [(xR + VEE_MID_X + back) / 2 + out, (yTop + tangentY) / 2 + out],
+      [xR, yTop]
+    ];
+  }
+
+  /** An edge's points as path commands, left to right or right to left. */
+  function veePath(points, reverse = false) {
+    const pts = reverse ? [...points].reverse() : points;
+    const n = ([x, y]) => `${round1(x)} ${round1(y)}`;
+
+    return `Q${n(pts[1])} ${n(pts[2])}Q${n(pts[3])} ${n(pts[4])}Q${n(pts[5])} ${n(pts[6])}`;
+  }
+
+  /** Path data reads better without fifteen decimal places in it. */
+  function round1(v) {
+    return Math.round(v * 10) / 10;
+  }
+
   export default {
     name: 'Kit',
     components: { AustinFCRoundel, AustinFCLeaves, AustinFCBars },
@@ -1982,6 +2078,62 @@
       // one and not notice.
       pinstripeColumns() {
         return this.stripeColumns(175, 545);
+      },
+      /**
+       * The V-neck band: outer edge left to right, across the shoulder line,
+       * inner edge back again.
+       *
+       * It was a six-point polygon, which is to say six dead straight lines
+       * and two needle points, and at this size it read as a chevron printed
+       * on the chest rather than a neckline cut into it. Same four x on the
+       * shoulder line, same 45 degrees, same band width: all that changed is
+       * that the point turns and the arms breathe.
+       */
+      veeCollar() {
+        const outer = veeEdge(VEE_OUTER_X, VEE_ROUND_OUTER, VEE_BOW);
+        const inner = veeEdge(VEE_INNER_X, VEE_ROUND_INNER, VEE_BOW);
+
+        return `M${round1(outer[0][0])} ${round1(outer[0][1])}`
+          + veePath(outer)
+          + `L${round1(inner[6][0])} ${round1(inner[6][1])}`
+          + veePath(inner, true)
+          + 'Z';
+      },
+      /**
+       * The shadow under the V-neck: the collar's outer edge, and that same
+       * edge dropped. It has to carry the collar's rounding and bow or it
+       * separates from the thing it is the shadow of -- which is why both
+       * come out of veeEdge rather than being written twice.
+       */
+      veeCollarShadow() {
+        const upper = veeEdge(VEE_OUTER_X, VEE_ROUND_OUTER, VEE_BOW);
+        const lower = veeEdge(VEE_OUTER_X, VEE_ROUND_OUTER, VEE_BOW, VEE_SHADOW_DROP);
+
+        return `M${round1(upper[0][0])} ${round1(upper[0][1])}`
+          + veePath(upper)
+          + `L${round1(lower[6][0])} ${round1(lower[6][1])}`
+          + veePath(lower, true)
+          + 'Z';
+      },
+      /**
+       * The collar, seen where it comes round the back of the neck.
+       *
+       * The same step down in lightness the garment backs take, for the same
+       * reason: this is cloth on the far side of an opening, and the one
+       * light in this kit is overhead and in front. Deliberately not
+       * farSide() -- that exists to hold an opening's edge against the cloth
+       * AROUND it, and lifts a near-black to do it. This sits inside the
+       * opening against the shirt's own inside, and a collar that got
+       * brighter as it went behind the neck is the glow this kit has already
+       * been through once.
+       *
+       * On a black collar it therefore goes to black and the back of the
+       * collar reads as silhouette against the lit top of the opening. That
+       * is the honest answer at this light, and it is what a black collar
+       * already does against a black shirt at the front.
+       */
+      collarBack() {
+        return this.deepen(this.collarFill);
       },
       diagonalPinstripeColumns() {
         return this.stripeColumns(35, 690);
@@ -2207,14 +2359,23 @@
 
         return fromHsl(h, s, Math.min(1, l + by));
       },
+      // One step darker: .15 of lightness, or .6 of what is left below when
+      // there is less, so it cannot clamp into black. Pulled out of
+      // farSideRamp because the back of the collar takes the same step for
+      // the same reason, and two copies of it would drift.
+      deepen(hex) {
+        if (!hex) return hex;
+
+        const [h, s, l] = toHsl(hex);
+
+        return fromHsl(h, s, l - Math.min(0.15, l * 0.6));
+      },
       farSideRamp(hex) {
         const lit = this.farSide(hex);
 
         if (!lit) return { lit, deep: lit };
 
-        const [h, s, l] = toHsl(lit);
-
-        return { lit, deep: fromHsl(h, s, l - Math.min(0.15, l * 0.6)) };
+        return { lit, deep: this.deepen(lit) };
       },
       /**
        * One chevron band, as points: a V across the trunk whose upper edge
