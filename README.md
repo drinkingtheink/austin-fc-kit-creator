@@ -14,7 +14,7 @@ club? Pick colours, pick a pattern, and kit out eleven imaginary players. Or
 mash the randomiser until something beautiful falls out. Either way — **LET'S
 GROW THE LEGEND.**
 
-### ▶ [PRESS START](https://austin-fc-kit-creator.netlify.app/)
+### ▶ [PRESS START](https://austin-fc-kit-creator.jasonmharrison.info/)
 
 ---
 
