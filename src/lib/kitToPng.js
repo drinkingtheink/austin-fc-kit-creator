@@ -27,8 +27,29 @@ const STADIUM_FILTER = 'saturate(0.7)';
 const CAPTION_TEXT = 'AUSTIN FC KIT CREATOR';
 const CAPTION_STACK = "'Bungee Inline', system-ui, sans-serif";
 const CAPTION_SIZE = 42;
-const CAPTION_BASELINE_GAP = 54;
+// 66 rather than the 54 this sat at before the notice below it existed: the
+// two lines share the bottom band, and the caption had to come up to give the
+// notice its own. Bungee Inline's caps stand about 0.72em, so a 42px caption
+// on a 1534 baseline tops out at 1504 -- still 16px clear of the kit, which
+// FIT_HEIGHT stops at 1488.
+const CAPTION_BASELINE_GAP = 66;
 const CAPTION_MAX_WIDTH = 0.8;
+
+// Under the caption: the line that says whose project this is not.
+//
+// It belongs on the image and not only in the page footer, because the PNG is
+// what leaves the app. It travels with the crest on the shirt, the club's name
+// across the foot of it and the hashtag the footer asks for, into feeds where
+// nothing else from the page follows it.
+//
+// Set in --font-ui, not the display face: Bungee Inline is a poster face, and
+// a 60-character sentence in it at this size is a smear. Loaded explicitly for
+// the same reason the caption is -- canvas paints a fallback silently.
+const NOTICE_TEXT = 'UNOFFICIAL FAN PROJECT \u00b7 NOT AFFILIATED WITH AUSTIN FC OR MLS';
+const NOTICE_STACK = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const NOTICE_SIZE = 17;
+const NOTICE_WEIGHT = 500;
+const NOTICE_BASELINE_GAP = 26;
 
 // The kit's own name, when it has one, along the head of the download.
 //
@@ -360,6 +381,14 @@ async function paintCaption(ctx, width, height, kitName = '') {
     console.warn('[kit-export] Bungee Inline unavailable; caption fell back');
   }
 
+  const noticeFace = `${NOTICE_WEIGHT} ${NOTICE_SIZE}px 'Inter'`;
+
+  try {
+    await document.fonts.load(noticeFace, NOTICE_TEXT);
+  } catch {
+    // Same as above: the stack behind it still puts the words on the image.
+  }
+
   if (kitName) {
     paintBanner(ctx, kitName, TITLE_SIZE, TITLE_BASELINE, width);
   }
@@ -391,36 +420,51 @@ async function paintCaption(ctx, width, height, kitName = '') {
   ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
   ctx.fillText(CAPTION_TEXT, width / 2, height - CAPTION_BASELINE_GAP);
   ctx.restore();
+
+  // Quieter than the caption on purpose -- it has to be readable, not read
+  // first -- but above the 0.5 alpha where a thin face starts to disappear
+  // into a pale sky.
+  paintBanner(ctx, NOTICE_TEXT, NOTICE_SIZE, height - NOTICE_BASELINE_GAP, width, {
+    stack: NOTICE_STACK,
+    weight: NOTICE_WEIGHT,
+    tracking: '0.08em',
+    alpha: 0.78
+  });
 }
 
 /**
  * One centred line, shrunk until it fits.
  *
- * The same treatment the caption gets, kept in one place because the two
- * lines differ in what they say and where they sit rather than in how they
- * are drawn. The shadow is here for the same reason it is there: the sky
- * behind this edge is a different colour in every backdrop, so the text
- * carries its own contrast rather than trusting any one of them.
+ * The same treatment the caption gets, kept in one place because the lines
+ * differ in what they say and where they sit rather than in how they are
+ * drawn. Face, weight, tracking and alpha are the only things that vary, so
+ * they are arguments; the kit's name takes all four defaults. The shadow is
+ * here for the same reason it is there: the sky behind this edge is a
+ * different colour in every backdrop, so the text carries its own contrast
+ * rather than trusting any one of them.
  */
-function paintBanner(ctx, text, startSize, baseline, width) {
+function paintBanner(ctx, text, startSize, baseline, width, opts = {}) {
+  const { stack = CAPTION_STACK, weight = '', tracking = '0.04em', alpha = 0.95 } = opts;
+  const face = size => `${weight ? `${weight} ` : ''}${size}px ${stack}`;
+
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
 
-  if ('letterSpacing' in ctx) ctx.letterSpacing = '0.04em';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = tracking;
 
   let size = startSize;
 
-  ctx.font = `${size}px ${CAPTION_STACK}`;
+  ctx.font = face(size);
 
   while (size > 12 && ctx.measureText(text).width > width * CAPTION_MAX_WIDTH) {
     size -= 1;
-    ctx.font = `${size}px ${CAPTION_STACK}`;
+    ctx.font = face(size);
   }
 
   ctx.shadowColor = 'rgba(4, 6, 5, 0.55)';
   ctx.shadowBlur = 12;
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
   ctx.fillText(text, width / 2, baseline);
   ctx.restore();
 }
